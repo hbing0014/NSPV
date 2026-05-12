@@ -1,0 +1,20 @@
+{
+  "folders": [
+    {
+      "name": "NSPV",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/__pycache__": true,
+      "**/.pytest_cache": true,
+      "**/.next": true,
+      "**/node_modules": true,
+      "**/.venv": true
+    },
+    "python.defaultInterpreterPath": "${workspaceFolder}/backend/.venv/Scripts/python.exe",
+    "typescript.tsdk": "frontend/node_modules/typescript/lib"
+  }
+}
+
