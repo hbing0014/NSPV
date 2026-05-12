@@ -75,6 +75,25 @@ Expected:
 - Shows Top20 products table.
 - New report appears in `/reports`.
 
+Automated frontend smoke check:
+
+```powershell
+cd frontend
+npm run smoke
+```
+
+This checks the home page and reports list against `http://127.0.0.1:3000`.
+
+To include a report detail page:
+
+```powershell
+cd frontend
+$env:SMOKE_REPORT_ID="1"
+npm run smoke
+```
+
+Use `FRONTEND_BASE_URL` to point at a different frontend server.
+
 ## Backend Unit Tests To Add
 
 Target command:
@@ -138,4 +157,3 @@ Run this before considering V1 stable:
 - Warning section handles multiple warnings.
 - Frontend build passes.
 - Backend tests pass.
-
