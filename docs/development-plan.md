@@ -7,11 +7,94 @@
 每次开发前：
 
 1. 先阅读 `docs/v1-scope.md`，确认当前是否属于 V1。
-2. 再阅读本文件对应阶段任务。
-3. 只修改任务涉及的模块，避免扩散到 V2/V3。
-4. 每完成一个任务，运行该任务列出的测试。
-5. 如果任务影响接口响应，更新 `docs/api-roadmap.md`。
-6. 如果任务影响表结构，更新 `docs/db-roadmap.md`。
+2. 再阅读 `Progress Dashboard` 和本文件对应阶段任务。
+3. 创建或切换到任务分支，分支命名建议：`phase-{number}/task-{number}-{short-name}`。
+4. 只修改任务涉及的模块，避免扩散到 V2/V3。
+5. 每完成一个任务，运行该任务列出的测试。
+6. 如果任务影响接口响应，更新 `docs/api-roadmap.md`。
+7. 如果任务影响表结构，更新 `docs/db-roadmap.md`。
+8. 任务完成后更新本文件中的任务状态、测试状态、分支状态和整体完成度。
+
+## Status Legend
+
+任务状态：
+
+- `[DONE]` 已完成并提交。
+- `[IN PROGRESS]` 当前正在执行。
+- `[NEXT]` 建议下一个执行。
+- `[TODO]` 未开始。
+- `[BLOCKED]` 被外部条件阻塞。
+- `[DEFERRED]` 明确暂缓。
+
+分支状态：
+
+- `merged` 已合入主分支。
+- `active` 当前开发分支。
+- `planned` 尚未创建分支。
+- `blocked` 分支存在但无法继续。
+
+测试状态：
+
+- `passed` 已运行并通过。
+- `not run` 尚未运行。
+- `manual` 仅完成手工验证。
+- `blocked` 测试无法执行，需要说明原因。
+
+## Progress Dashboard
+
+Last updated: 2026-05-12
+
+Overall V1 progress: 30%
+
+Current branch: `main`
+
+Current branch status: `clean`
+
+Remote repository: `https://github.com/hbing0014/NSPV.git`
+
+Latest commits:
+
+- `ef4fa17 Add VSCode workspace`
+- `caa2642 Initial NSPV project scaffold`
+
+Current active task: `Task 1.1 Add Backend Test Setup`
+
+Next recommended task: `Task 1.1 Add Backend Test Setup`
+
+Phase progress:
+
+| Phase | Scope | Status | Progress | Branch Status | Test Status |
+| --- | --- | --- | --- | --- | --- |
+| Phase 0 | Project bootstrap, docs, Git, VSCode workspace | `[DONE]` | 100% | `merged: main` | `manual` |
+| Phase 1 | Stabilize current V1 prototype | `[NEXT]` | 0% | `planned` | `not run` |
+| Phase 2 | Real Amazon data integration | `[TODO]` | 0% | `planned` | `not run` |
+| Phase 3 | Improve scoring and risk engine | `[TODO]` | 0% | `planned` | `not run` |
+| Phase 4 | Frontend V1 completion | `[TODO]` | 0% | `planned` | `not run` |
+| Phase 5 | Basic auth | `[TODO]` | 0% | `planned` | `not run` |
+| Phase 6 | Deployment readiness | `[TODO]` | 0% | `planned` | `not run` |
+
+Task progress:
+
+| Task | Status | Suggested Branch | Branch Status | Test Status |
+| --- | --- | --- | --- | --- |
+| Task 1.1 Add Backend Test Setup | `[NEXT]` | `phase-1/task-1.1-backend-tests` | `planned` | `not run` |
+| Task 1.2 Add Frontend Test or Smoke Check | `[TODO]` | `phase-1/task-1.2-frontend-smoke` | `planned` | `not run` |
+| Task 1.3 Normalize API Error Contract | `[TODO]` | `phase-1/task-1.3-api-errors` | `planned` | `not run` |
+| Task 1.4 Add Project CRUD | `[TODO]` | `phase-1/task-1.4-project-crud` | `planned` | `not run` |
+| Task 1.5 Add Analysis Input Persistence | `[TODO]` | `phase-1/task-1.5-analysis-persistence` | `planned` | `not run` |
+| Task 2.1 Define Scraper Interface | `[TODO]` | `phase-2/task-2.1-scraper-interface` | `planned` | `not run` |
+| Task 2.2 Implement Playwright Amazon Search Scraper | `[TODO]` | `phase-2/task-2.2-playwright-scraper` | `planned` | `not run` |
+| Task 2.3 Add Scraper Run Logging | `[TODO]` | `phase-2/task-2.3-scraper-logging` | `planned` | `not run` |
+| Task 3.1 Extract Risk Warning Engine | `[TODO]` | `phase-3/task-3.1-risk-engine` | `planned` | `not run` |
+| Task 3.2 Add Scoring Fixtures | `[TODO]` | `phase-3/task-3.2-scoring-fixtures` | `planned` | `not run` |
+| Task 3.3 Add Scoring Version | `[TODO]` | `phase-3/task-3.3-scoring-version` | `planned` | `not run` |
+| Task 4.1 Improve Loading and Error States | `[TODO]` | `phase-4/task-4.1-loading-errors` | `planned` | `not run` |
+| Task 4.2 Add Project Selection to Home Page | `[TODO]` | `phase-4/task-4.2-project-selection` | `planned` | `not run` |
+| Task 4.3 Improve Report Detail Layout | `[TODO]` | `phase-4/task-4.3-report-layout` | `planned` | `not run` |
+| Task 5.1 Add Password Hash and JWT | `[TODO]` | `phase-5/task-5.1-auth-jwt` | `planned` | `not run` |
+| Task 5.2 Scope Projects and Reports by User | `[TODO]` | `phase-5/task-5.2-user-scope` | `planned` | `not run` |
+| Task 6.1 Add Environment Documentation | `[TODO]` | `phase-6/task-6.1-env-docs` | `planned` | `not run` |
+| Task 6.2 Add Alembic | `[TODO]` | `phase-6/task-6.2-alembic` | `planned` | `not run` |
 
 ## Current Project State
 
@@ -37,13 +120,13 @@
 - 缺少自动化测试。
 - 缺少真实 scraper 错误处理和监控。
 
-## Phase 1: Stabilize Current V1 Prototype
+## Phase 1: Stabilize Current V1 Prototype `[NEXT]`
 
 目标：
 
 - 把当前可运行原型整理成可持续开发的 V1 基线。
 
-### Task 1.1 Add Backend Test Setup
+### Task 1.1 Add Backend Test Setup `[NEXT]`
 
 目标：
 
@@ -78,7 +161,7 @@ cd backend
 .\.venv\Scripts\pytest
 ```
 
-### Task 1.2 Add Frontend Test or Smoke Check
+### Task 1.2 Add Frontend Test or Smoke Check `[TODO]`
 
 目标：
 
@@ -108,7 +191,7 @@ cd frontend
 npm run build
 ```
 
-### Task 1.3 Normalize API Error Contract
+### Task 1.3 Normalize API Error Contract `[TODO]`
 
 目标：
 
@@ -152,7 +235,7 @@ cd backend
 .\.venv\Scripts\pytest
 ```
 
-### Task 1.4 Add Project CRUD
+### Task 1.4 Add Project CRUD `[TODO]`
 
 目标：
 
@@ -198,7 +281,7 @@ cd backend
 .\.venv\Scripts\pytest
 ```
 
-### Task 1.5 Add Analysis Input Persistence
+### Task 1.5 Add Analysis Input Persistence `[TODO]`
 
 目标：
 
@@ -232,13 +315,13 @@ cd backend
 .\.venv\Scripts\pytest
 ```
 
-## Phase 2: Real Amazon Data Integration
+## Phase 2: Real Amazon Data Integration `[TODO]`
 
 目标：
 
 - 替换 mock crawler，接入真实 Amazon 搜索数据。
 
-### Task 2.1 Define Scraper Interface
+### Task 2.1 Define Scraper Interface `[TODO]`
 
 目标：
 
@@ -278,7 +361,7 @@ cd backend
 .\.venv\Scripts\pytest
 ```
 
-### Task 2.2 Implement Playwright Amazon Search Scraper
+### Task 2.2 Implement Playwright Amazon Search Scraper `[TODO]`
 
 目标：
 
@@ -328,7 +411,7 @@ cd backend
 Invoke-RestMethod -Uri http://127.0.0.1:8000/api/analyze -Method Post -ContentType 'application/json' -Body '{"keyword":"sink organizer","marketplace":"US","category":"Kitchen & Dining","budget_rmb":100000,"target_price_min":20,"target_price_max":40,"exclude_red_ocean":true}'
 ```
 
-### Task 2.3 Add Scraper Run Logging
+### Task 2.3 Add Scraper Run Logging `[TODO]`
 
 目标：
 
@@ -365,13 +448,13 @@ cd backend
 .\.venv\Scripts\pytest
 ```
 
-## Phase 3: Improve Scoring and Risk Engine
+## Phase 3: Improve Scoring and Risk Engine `[TODO]`
 
 目标：
 
 - 让 NSFS 更稳定、可解释、可回归测试。
 
-### Task 3.1 Extract Risk Warning Engine
+### Task 3.1 Extract Risk Warning Engine `[TODO]`
 
 目标：
 
@@ -407,7 +490,7 @@ cd backend
 .\.venv\Scripts\pytest
 ```
 
-### Task 3.2 Add Scoring Fixtures
+### Task 3.2 Add Scoring Fixtures `[TODO]`
 
 目标：
 
@@ -428,7 +511,7 @@ cd backend
 
 - 评分规则改动时测试能发现推荐等级变化。
 
-### Task 3.3 Add Scoring Version
+### Task 3.3 Add Scoring Version `[TODO]`
 
 目标：
 
@@ -450,13 +533,13 @@ cd backend
 
 - Report detail 能看到或内部保存评分版本。
 
-## Phase 4: Frontend V1 Completion
+## Phase 4: Frontend V1 Completion `[TODO]`
 
 目标：
 
 - 让用户可以完整使用 V1。
 
-### Task 4.1 Improve Loading and Error States
+### Task 4.1 Improve Loading and Error States `[TODO]`
 
 目标：
 
@@ -484,7 +567,7 @@ cd frontend
 npm run build
 ```
 
-### Task 4.2 Add Project Selection to Home Page
+### Task 4.2 Add Project Selection to Home Page `[TODO]`
 
 目标：
 
@@ -507,7 +590,7 @@ npm run build
 - 报告正确关联 project。
 - Project reports 页面可看到该项目报告。
 
-### Task 4.3 Improve Report Detail Layout
+### Task 4.3 Improve Report Detail Layout `[TODO]`
 
 目标：
 
@@ -552,13 +635,13 @@ npm run build
 - 查看结果页
 - 查看 `Reports`
 
-## Phase 5: Basic Auth
+## Phase 5: Basic Auth `[TODO]`
 
 目标：
 
 - 支持真实用户注册登录，并将项目和报告归属用户。
 
-### Task 5.1 Add Password Hash and JWT
+### Task 5.1 Add Password Hash and JWT `[TODO]`
 
 建议修改位置：
 
@@ -585,7 +668,7 @@ cd backend
 .\.venv\Scripts\pytest
 ```
 
-### Task 5.2 Scope Projects and Reports by User
+### Task 5.2 Scope Projects and Reports by User `[TODO]`
 
 目标：
 
@@ -607,13 +690,13 @@ cd backend
 
 - 测试不同用户不能访问彼此报告。
 
-## Phase 6: Deployment Readiness
+## Phase 6: Deployment Readiness `[TODO]`
 
 目标：
 
 - 可以部署到 Vercel + Render/Railway/Fly.io + Supabase/Neon。
 
-### Task 6.1 Add Environment Documentation
+### Task 6.1 Add Environment Documentation `[TODO]`
 
 建议修改位置：
 
@@ -628,7 +711,7 @@ cd backend
 - 记录前端 `NEXT_PUBLIC_API_BASE`。
 - 记录 PostgreSQL `DATABASE_URL`。
 
-### Task 6.2 Add Alembic
+### Task 6.2 Add Alembic `[TODO]`
 
 目标：
 
@@ -663,4 +746,3 @@ cd backend
 - API 响应变更同步更新文档。
 - 数据库结构变更同步更新文档。
 - 报告页仍能完成一次关键词分析闭环。
-
