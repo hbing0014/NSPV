@@ -44,11 +44,11 @@
 
 Last updated: 2026-05-12
 
-Overall V1 progress: 30%
+Overall V1 progress: 35%
 
-Current branch: `main`
+Current branch: `phase-1/task-1.1-backend-tests`
 
-Current branch status: `clean`
+Current branch status: `active`
 
 Remote repository: `https://github.com/hbing0014/NSPV.git`
 
@@ -57,16 +57,16 @@ Latest commits:
 - `ef4fa17 Add VSCode workspace`
 - `caa2642 Initial NSPV project scaffold`
 
-Current active task: `Task 1.1 Add Backend Test Setup`
+Current active task: `Task 1.2 Add Frontend Test or Smoke Check`
 
-Next recommended task: `Task 1.1 Add Backend Test Setup`
+Next recommended task: `Task 1.2 Add Frontend Test or Smoke Check`
 
 Phase progress:
 
 | Phase | Scope | Status | Progress | Branch Status | Test Status |
 | --- | --- | --- | --- | --- | --- |
 | Phase 0 | Project bootstrap, docs, Git, VSCode workspace | `[DONE]` | 100% | `merged: main` | `manual` |
-| Phase 1 | Stabilize current V1 prototype | `[NEXT]` | 0% | `planned` | `not run` |
+| Phase 1 | Stabilize current V1 prototype | `[IN PROGRESS]` | 20% | `active: phase-1/task-1.1-backend-tests` | `passed` |
 | Phase 2 | Real Amazon data integration | `[TODO]` | 0% | `planned` | `not run` |
 | Phase 3 | Improve scoring and risk engine | `[TODO]` | 0% | `planned` | `not run` |
 | Phase 4 | Frontend V1 completion | `[TODO]` | 0% | `planned` | `not run` |
@@ -77,8 +77,8 @@ Task progress:
 
 | Task | Status | Suggested Branch | Branch Status | Test Status |
 | --- | --- | --- | --- | --- |
-| Task 1.1 Add Backend Test Setup | `[NEXT]` | `phase-1/task-1.1-backend-tests` | `planned` | `not run` |
-| Task 1.2 Add Frontend Test or Smoke Check | `[TODO]` | `phase-1/task-1.2-frontend-smoke` | `planned` | `not run` |
+| Task 1.1 Add Backend Test Setup | `[DONE]` | `phase-1/task-1.1-backend-tests` | `active` | `passed` |
+| Task 1.2 Add Frontend Test or Smoke Check | `[NEXT]` | `phase-1/task-1.2-frontend-smoke` | `planned` | `not run` |
 | Task 1.3 Normalize API Error Contract | `[TODO]` | `phase-1/task-1.3-api-errors` | `planned` | `not run` |
 | Task 1.4 Add Project CRUD | `[TODO]` | `phase-1/task-1.4-project-crud` | `planned` | `not run` |
 | Task 1.5 Add Analysis Input Persistence | `[TODO]` | `phase-1/task-1.5-analysis-persistence` | `planned` | `not run` |
@@ -120,13 +120,13 @@ Task progress:
 - 缺少自动化测试。
 - 缺少真实 scraper 错误处理和监控。
 
-## Phase 1: Stabilize Current V1 Prototype `[NEXT]`
+## Phase 1: Stabilize Current V1 Prototype `[IN PROGRESS]`
 
 目标：
 
 - 把当前可运行原型整理成可持续开发的 V1 基线。
 
-### Task 1.1 Add Backend Test Setup `[NEXT]`
+### Task 1.1 Add Backend Test Setup `[DONE]`
 
 目标：
 
@@ -161,7 +161,14 @@ cd backend
 .\.venv\Scripts\pytest
 ```
 
-### Task 1.2 Add Frontend Test or Smoke Check `[TODO]`
+Completion record:
+
+- Branch: `phase-1/task-1.1-backend-tests`
+- Status: `[DONE]`
+- Test result: `30 passed, 2 warnings`
+- Notes: warnings are FastAPI `on_event` deprecation warnings and do not block this task.
+
+### Task 1.2 Add Frontend Test or Smoke Check `[NEXT]`
 
 目标：
 

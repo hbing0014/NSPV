@@ -1,0 +1,56 @@
+from fastapi.testclient import TestClient
+
+
+def analyze_payload() -> dict:
+    return {
+        "keyword": "sink organizer",
+        "marketplace": "US",
+        "category": "Kitchen & Dining",
+        "budget_rmb": 100000,
+        "target_price_min": 20,
+        "target_price_max": 40,
+        "exclude_red_ocean": True,
+    }
+
+
+def test_analyze_creates_report(client: TestClient) -> None:
+    response = client.post("/api/analyze", json=analyze_payload())
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["report_id"] > 0
+    assert data["project_id"] > 0
+    assert data["keyword"] == "sink organizer"
+    assert 0 <= data["nsfs_score"] <= 100
+    assert data["recommendation"] in {"Strongly Recommended", "Worth Research", "Caution", "Avoid"}
+    assert len(data["products"]) == 20
+
+
+def test_report_detail_returns_saved_snapshot(client: TestClient) -> None:
+    created = client.post("/api/analyze", json=analyze_payload()).json()
+
+    response = client.get(f"/api/reports/{created['report_id']}")
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["report_id"] == created["report_id"]
+    assert data["products"] == created["products"]
+
+
+def test_analyze_rejects_invalid_price_range(client: TestClient) -> None:
+    payload = analyze_payload()
+    payload["target_price_min"] = 45
+    payload["target_price_max"] = 20
+
+    response = client.post("/api/analyze", json=payload)
+
+    assert response.status_code == 400
+    assert response.json()["detail"] == "target_price_min cannot exceed target_price_max"
+
+
+def test_report_not_found(client: TestClient) -> None:
+    response = client.get("/api/reports/999999")
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Report not found"
+
