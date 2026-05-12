@@ -45,12 +45,30 @@ def test_analyze_rejects_invalid_price_range(client: TestClient) -> None:
     response = client.post("/api/analyze", json=payload)
 
     assert response.status_code == 400
-    assert response.json()["detail"] == "target_price_min cannot exceed target_price_max"
+    error = response.json()["error"]
+    assert error["code"] == "VALIDATION_ERROR"
+    assert error["message"] == "target_price_min cannot exceed target_price_max"
+    assert error["details"]["field"] == "target_price_min"
 
 
 def test_report_not_found(client: TestClient) -> None:
     response = client.get("/api/reports/999999")
 
     assert response.status_code == 404
-    assert response.json()["detail"] == "Report not found"
+    error = response.json()["error"]
+    assert error["code"] == "REPORT_NOT_FOUND"
+    assert error["message"] == "Report not found"
+    assert error["details"]["report_id"] == 999999
 
+
+def test_request_validation_error_uses_error_contract(client: TestClient) -> None:
+    payload = analyze_payload()
+    payload["budget_rmb"] = 0
+
+    response = client.post("/api/analyze", json=payload)
+
+    assert response.status_code == 422
+    error = response.json()["error"]
+    assert error["code"] == "VALIDATION_ERROR"
+    assert error["message"] == "Request validation failed."
+    assert error["details"]["errors"]

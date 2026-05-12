@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.core.errors import ApiError
 from app.db.session import get_db
 from app.models.tables import Keyword, KeywordProductSnapshot, Product, Project, SelectionReport
 from app.schemas.analysis import AnalyzeRequest, AnalyzeResponse, ProductOut, ReportListItem
@@ -14,9 +15,25 @@ router = APIRouter(prefix="/api")
 @router.post("/analyze", response_model=AnalyzeResponse)
 def analyze(request: AnalyzeRequest, db: Session = Depends(get_db)) -> AnalyzeResponse:
     if request.target_price_min > request.target_price_max:
-        raise HTTPException(status_code=400, detail="target_price_min cannot exceed target_price_max")
+        raise ApiError(
+            code="VALIDATION_ERROR",
+            message="target_price_min cannot exceed target_price_max",
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details={
+                "field": "target_price_min",
+                "target_price_min": request.target_price_min,
+                "target_price_max": request.target_price_max,
+            },
+        )
 
     products = fetch_top20_products(request.keyword, request.marketplace)
+    if not products:
+        raise ApiError(
+            code="SCRAPER_EMPTY_RESULT",
+            message="Amazon search returned no products.",
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            details={"keyword": request.keyword, "marketplace": request.marketplace},
+        )
     score = analyze_products(
         keyword=request.keyword,
         products=products,
@@ -120,7 +137,12 @@ def analyze(request: AnalyzeRequest, db: Session = Depends(get_db)) -> AnalyzeRe
 def get_report(report_id: int, db: Session = Depends(get_db)) -> AnalyzeResponse:
     report = db.get(SelectionReport, report_id)
     if report is None:
-        raise HTTPException(status_code=404, detail="Report not found")
+        raise ApiError(
+            code="REPORT_NOT_FOUND",
+            message="Report not found",
+            status_code=status.HTTP_404_NOT_FOUND,
+            details={"report_id": report_id},
+        )
     return report_to_response(report, report.keyword.keyword)
 
 
@@ -173,4 +195,3 @@ def report_to_list_item(report: SelectionReport) -> ReportListItem:
         risk_level=report.risk_level,
         created_at=report.created_at,
     )
-
