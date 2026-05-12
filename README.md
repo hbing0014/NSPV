@@ -36,3 +36,4 @@ The backend uses SQLite by default for quick local runs. Set `DATABASE_URL` to u
 $env:DATABASE_URL="postgresql+psycopg://nspv:nspv@localhost:5432/nspv"
 ```
 
+Supabase is configured as the target hosted database. See `docs/supabase.md` for the migrated schema and connection string format.
