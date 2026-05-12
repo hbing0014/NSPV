@@ -1,0 +1,176 @@
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+
+from app.db.session import get_db
+from app.models.tables import Keyword, KeywordProductSnapshot, Product, Project, SelectionReport
+from app.schemas.analysis import AnalyzeRequest, AnalyzeResponse, ProductOut, ReportListItem
+from app.services.mock_crawler import fetch_top20_products
+from app.services.scoring import analyze_products
+
+router = APIRouter(prefix="/api")
+
+
+@router.post("/analyze", response_model=AnalyzeResponse)
+def analyze(request: AnalyzeRequest, db: Session = Depends(get_db)) -> AnalyzeResponse:
+    if request.target_price_min > request.target_price_max:
+        raise HTTPException(status_code=400, detail="target_price_min cannot exceed target_price_max")
+
+    products = fetch_top20_products(request.keyword, request.marketplace)
+    score = analyze_products(
+        keyword=request.keyword,
+        products=products,
+        budget_rmb=request.budget_rmb,
+        target_price_min=request.target_price_min,
+        target_price_max=request.target_price_max,
+    )
+
+    project = Project(
+        project_name=f"{request.keyword} analysis",
+        category=request.category,
+        budget_rmb=request.budget_rmb,
+        marketplace=request.marketplace,
+    )
+    db.add(project)
+    db.flush()
+
+    details = score["score_details"]
+    keyword = Keyword(
+        project_id=project.id,
+        keyword=request.keyword,
+        marketplace=request.marketplace,
+        category=request.category,
+        monthly_search_volume=details.monthly_search_volume,
+        avg_price=details.avg_price,
+        avg_rating=details.avg_rating,
+        avg_reviews_top10=details.avg_reviews_top10,
+        avg_reviews_top3=details.avg_reviews_top3,
+        min_reviews_top10=details.min_reviews_top10,
+        sponsored_density=details.sponsored_density,
+        amazon_basics_present=details.amazon_basics_present,
+    )
+    db.add(keyword)
+    db.flush()
+
+    saved_products: list[ProductOut] = []
+    for rank, item in enumerate(products, start=1):
+        product = db.scalar(select(Product).where(Product.asin == item.asin))
+        if product is None:
+            product = Product(
+                asin=item.asin,
+                marketplace=request.marketplace,
+                title=item.title,
+                brand=item.brand,
+                price=item.price,
+                rating=item.rating,
+                review_count=item.review_count,
+                monthly_sales_est=item.monthly_sales_est,
+                monthly_revenue_est=item.monthly_revenue_est,
+                bsr=item.bsr,
+                is_sponsored=item.is_sponsored,
+                seller_type=item.seller_type,
+                image_url=item.image_url,
+                product_url=item.product_url,
+            )
+            db.add(product)
+            db.flush()
+
+        snapshot = KeywordProductSnapshot(
+            keyword_id=keyword.id,
+            product_id=product.id,
+            asin=item.asin,
+            organic_rank=None if item.is_sponsored else rank,
+            sponsored_rank=rank if item.is_sponsored else None,
+            page_no=1,
+            is_sponsored=item.is_sponsored,
+            price=item.price,
+            rating=item.rating,
+            review_count=item.review_count,
+        )
+        db.add(snapshot)
+        saved_products.append(
+            item.model_copy(update={"organic_rank": snapshot.organic_rank, "sponsored_rank": snapshot.sponsored_rank})
+        )
+
+    report = SelectionReport(
+        project_id=project.id,
+        keyword_id=keyword.id,
+        nsfs_score=score["nsfs_score"],
+        demand_score=score["demand_score"],
+        competition_score=score["competition_score"],
+        profit_score=score["profit_score"],
+        opportunity_score=score["opportunity_score"],
+        recommendation=score["recommendation"],
+        risk_level=score["risk_level"],
+        summary=score["summary"],
+        key_risks=score["warnings"],
+        key_opportunities=score["opportunities"],
+        action_suggestions=score["suggestions"],
+        products_snapshot=[product.model_dump() for product in saved_products],
+        score_details=details.model_dump(),
+    )
+    db.add(report)
+    db.commit()
+    db.refresh(report)
+
+    return report_to_response(report, request.keyword)
+
+
+@router.get("/reports/{report_id}", response_model=AnalyzeResponse)
+def get_report(report_id: int, db: Session = Depends(get_db)) -> AnalyzeResponse:
+    report = db.get(SelectionReport, report_id)
+    if report is None:
+        raise HTTPException(status_code=404, detail="Report not found")
+    return report_to_response(report, report.keyword.keyword)
+
+
+@router.get("/projects/{project_id}/reports", response_model=list[ReportListItem])
+def get_project_reports(project_id: int, db: Session = Depends(get_db)) -> list[ReportListItem]:
+    reports = db.scalars(
+        select(SelectionReport)
+        .where(SelectionReport.project_id == project_id)
+        .order_by(SelectionReport.created_at.desc())
+    ).all()
+    return [report_to_list_item(report) for report in reports]
+
+
+@router.get("/reports", response_model=list[ReportListItem])
+def get_all_reports(db: Session = Depends(get_db)) -> list[ReportListItem]:
+    reports = db.scalars(select(SelectionReport).order_by(SelectionReport.created_at.desc()).limit(50)).all()
+    return [report_to_list_item(report) for report in reports]
+
+
+def report_to_response(report: SelectionReport, keyword_text: str) -> AnalyzeResponse:
+    return AnalyzeResponse(
+        report_id=report.id,
+        project_id=report.project_id,
+        keyword_id=report.keyword_id,
+        keyword=keyword_text,
+        nsfs_score=report.nsfs_score,
+        recommendation=report.recommendation,
+        risk_level=report.risk_level,
+        demand_score=report.demand_score,
+        competition_score=report.competition_score,
+        profit_score=report.profit_score,
+        opportunity_score=report.opportunity_score,
+        summary=report.summary,
+        warnings=report.key_risks or [],
+        suggestions=report.action_suggestions or [],
+        opportunities=report.key_opportunities or [],
+        score_details=report.score_details,
+        products=[ProductOut(**product) for product in (report.products_snapshot or [])],
+        created_at=report.created_at,
+    )
+
+
+def report_to_list_item(report: SelectionReport) -> ReportListItem:
+    return ReportListItem(
+        report_id=report.id,
+        project_id=report.project_id,
+        keyword=report.keyword.keyword,
+        nsfs_score=report.nsfs_score,
+        recommendation=report.recommendation,
+        risk_level=report.risk_level,
+        created_at=report.created_at,
+    )
+
