@@ -24,7 +24,7 @@ def test_mock_scraper_provider_supports_analyze(client: TestClient) -> None:
 def test_unimplemented_scraper_provider_returns_error(client: TestClient) -> None:
     settings = get_settings()
     original_provider = settings.scraper_provider
-    settings.scraper_provider = "playwright"
+    settings.scraper_provider = "brightdata"
 
     try:
         response = client.post(
@@ -46,4 +46,3 @@ def test_unimplemented_scraper_provider_returns_error(client: TestClient) -> Non
     error = response.json()["error"]
     assert error["code"] == "SCRAPER_FAILED"
     assert "not implemented yet" in error["message"]
-

@@ -44,9 +44,9 @@
 
 Last updated: 2026-05-13
 
-Overall V1 progress: 60%
+Overall V1 progress: 65%
 
-Current branch: `phase-2/task-2.1-scraper-interface`
+Current branch: `phase-2/task-2.2-playwright-scraper`
 
 Current branch status: `active`
 
@@ -57,9 +57,9 @@ Latest commits:
 - `ef4fa17 Add VSCode workspace`
 - `caa2642 Initial NSPV project scaffold`
 
-Current active task: `Task 2.1 Define Scraper Interface`
+Current active task: `Task 2.2 Implement Playwright Amazon Search Scraper`
 
-Next recommended task: `Task 2.2 Implement Playwright Amazon Search Scraper`
+Next recommended task: `Task 2.3 Add Scraper Run Logging`
 
 Phase progress:
 
@@ -67,7 +67,7 @@ Phase progress:
 | --- | --- | --- | --- | --- | --- |
 | Phase 0 | Project bootstrap, docs, Git, VSCode workspace | `[DONE]` | 100% | `merged: main` | `manual` |
 | Phase 1 | Stabilize current V1 prototype | `[DONE]` | 100% | `merged: main` | `passed` |
-| Phase 2 | Real Amazon data integration | `[IN PROGRESS]` | 33% | `active: phase-2/task-2.1-scraper-interface` | `passed` |
+| Phase 2 | Real Amazon data integration | `[IN PROGRESS]` | 66% | `active: phase-2/task-2.2-playwright-scraper` | `passed` |
 | Phase 3 | Improve scoring and risk engine | `[TODO]` | 0% | `planned` | `not run` |
 | Phase 4 | Frontend V1 completion | `[TODO]` | 0% | `planned` | `not run` |
 | Phase 5 | Basic auth | `[TODO]` | 0% | `planned` | `not run` |
@@ -82,9 +82,9 @@ Task progress:
 | Task 1.3 Normalize API Error Contract | `[DONE]` | `phase-1/task-1.3-api-errors` | `merged: main` | `passed` |
 | Task 1.4 Add Project CRUD | `[DONE]` | `phase-1/task-1.4-project-crud` | `merged: main` | `passed` |
 | Task 1.5 Add Analysis Input Persistence | `[DONE]` | `phase-1/task-1.5-analysis-persistence` | `merged: main` | `passed` |
-| Task 2.1 Define Scraper Interface | `[DONE]` | `phase-2/task-2.1-scraper-interface` | `active` | `passed` |
-| Task 2.2 Implement Playwright Amazon Search Scraper | `[NEXT]` | `phase-2/task-2.2-playwright-scraper` | `planned` | `not run` |
-| Task 2.3 Add Scraper Run Logging | `[TODO]` | `phase-2/task-2.3-scraper-logging` | `planned` | `not run` |
+| Task 2.1 Define Scraper Interface | `[DONE]` | `phase-2/task-2.1-scraper-interface` | `merged: main` | `passed` |
+| Task 2.2 Implement Playwright Amazon Search Scraper | `[DONE]` | `phase-2/task-2.2-playwright-scraper` | `active` | `passed` |
+| Task 2.3 Add Scraper Run Logging | `[NEXT]` | `phase-2/task-2.3-scraper-logging` | `planned` | `not run` |
 | Task 3.1 Extract Risk Warning Engine | `[TODO]` | `phase-3/task-3.1-risk-engine` | `planned` | `not run` |
 | Task 3.2 Add Scoring Fixtures | `[TODO]` | `phase-3/task-3.2-scoring-fixtures` | `planned` | `not run` |
 | Task 3.3 Add Scoring Version | `[TODO]` | `phase-3/task-3.3-scoring-version` | `planned` | `not run` |
@@ -405,7 +405,7 @@ Completion record:
 - Test result: `37 passed, 2 warnings`
 - Notes: API now uses `get_search_scraper()` and supports `SCRAPER_PROVIDER=mock|playwright|brightdata`. Mock provider remains the default and the only implemented provider in this task.
 
-### Task 2.2 Implement Playwright Amazon Search Scraper `[NEXT]`
+### Task 2.2 Implement Playwright Amazon Search Scraper `[DONE]`
 
 目标：
 
@@ -455,7 +455,16 @@ cd backend
 Invoke-RestMethod -Uri http://127.0.0.1:8000/api/analyze -Method Post -ContentType 'application/json' -Body '{"keyword":"sink organizer","marketplace":"US","category":"Kitchen & Dining","budget_rmb":100000,"target_price_min":20,"target_price_max":40,"exclude_red_ocean":true}'
 ```
 
-### Task 2.3 Add Scraper Run Logging `[TODO]`
+Completion record:
+
+- Branch: `phase-2/task-2.2-playwright-scraper`
+- Status: `[DONE]`
+- Test result: `40 passed, 2 warnings`
+- Build result: `frontend npm run build` passed.
+- Manual scraper result: `PlaywrightAmazonSearchScraper().fetch_top20_products("sink organizer", "US")` returned 20 products.
+- Notes: Current local Amazon response displays JPY prices by geolocation, so the scraper normalizes JPY to approximate USD for scoring. This should be replaced with proxy/location control or a live FX source before production.
+
+### Task 2.3 Add Scraper Run Logging `[NEXT]`
 
 目标：
 
