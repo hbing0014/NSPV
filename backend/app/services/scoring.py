@@ -189,6 +189,7 @@ def analyze_products(
         "suggestions": suggestions,
         "opportunities": opportunities,
         "score_details": details,
+        "scoring_version": SCORING_VERSION,
     }
 
 

@@ -5,6 +5,7 @@ import pytest
 
 from app.schemas.analysis import ProductOut
 from app.services.scoring import (
+    SCORING_VERSION,
     analyze_products,
     demand_score,
     profit_score,
@@ -150,6 +151,7 @@ def test_analyze_products_uses_nsfs_weighted_formula() -> None:
     assert result["nsfs_score"] == expected_nsfs
     assert result["score_details"].avg_reviews_top10 == 125.5
     assert result["score_details"].sponsored_density == 0.2
+    assert result["scoring_version"] == SCORING_VERSION
 
 
 @pytest.mark.parametrize("case", load_scoring_fixtures(), ids=lambda case: case["name"])
