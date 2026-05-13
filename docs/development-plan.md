@@ -44,9 +44,9 @@
 
 Last updated: 2026-05-13
 
-Overall V1 progress: 65%
+Overall V1 progress: 70%
 
-Current branch: `phase-2/task-2.2-playwright-scraper`
+Current branch: `phase-2/task-2.3-scraper-logging`
 
 Current branch status: `active`
 
@@ -57,9 +57,9 @@ Latest commits:
 - `ef4fa17 Add VSCode workspace`
 - `caa2642 Initial NSPV project scaffold`
 
-Current active task: `Task 2.2 Implement Playwright Amazon Search Scraper`
+Current active task: `Task 2.3 Add Scraper Run Logging`
 
-Next recommended task: `Task 2.3 Add Scraper Run Logging`
+Next recommended task: `Task 3.1 Extract Risk Warning Engine`
 
 Phase progress:
 
@@ -67,8 +67,8 @@ Phase progress:
 | --- | --- | --- | --- | --- | --- |
 | Phase 0 | Project bootstrap, docs, Git, VSCode workspace | `[DONE]` | 100% | `merged: main` | `manual` |
 | Phase 1 | Stabilize current V1 prototype | `[DONE]` | 100% | `merged: main` | `passed` |
-| Phase 2 | Real Amazon data integration | `[IN PROGRESS]` | 66% | `active: phase-2/task-2.2-playwright-scraper` | `passed` |
-| Phase 3 | Improve scoring and risk engine | `[TODO]` | 0% | `planned` | `not run` |
+| Phase 2 | Real Amazon data integration | `[DONE]` | 100% | `active: phase-2/task-2.3-scraper-logging` | `passed` |
+| Phase 3 | Improve scoring and risk engine | `[NEXT]` | 0% | `planned` | `not run` |
 | Phase 4 | Frontend V1 completion | `[TODO]` | 0% | `planned` | `not run` |
 | Phase 5 | Basic auth | `[TODO]` | 0% | `planned` | `not run` |
 | Phase 6 | Deployment readiness | `[TODO]` | 0% | `planned` | `not run` |
@@ -83,9 +83,9 @@ Task progress:
 | Task 1.4 Add Project CRUD | `[DONE]` | `phase-1/task-1.4-project-crud` | `merged: main` | `passed` |
 | Task 1.5 Add Analysis Input Persistence | `[DONE]` | `phase-1/task-1.5-analysis-persistence` | `merged: main` | `passed` |
 | Task 2.1 Define Scraper Interface | `[DONE]` | `phase-2/task-2.1-scraper-interface` | `merged: main` | `passed` |
-| Task 2.2 Implement Playwright Amazon Search Scraper | `[DONE]` | `phase-2/task-2.2-playwright-scraper` | `active` | `passed` |
-| Task 2.3 Add Scraper Run Logging | `[NEXT]` | `phase-2/task-2.3-scraper-logging` | `planned` | `not run` |
-| Task 3.1 Extract Risk Warning Engine | `[TODO]` | `phase-3/task-3.1-risk-engine` | `planned` | `not run` |
+| Task 2.2 Implement Playwright Amazon Search Scraper | `[DONE]` | `phase-2/task-2.2-playwright-scraper` | `merged: main` | `passed` |
+| Task 2.3 Add Scraper Run Logging | `[DONE]` | `phase-2/task-2.3-scraper-logging` | `active` | `passed` |
+| Task 3.1 Extract Risk Warning Engine | `[NEXT]` | `phase-3/task-3.1-risk-engine` | `planned` | `not run` |
 | Task 3.2 Add Scoring Fixtures | `[TODO]` | `phase-3/task-3.2-scoring-fixtures` | `planned` | `not run` |
 | Task 3.3 Add Scoring Version | `[TODO]` | `phase-3/task-3.3-scoring-version` | `planned` | `not run` |
 | Task 4.1 Improve Loading and Error States | `[TODO]` | `phase-4/task-4.1-loading-errors` | `planned` | `not run` |
@@ -464,7 +464,7 @@ Completion record:
 - Manual scraper result: `PlaywrightAmazonSearchScraper().fetch_top20_products("sink organizer", "US")` returned 20 products.
 - Notes: Current local Amazon response displays JPY prices by geolocation, so the scraper normalizes JPY to approximate USD for scoring. This should be replaced with proxy/location control or a live FX source before production.
 
-### Task 2.3 Add Scraper Run Logging `[NEXT]`
+### Task 2.3 Add Scraper Run Logging `[DONE]`
 
 目标：
 
@@ -501,7 +501,15 @@ cd backend
 .\.venv\Scripts\pytest
 ```
 
-## Phase 3: Improve Scoring and Risk Engine `[TODO]`
+Completion record:
+
+- Branch: `phase-2/task-2.3-scraper-logging`
+- Status: `[DONE]`
+- Test result: `41 passed, 2 warnings`
+- Database: Supabase MCP migration `004_add_scraper_runs.sql` applied.
+- Notes: Successful, empty, and failed scraper attempts are recorded in `scraper_runs`. Reports now include `scraper_run_id`.
+
+## Phase 3: Improve Scoring and Risk Engine `[NEXT]`
 
 目标：
 
