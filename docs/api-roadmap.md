@@ -282,3 +282,9 @@ Suggested error codes:
 - `UNAUTHORIZED`
 - `FORBIDDEN`
 
+Currently implemented:
+
+- Invalid analyze price range returns `400` with `VALIDATION_ERROR`.
+- Pydantic request validation returns `422` with `VALIDATION_ERROR`.
+- Missing report returns `404` with `REPORT_NOT_FOUND`.
+- Empty scraper result returns `503` with `SCRAPER_EMPTY_RESULT`.
