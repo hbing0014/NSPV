@@ -1,10 +1,13 @@
+from datetime import datetime, timezone
+
 from fastapi import APIRouter, Depends, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.core.config import get_settings
 from app.core.errors import ApiError
 from app.db.session import get_db
-from app.models.tables import Keyword, KeywordProductSnapshot, Product, Project, SelectionReport
+from app.models.tables import Keyword, KeywordProductSnapshot, Product, Project, ScraperRun, SelectionReport
 from app.schemas.analysis import AnalyzeRequest, AnalyzeResponse, ProductOut, ReportListItem
 from app.schemas.project import ProjectCreate, ProjectOut, ProjectUpdate
 from app.services.scoring import SCORING_VERSION, analyze_products
@@ -12,6 +15,10 @@ from app.services.scrapers import get_search_scraper
 from app.services.scrapers.base import ScraperError
 
 router = APIRouter(prefix="/api")
+
+
+def now_utc() -> datetime:
+    return datetime.now(timezone.utc)
 
 
 def get_project_or_404(project_id: int, db: Session) -> Project:
@@ -94,9 +101,21 @@ def analyze(request: AnalyzeRequest, db: Session = Depends(get_db)) -> AnalyzeRe
             },
         )
 
+    scraper_run = ScraperRun(
+        keyword=request.keyword,
+        marketplace=request.marketplace,
+        provider=get_settings().scraper_provider.lower(),
+        status="running",
+        product_count=0,
+        started_at=now_utc(),
+    )
+    db.add(scraper_run)
+    db.flush()
+
     try:
         products = get_search_scraper().fetch_top20_products(request.keyword, request.marketplace)
     except ScraperError as exc:
+        finish_scraper_run(db, scraper_run, "failed", 0, str(exc))
         raise ApiError(
             code="SCRAPER_FAILED",
             message=str(exc),
@@ -104,6 +123,7 @@ def analyze(request: AnalyzeRequest, db: Session = Depends(get_db)) -> AnalyzeRe
             details={"keyword": request.keyword, "marketplace": request.marketplace},
         ) from exc
     except NotImplementedError as exc:
+        finish_scraper_run(db, scraper_run, "failed", 0, str(exc))
         raise ApiError(
             code="SCRAPER_FAILED",
             message=str(exc),
@@ -111,6 +131,7 @@ def analyze(request: AnalyzeRequest, db: Session = Depends(get_db)) -> AnalyzeRe
             details={"keyword": request.keyword, "marketplace": request.marketplace},
         ) from exc
     except ValueError as exc:
+        finish_scraper_run(db, scraper_run, "failed", 0, str(exc))
         raise ApiError(
             code="SCRAPER_PROVIDER_INVALID",
             message=str(exc),
@@ -119,12 +140,15 @@ def analyze(request: AnalyzeRequest, db: Session = Depends(get_db)) -> AnalyzeRe
         ) from exc
 
     if not products:
+        finish_scraper_run(db, scraper_run, "empty", 0, "Amazon search returned no products.")
         raise ApiError(
             code="SCRAPER_EMPTY_RESULT",
             message="Amazon search returned no products.",
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             details={"keyword": request.keyword, "marketplace": request.marketplace},
         )
+
+    finish_scraper_run(db, scraper_run, "completed", len(products), None)
     score = analyze_products(
         keyword=request.keyword,
         products=products,
@@ -209,6 +233,7 @@ def analyze(request: AnalyzeRequest, db: Session = Depends(get_db)) -> AnalyzeRe
     report = SelectionReport(
         project_id=project.id,
         keyword_id=keyword.id,
+        scraper_run_id=scraper_run.id,
         nsfs_score=score["nsfs_score"],
         demand_score=score["demand_score"],
         competition_score=score["competition_score"],
@@ -268,6 +293,7 @@ def report_to_response(report: SelectionReport, keyword_text: str) -> AnalyzeRes
         report_id=report.id,
         project_id=report.project_id,
         keyword_id=report.keyword_id,
+        scraper_run_id=report.scraper_run_id,
         keyword=keyword_text,
         nsfs_score=report.nsfs_score,
         recommendation=report.recommendation,
@@ -294,6 +320,7 @@ def report_to_list_item(report: SelectionReport) -> ReportListItem:
     return ReportListItem(
         report_id=report.id,
         project_id=report.project_id,
+        scraper_run_id=report.scraper_run_id,
         keyword=report.keyword.keyword,
         nsfs_score=report.nsfs_score,
         recommendation=report.recommendation,
@@ -301,6 +328,20 @@ def report_to_list_item(report: SelectionReport) -> ReportListItem:
         analysis_status=report.analysis_status,
         created_at=report.created_at,
     )
+
+
+def finish_scraper_run(
+    db: Session,
+    scraper_run: ScraperRun,
+    status_value: str,
+    product_count: int,
+    error_message: str | None,
+) -> None:
+    scraper_run.status = status_value
+    scraper_run.product_count = product_count
+    scraper_run.error_message = error_message
+    scraper_run.finished_at = now_utc()
+    db.commit()
 
 
 def project_to_response(project: Project) -> ProjectOut:

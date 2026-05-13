@@ -111,12 +111,29 @@ class KeywordProductSnapshot(Base):
     product: Mapped[Product] = relationship(back_populates="snapshots")
 
 
+class ScraperRun(Base):
+    __tablename__ = "scraper_runs"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    keyword: Mapped[str] = mapped_column(String(255), index=True)
+    marketplace: Mapped[str] = mapped_column(String(20), default="US")
+    provider: Mapped[str] = mapped_column(String(50), index=True)
+    status: Mapped[str] = mapped_column(String(50), index=True)
+    product_count: Mapped[int] = mapped_column(Integer, default=0)
+    error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
+    started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now_utc)
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    reports: Mapped[list["SelectionReport"]] = relationship(back_populates="scraper_run")
+
+
 class SelectionReport(Base):
     __tablename__ = "selection_reports"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"))
     keyword_id: Mapped[int] = mapped_column(ForeignKey("keywords.id"))
+    scraper_run_id: Mapped[int | None] = mapped_column(ForeignKey("scraper_runs.id"), nullable=True)
     nsfs_score: Mapped[float] = mapped_column(Float)
     demand_score: Mapped[float] = mapped_column(Float)
     competition_score: Mapped[float] = mapped_column(Float)
@@ -138,3 +155,4 @@ class SelectionReport(Base):
 
     project: Mapped[Project] = relationship(back_populates="reports")
     keyword: Mapped[Keyword] = relationship(back_populates="reports")
+    scraper_run: Mapped[ScraperRun | None] = relationship(back_populates="reports")

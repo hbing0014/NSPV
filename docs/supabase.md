@@ -16,6 +16,7 @@ The following tables exist in the `public` schema:
 - `products`
 - `keyword_product_snapshots`
 - `selection_reports`
+- `scraper_runs`
 
 The migrations applied through Supabase MCP are tracked in:
 
@@ -23,6 +24,7 @@ The migrations applied through Supabase MCP are tracked in:
 backend/migrations/supabase/001_create_nspv_v1_schema.sql
 backend/migrations/supabase/002_add_project_crud_fields.sql
 backend/migrations/supabase/003_add_analysis_persistence_fields.sql
+backend/migrations/supabase/004_add_scraper_runs.sql
 ```
 
 Migration `002_add_project_crud_fields.sql` adds the Project CRUD fields:
@@ -37,6 +39,11 @@ Migration `003_add_analysis_persistence_fields.sql` adds the report persistence 
 - `selection_reports.scoring_version`
 - `selection_reports.analysis_status`
 - `selection_reports.error_message`
+
+Migration `004_add_scraper_runs.sql` adds scraper execution logging:
+
+- `scraper_runs`
+- `selection_reports.scraper_run_id`
 
 ## Backend Connection
 

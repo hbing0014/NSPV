@@ -46,6 +46,7 @@ export type AnalyzeResponse = {
   report_id: number;
   project_id: number;
   keyword_id: number;
+  scraper_run_id: number | null;
   keyword: string;
   nsfs_score: number;
   recommendation: string;
@@ -66,6 +67,7 @@ export type AnalyzeResponse = {
 export type ReportListItem = {
   report_id: number;
   project_id: number;
+  scraper_run_id: number | null;
   keyword: string;
   nsfs_score: number;
   recommendation: string;

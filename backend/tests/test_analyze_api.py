@@ -1,4 +1,7 @@
 from fastapi.testclient import TestClient
+from sqlalchemy.orm import Session
+
+from app.models.tables import ScraperRun
 
 
 def analyze_payload() -> dict:
@@ -20,6 +23,7 @@ def test_analyze_creates_report(client: TestClient) -> None:
     data = response.json()
     assert data["report_id"] > 0
     assert data["project_id"] > 0
+    assert data["scraper_run_id"] > 0
     assert data["keyword"] == "sink organizer"
     assert 0 <= data["nsfs_score"] <= 100
     assert data["recommendation"] in {"Strongly Recommended", "Worth Research", "Caution", "Avoid"}
@@ -38,10 +42,26 @@ def test_report_detail_returns_saved_snapshot(client: TestClient) -> None:
     assert response.status_code == 200
     data = response.json()
     assert data["report_id"] == created["report_id"]
+    assert data["scraper_run_id"] == created["scraper_run_id"]
     assert data["products"] == created["products"]
     assert data["input_payload"] == created["input_payload"]
     assert data["scoring_version"] == created["scoring_version"]
     assert data["analysis_status"] == "completed"
+
+
+def test_analyze_records_successful_scraper_run(client: TestClient, db_session: Session) -> None:
+    created = client.post("/api/analyze", json=analyze_payload()).json()
+
+    scraper_run = db_session.get(ScraperRun, created["scraper_run_id"])
+
+    assert scraper_run is not None
+    assert scraper_run.keyword == "sink organizer"
+    assert scraper_run.marketplace == "US"
+    assert scraper_run.provider == "mock"
+    assert scraper_run.status == "completed"
+    assert scraper_run.product_count == 20
+    assert scraper_run.error_message is None
+    assert scraper_run.finished_at is not None
 
 
 def test_analyze_rejects_invalid_price_range(client: TestClient) -> None:

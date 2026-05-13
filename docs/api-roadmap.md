@@ -88,6 +88,7 @@ Response:
   "report_id": 1,
   "project_id": 1,
   "keyword_id": 1,
+  "scraper_run_id": 1,
   "keyword": "sink organizer",
   "nsfs_score": 82,
   "recommendation": "Worth Research",
@@ -134,6 +135,7 @@ V1 required behavior:
 - If `project_id` is provided, attach the report to that project.
 - If `project_id` is omitted, create a project automatically from the analysis input.
 - Save `input_payload`, `scoring_version`, `analysis_status`, and `error_message` on the report.
+- Save a `scraper_runs` record for successful, empty, and failed scraper attempts.
 
 ### Report Detail
 
@@ -146,6 +148,7 @@ V1 required behavior:
 - Return full report detail.
 - Include products snapshot used at analysis time.
 - Include analysis input and scoring version metadata.
+- Include `scraper_run_id` when a report was created from a scraper run.
 - Return `404` if report does not exist.
 
 ### Report List
@@ -158,6 +161,7 @@ V1 required behavior:
 
 - Return latest reports.
 - Include `analysis_status`.
+- Include `scraper_run_id`.
 - Support future pagination fields:
   - `limit`
   - `offset`

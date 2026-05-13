@@ -59,6 +59,7 @@ class AnalyzeResponse(BaseModel):
     report_id: int
     project_id: int
     keyword_id: int
+    scraper_run_id: int | None = None
     keyword: str
     nsfs_score: float
     recommendation: str
@@ -83,6 +84,7 @@ class AnalyzeResponse(BaseModel):
 class ReportListItem(BaseModel):
     report_id: int
     project_id: int
+    scraper_run_id: int | None = None
     keyword: str
     nsfs_score: float
     recommendation: str

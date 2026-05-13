@@ -201,6 +201,7 @@ Current fields:
 - `id`
 - `project_id`
 - `keyword_id`
+- `scraper_run_id`
 - `nsfs_score`
 - `demand_score`
 - `competition_score`
@@ -261,21 +262,24 @@ Purpose:
 
 - 记录每次 Amazon 抓取执行状态。
 
-Suggested fields:
+Current fields:
 
 - `id`
 - `keyword`
 - `marketplace`
-- `source`
+- `provider`
 - `status`
 - `product_count`
 - `error_message`
 - `started_at`
 - `finished_at`
 
-V1 priority:
+`status` values:
 
-- High when real scraper is introduced.
+- `running`
+- `completed`
+- `empty`
+- `failed`
 
 ## V2 Tables
 
