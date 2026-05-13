@@ -1,10 +1,10 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertTriangle, Loader2, RotateCcw, Search } from "lucide-react";
+import { AlertTriangle, FolderOpen, Loader2, RotateCcw, Search } from "lucide-react";
 import { Header } from "@/components/Header";
-import { ApiRequestError, analyzeKeyword } from "@/lib/api";
+import { ApiRequestError, Project, analyzeKeyword, getProjects } from "@/lib/api";
 
 const categories = ["Kitchen & Dining", "Home & Kitchen", "Storage & Organization", "Tools & Home Improvement"];
 
@@ -17,8 +17,58 @@ export default function Home() {
   const [priceMin, setPriceMin] = useState(20);
   const [priceMax, setPriceMax] = useState(40);
   const [excludeRedOcean, setExcludeRedOcean] = useState(true);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [selectedProjectId, setSelectedProjectId] = useState("");
+  const [projectsLoading, setProjectsLoading] = useState(true);
+  const [projectError, setProjectError] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<{ message: string; code?: string; status?: number } | null>(null);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadProjects() {
+      try {
+        const items = await getProjects();
+        if (active) {
+          setProjects(items.filter((project) => project.status !== "archived"));
+          setProjectError("");
+        }
+      } catch (err) {
+        if (active) {
+          setProjectError(err instanceof Error ? err.message : "Failed to load projects");
+        }
+      } finally {
+        if (active) {
+          setProjectsLoading(false);
+        }
+      }
+    }
+
+    loadProjects();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  function selectProject(projectId: string) {
+    setSelectedProjectId(projectId);
+
+    const project = projects.find((item) => String(item.id) === projectId);
+    if (!project) {
+      return;
+    }
+
+    setMarketplace(project.marketplace);
+    setCategory(project.category);
+    setBudget(project.budget_rmb);
+    if (project.target_price_min !== null) {
+      setPriceMin(project.target_price_min);
+    }
+    if (project.target_price_max !== null) {
+      setPriceMax(project.target_price_max);
+    }
+  }
 
   async function runAnalyze() {
     if (loading) {
@@ -29,7 +79,9 @@ export default function Home() {
     setError(null);
 
     try {
+      const projectId = selectedProjectId ? Number(selectedProjectId) : undefined;
       const report = await analyzeKeyword({
+        ...(projectId ? { project_id: projectId } : {}),
         keyword,
         marketplace,
         category,
@@ -80,6 +132,33 @@ export default function Home() {
 
           <form onSubmit={onSubmit} className="border border-line bg-white p-5" aria-busy={loading}>
             <div className="grid gap-4">
+              <label className="grid gap-2">
+                <span className="text-sm font-medium text-ink">Project</span>
+                <div className="relative">
+                  <FolderOpen
+                    className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink/45"
+                    size={18}
+                    aria-hidden="true"
+                  />
+                  <select
+                    className="w-full border border-line bg-field py-3 pl-10 pr-3 outline-none focus:border-accent"
+                    value={selectedProjectId}
+                    onChange={(event) => selectProject(event.target.value)}
+                    disabled={projectsLoading}
+                  >
+                    <option value="">
+                      {projectsLoading ? "Loading projects..." : "Create new project from this analysis"}
+                    </option>
+                    {projects.map((project) => (
+                      <option key={project.id} value={project.id}>
+                        {project.project_name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                {projectError ? <span className="text-xs text-red-700">{projectError}</span> : null}
+              </label>
+
               <label className="grid gap-2">
                 <span className="text-sm font-medium text-ink">Keyword</span>
                 <input

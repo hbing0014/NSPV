@@ -44,9 +44,9 @@
 
 Last updated: 2026-05-13
 
-Overall V1 progress: 88%
+Overall V1 progress: 91%
 
-Current branch: `phase-4/task-4.1-loading-errors`
+Current branch: `phase-4/task-4.2-project-selection`
 
 Current branch status: `active`
 
@@ -57,9 +57,9 @@ Latest commits:
 - `ef4fa17 Add VSCode workspace`
 - `caa2642 Initial NSPV project scaffold`
 
-Current active task: `Task 4.1 Improve Loading and Error States`
+Current active task: `Task 4.2 Add Project Selection to Home Page`
 
-Next recommended task: `Task 4.2 Add Project Selection to Home Page`
+Next recommended task: `Task 4.3 Improve Report Detail Layout`
 
 Phase progress:
 
@@ -69,7 +69,7 @@ Phase progress:
 | Phase 1 | Stabilize current V1 prototype | `[DONE]` | 100% | `merged: main` | `passed` |
 | Phase 2 | Real Amazon data integration | `[DONE]` | 100% | `merged: main` | `passed` |
 | Phase 3 | Improve scoring and risk engine | `[DONE]` | 100% | `merged: main` | `passed` |
-| Phase 4 | Frontend V1 completion | `[IN PROGRESS]` | 33% | `active: phase-4/task-4.1-loading-errors` | `passed` |
+| Phase 4 | Frontend V1 completion | `[IN PROGRESS]` | 66% | `active: phase-4/task-4.2-project-selection` | `passed` |
 | Phase 5 | Basic auth | `[TODO]` | 0% | `planned` | `not run` |
 | Phase 6 | Deployment readiness | `[TODO]` | 0% | `planned` | `not run` |
 
@@ -88,9 +88,9 @@ Task progress:
 | Task 3.1 Extract Risk Warning Engine | `[DONE]` | `phase-3/task-3.1-risk-engine` | `merged: main` | `passed` |
 | Task 3.2 Add Scoring Fixtures | `[DONE]` | `phase-3/task-3.2-scoring-fixtures` | `merged: main` | `passed` |
 | Task 3.3 Add Scoring Version | `[DONE]` | `phase-3/task-3.3-scoring-version` | `merged: main` | `passed` |
-| Task 4.1 Improve Loading and Error States | `[DONE]` | `phase-4/task-4.1-loading-errors` | `active` | `passed` |
-| Task 4.2 Add Project Selection to Home Page | `[NEXT]` | `phase-4/task-4.2-project-selection` | `planned` | `not run` |
-| Task 4.3 Improve Report Detail Layout | `[TODO]` | `phase-4/task-4.3-report-layout` | `planned` | `not run` |
+| Task 4.1 Improve Loading and Error States | `[DONE]` | `phase-4/task-4.1-loading-errors` | `merged: main` | `passed` |
+| Task 4.2 Add Project Selection to Home Page | `[DONE]` | `phase-4/task-4.2-project-selection` | `active` | `passed` |
+| Task 4.3 Improve Report Detail Layout | `[NEXT]` | `phase-4/task-4.3-report-layout` | `planned` | `not run` |
 | Task 5.1 Add Password Hash and JWT | `[TODO]` | `phase-5/task-5.1-auth-jwt` | `planned` | `not run` |
 | Task 5.2 Scope Projects and Reports by User | `[TODO]` | `phase-5/task-5.2-user-scope` | `planned` | `not run` |
 | Task 6.1 Add Environment Documentation | `[TODO]` | `phase-6/task-6.1-env-docs` | `planned` | `not run` |
@@ -670,7 +670,7 @@ Completion record:
 - Test result: `npm run build` passed; `npm run smoke` passed.
 - Notes: Analyze now shows loading state, parses backend error contract, displays retry-friendly error details, and handles API connection failures.
 
-### Task 4.2 Add Project Selection to Home Page `[NEXT]`
+### Task 4.2 Add Project Selection to Home Page `[DONE]`
 
 目标：
 
@@ -693,7 +693,25 @@ Completion record:
 - 报告正确关联 project。
 - Project reports 页面可看到该项目报告。
 
-### Task 4.3 Improve Report Detail Layout `[TODO]`
+测试命令：
+
+```powershell
+cd frontend
+npm run build
+npm run smoke
+
+cd ..\backend
+.\.venv\Scripts\pytest tests\test_projects_api.py
+```
+
+Completion record:
+
+- Branch: `phase-4/task-4.2-project-selection`
+- Status: `[DONE]`
+- Test result: `npm run build` passed; `npm run smoke` passed; `tests/test_projects_api.py` passed.
+- Notes: Home page now loads projects, supports selecting an existing project, applies project defaults, and sends `project_id` during analysis. Leaving the selector empty keeps automatic project creation.
+
+### Task 4.3 Improve Report Detail Layout `[NEXT]`
 
 目标：
 
