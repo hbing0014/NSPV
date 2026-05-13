@@ -29,6 +29,16 @@ GET  /api/projects/{project_id}/reports
 
 当前 `POST /api/analyze` 使用 mock Amazon Top20 数据源，用于打通业务闭环。
 
+Scraper provider is selected by backend configuration:
+
+```text
+SCRAPER_PROVIDER=mock
+SCRAPER_PROVIDER=playwright
+SCRAPER_PROVIDER=brightdata
+```
+
+Currently only `mock` is implemented. `playwright` and `brightdata` return a structured scraper failure until their providers are implemented.
+
 ## V1 API Target
 
 ### Analyze Keyword
@@ -303,6 +313,7 @@ Suggested error codes:
 - `PROJECT_NOT_FOUND`
 - `SCRAPER_FAILED`
 - `SCRAPER_EMPTY_RESULT`
+- `SCRAPER_PROVIDER_INVALID`
 - `SCORING_FAILED`
 - `RATE_LIMITED`
 - `UNAUTHORIZED`
@@ -315,3 +326,5 @@ Currently implemented:
 - Missing report returns `404` with `REPORT_NOT_FOUND`.
 - Missing project returns `404` with `PROJECT_NOT_FOUND`.
 - Empty scraper result returns `503` with `SCRAPER_EMPTY_RESULT`.
+- Unimplemented scraper provider returns `503` with `SCRAPER_FAILED`.
+- Invalid scraper provider config returns `500` with `SCRAPER_PROVIDER_INVALID`.
