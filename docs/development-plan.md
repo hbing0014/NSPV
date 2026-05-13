@@ -44,9 +44,9 @@
 
 Last updated: 2026-05-13
 
-Overall V1 progress: 55%
+Overall V1 progress: 60%
 
-Current branch: `phase-1/task-1.5-analysis-persistence`
+Current branch: `phase-2/task-2.1-scraper-interface`
 
 Current branch status: `active`
 
@@ -57,17 +57,17 @@ Latest commits:
 - `ef4fa17 Add VSCode workspace`
 - `caa2642 Initial NSPV project scaffold`
 
-Current active task: `Task 1.5 Add Analysis Input Persistence`
+Current active task: `Task 2.1 Define Scraper Interface`
 
-Next recommended task: `Task 2.1 Define Scraper Interface`
+Next recommended task: `Task 2.2 Implement Playwright Amazon Search Scraper`
 
 Phase progress:
 
 | Phase | Scope | Status | Progress | Branch Status | Test Status |
 | --- | --- | --- | --- | --- | --- |
 | Phase 0 | Project bootstrap, docs, Git, VSCode workspace | `[DONE]` | 100% | `merged: main` | `manual` |
-| Phase 1 | Stabilize current V1 prototype | `[DONE]` | 100% | `active: phase-1/task-1.5-analysis-persistence` | `passed` |
-| Phase 2 | Real Amazon data integration | `[NEXT]` | 0% | `planned` | `not run` |
+| Phase 1 | Stabilize current V1 prototype | `[DONE]` | 100% | `merged: main` | `passed` |
+| Phase 2 | Real Amazon data integration | `[IN PROGRESS]` | 33% | `active: phase-2/task-2.1-scraper-interface` | `passed` |
 | Phase 3 | Improve scoring and risk engine | `[TODO]` | 0% | `planned` | `not run` |
 | Phase 4 | Frontend V1 completion | `[TODO]` | 0% | `planned` | `not run` |
 | Phase 5 | Basic auth | `[TODO]` | 0% | `planned` | `not run` |
@@ -81,9 +81,9 @@ Task progress:
 | Task 1.2 Add Frontend Test or Smoke Check | `[DONE]` | `phase-1/task-1.2-frontend-smoke` | `merged: main` | `passed` |
 | Task 1.3 Normalize API Error Contract | `[DONE]` | `phase-1/task-1.3-api-errors` | `merged: main` | `passed` |
 | Task 1.4 Add Project CRUD | `[DONE]` | `phase-1/task-1.4-project-crud` | `merged: main` | `passed` |
-| Task 1.5 Add Analysis Input Persistence | `[DONE]` | `phase-1/task-1.5-analysis-persistence` | `active` | `passed` |
-| Task 2.1 Define Scraper Interface | `[NEXT]` | `phase-2/task-2.1-scraper-interface` | `planned` | `not run` |
-| Task 2.2 Implement Playwright Amazon Search Scraper | `[TODO]` | `phase-2/task-2.2-playwright-scraper` | `planned` | `not run` |
+| Task 1.5 Add Analysis Input Persistence | `[DONE]` | `phase-1/task-1.5-analysis-persistence` | `merged: main` | `passed` |
+| Task 2.1 Define Scraper Interface | `[DONE]` | `phase-2/task-2.1-scraper-interface` | `active` | `passed` |
+| Task 2.2 Implement Playwright Amazon Search Scraper | `[NEXT]` | `phase-2/task-2.2-playwright-scraper` | `planned` | `not run` |
 | Task 2.3 Add Scraper Run Logging | `[TODO]` | `phase-2/task-2.3-scraper-logging` | `planned` | `not run` |
 | Task 3.1 Extract Risk Warning Engine | `[TODO]` | `phase-3/task-3.1-risk-engine` | `planned` | `not run` |
 | Task 3.2 Add Scoring Fixtures | `[TODO]` | `phase-3/task-3.2-scoring-fixtures` | `planned` | `not run` |
@@ -358,7 +358,7 @@ Completion record:
 
 - 替换 mock crawler，接入真实 Amazon 搜索数据。
 
-### Task 2.1 Define Scraper Interface `[TODO]`
+### Task 2.1 Define Scraper Interface `[DONE]`
 
 目标：
 
@@ -398,7 +398,14 @@ cd backend
 .\.venv\Scripts\pytest
 ```
 
-### Task 2.2 Implement Playwright Amazon Search Scraper `[TODO]`
+Completion record:
+
+- Branch: `phase-2/task-2.1-scraper-interface`
+- Status: `[DONE]`
+- Test result: `37 passed, 2 warnings`
+- Notes: API now uses `get_search_scraper()` and supports `SCRAPER_PROVIDER=mock|playwright|brightdata`. Mock provider remains the default and the only implemented provider in this task.
+
+### Task 2.2 Implement Playwright Amazon Search Scraper `[NEXT]`
 
 目标：
 

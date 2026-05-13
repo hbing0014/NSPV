@@ -7,8 +7,8 @@ from app.db.session import get_db
 from app.models.tables import Keyword, KeywordProductSnapshot, Product, Project, SelectionReport
 from app.schemas.analysis import AnalyzeRequest, AnalyzeResponse, ProductOut, ReportListItem
 from app.schemas.project import ProjectCreate, ProjectOut, ProjectUpdate
-from app.services.mock_crawler import fetch_top20_products
 from app.services.scoring import SCORING_VERSION, analyze_products
+from app.services.scrapers import get_search_scraper
 
 router = APIRouter(prefix="/api")
 
@@ -93,7 +93,23 @@ def analyze(request: AnalyzeRequest, db: Session = Depends(get_db)) -> AnalyzeRe
             },
         )
 
-    products = fetch_top20_products(request.keyword, request.marketplace)
+    try:
+        products = get_search_scraper().fetch_top20_products(request.keyword, request.marketplace)
+    except NotImplementedError as exc:
+        raise ApiError(
+            code="SCRAPER_FAILED",
+            message=str(exc),
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            details={"keyword": request.keyword, "marketplace": request.marketplace},
+        ) from exc
+    except ValueError as exc:
+        raise ApiError(
+            code="SCRAPER_PROVIDER_INVALID",
+            message=str(exc),
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            details={"provider_error": str(exc)},
+        ) from exc
+
     if not products:
         raise ApiError(
             code="SCRAPER_EMPTY_RESULT",
