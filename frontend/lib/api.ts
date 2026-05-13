@@ -1,6 +1,29 @@
 export const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE ?? "http://127.0.0.1:8000";
 
+type ApiErrorBody = {
+  error?: {
+    code?: string;
+    message?: string;
+    details?: unknown;
+  };
+  detail?: string;
+};
+
+export class ApiRequestError extends Error {
+  status: number;
+  code: string;
+  details: unknown;
+
+  constructor(message: string, status: number, code = "REQUEST_FAILED", details: unknown = null) {
+    super(message);
+    this.name = "ApiRequestError";
+    this.status = status;
+    this.code = code;
+    this.details = details;
+  }
+}
+
 export type Product = {
   asin: string;
   title: string;
@@ -61,6 +84,10 @@ export type AnalyzeResponse = {
   opportunities: string[];
   score_details: ScoreDetails;
   products: Product[];
+  input_payload: Record<string, unknown>;
+  scoring_version: string;
+  analysis_status: string;
+  error_message: string | null;
   created_at: string;
 };
 
@@ -72,6 +99,7 @@ export type ReportListItem = {
   nsfs_score: number;
   recommendation: string;
   risk_level: string;
+  analysis_status: string;
   created_at: string;
 };
 
@@ -93,8 +121,7 @@ export async function analyzeKeyword(payload: {
   });
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.error?.message ?? error.detail ?? "Analyze request failed");
+    throw await toApiRequestError(response, "Analyze request failed");
   }
 
   return (await response.json()) as AnalyzeResponse;
@@ -106,7 +133,7 @@ export async function getReport(reportId: string) {
   });
 
   if (!response.ok) {
-    throw new Error("Report not found");
+    throw await toApiRequestError(response, "Report not found");
   }
 
   return (await response.json()) as AnalyzeResponse;
@@ -118,8 +145,15 @@ export async function getReports() {
   });
 
   if (!response.ok) {
-    throw new Error("Failed to load reports");
+    throw await toApiRequestError(response, "Failed to load reports");
   }
 
   return (await response.json()) as ReportListItem[];
+}
+
+async function toApiRequestError(response: Response, fallbackMessage: string) {
+  const body = (await response.json().catch(() => ({}))) as ApiErrorBody;
+  const message = body.error?.message ?? body.detail ?? fallbackMessage;
+  const code = body.error?.code ?? "REQUEST_FAILED";
+  return new ApiRequestError(message, response.status, code, body.error?.details ?? null);
 }
