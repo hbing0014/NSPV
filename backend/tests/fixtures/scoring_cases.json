@@ -1,0 +1,59 @@
+[
+  {
+    "name": "strong_demand_low_review_high_opportunity",
+    "keyword": "paper towel holder",
+    "budget_rmb": 100000,
+    "target_price_min": 20,
+    "target_price_max": 40,
+    "expected_recommendation": "Strongly Recommended",
+    "expected_risk_level": "Low",
+    "profile": {
+      "price": 29.99,
+      "rating": null,
+      "review_start": 20,
+      "review_step": 1,
+      "monthly_sales_est": 800,
+      "sponsored_count": 0,
+      "brand_cycle": 10,
+      "amazon_basics_rank": null
+    }
+  },
+  {
+    "name": "red_ocean_high_review_high_ads_amazon_basics",
+    "keyword": "soap tray",
+    "budget_rmb": 50000,
+    "target_price_min": 20,
+    "target_price_max": 40,
+    "expected_recommendation": "Avoid",
+    "expected_risk_level": "High",
+    "profile": {
+      "price": 12.99,
+      "rating": 4.9,
+      "review_start": 3000,
+      "review_step": 100,
+      "monthly_sales_est": 500,
+      "sponsored_count": 14,
+      "brand_cycle": 2,
+      "amazon_basics_rank": 1
+    }
+  },
+  {
+    "name": "moderate_market_worth_research",
+    "keyword": "drawer divider",
+    "budget_rmb": 80000,
+    "target_price_min": 20,
+    "target_price_max": 40,
+    "expected_recommendation": "Worth Research",
+    "expected_risk_level": "Low",
+    "profile": {
+      "price": 25.99,
+      "rating": 4.4,
+      "review_start": 420,
+      "review_step": 12,
+      "monthly_sales_est": 300,
+      "sponsored_count": 5,
+      "brand_cycle": 6,
+      "amazon_basics_rank": null
+    }
+  }
+]

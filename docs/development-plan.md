@@ -44,9 +44,9 @@
 
 Last updated: 2026-05-13
 
-Overall V1 progress: 75%
+Overall V1 progress: 80%
 
-Current branch: `phase-3/task-3.1-risk-engine`
+Current branch: `phase-3/task-3.2-scoring-fixtures`
 
 Current branch status: `active`
 
@@ -57,9 +57,9 @@ Latest commits:
 - `ef4fa17 Add VSCode workspace`
 - `caa2642 Initial NSPV project scaffold`
 
-Current active task: `Task 3.1 Extract Risk Warning Engine`
+Current active task: `Task 3.2 Add Scoring Fixtures`
 
-Next recommended task: `Task 3.2 Add Scoring Fixtures`
+Next recommended task: `Task 3.3 Add Scoring Version`
 
 Phase progress:
 
@@ -68,7 +68,7 @@ Phase progress:
 | Phase 0 | Project bootstrap, docs, Git, VSCode workspace | `[DONE]` | 100% | `merged: main` | `manual` |
 | Phase 1 | Stabilize current V1 prototype | `[DONE]` | 100% | `merged: main` | `passed` |
 | Phase 2 | Real Amazon data integration | `[DONE]` | 100% | `merged: main` | `passed` |
-| Phase 3 | Improve scoring and risk engine | `[IN PROGRESS]` | 33% | `active: phase-3/task-3.1-risk-engine` | `passed` |
+| Phase 3 | Improve scoring and risk engine | `[IN PROGRESS]` | 66% | `active: phase-3/task-3.2-scoring-fixtures` | `passed` |
 | Phase 4 | Frontend V1 completion | `[TODO]` | 0% | `planned` | `not run` |
 | Phase 5 | Basic auth | `[TODO]` | 0% | `planned` | `not run` |
 | Phase 6 | Deployment readiness | `[TODO]` | 0% | `planned` | `not run` |
@@ -85,9 +85,9 @@ Task progress:
 | Task 2.1 Define Scraper Interface | `[DONE]` | `phase-2/task-2.1-scraper-interface` | `merged: main` | `passed` |
 | Task 2.2 Implement Playwright Amazon Search Scraper | `[DONE]` | `phase-2/task-2.2-playwright-scraper` | `merged: main` | `passed` |
 | Task 2.3 Add Scraper Run Logging | `[DONE]` | `phase-2/task-2.3-scraper-logging` | `merged: main` | `passed` |
-| Task 3.1 Extract Risk Warning Engine | `[DONE]` | `phase-3/task-3.1-risk-engine` | `active` | `passed` |
-| Task 3.2 Add Scoring Fixtures | `[NEXT]` | `phase-3/task-3.2-scoring-fixtures` | `planned` | `not run` |
-| Task 3.3 Add Scoring Version | `[TODO]` | `phase-3/task-3.3-scoring-version` | `planned` | `not run` |
+| Task 3.1 Extract Risk Warning Engine | `[DONE]` | `phase-3/task-3.1-risk-engine` | `merged: main` | `passed` |
+| Task 3.2 Add Scoring Fixtures | `[DONE]` | `phase-3/task-3.2-scoring-fixtures` | `active` | `passed` |
+| Task 3.3 Add Scoring Version | `[NEXT]` | `phase-3/task-3.3-scoring-version` | `planned` | `not run` |
 | Task 4.1 Improve Loading and Error States | `[TODO]` | `phase-4/task-4.1-loading-errors` | `planned` | `not run` |
 | Task 4.2 Add Project Selection to Home Page | `[TODO]` | `phase-4/task-4.2-project-selection` | `planned` | `not run` |
 | Task 4.3 Improve Report Detail Layout | `[TODO]` | `phase-4/task-4.3-report-layout` | `planned` | `not run` |
@@ -509,7 +509,7 @@ Completion record:
 - Database: Supabase MCP migration `004_add_scraper_runs.sql` applied.
 - Notes: Successful, empty, and failed scraper attempts are recorded in `scraper_runs`. Reports now include `scraper_run_id`.
 
-## Phase 3: Improve Scoring and Risk Engine `[NEXT]`
+## Phase 3: Improve Scoring and Risk Engine `[IN PROGRESS]`
 
 目标：
 
@@ -558,7 +558,7 @@ Completion record:
 - Test result: `48 passed, 2 warnings`
 - Notes: Risk warning rules now live in `backend/app/services/risk.py`; scoring output remains unchanged.
 
-### Task 3.2 Add Scoring Fixtures `[NEXT]`
+### Task 3.2 Add Scoring Fixtures `[DONE]`
 
 目标：
 
@@ -579,7 +579,21 @@ Completion record:
 
 - 评分规则改动时测试能发现推荐等级变化。
 
-### Task 3.3 Add Scoring Version `[TODO]`
+测试命令：
+
+```powershell
+cd backend
+.\.venv\Scripts\pytest
+```
+
+Completion record:
+
+- Branch: `phase-3/task-3.2-scoring-fixtures`
+- Status: `[DONE]`
+- Test result: `51 passed, 2 warnings`
+- Notes: Added fixed scoring cases for strong recommendation, red-ocean avoidance, and moderate-market worth-research paths.
+
+### Task 3.3 Add Scoring Version `[NEXT]`
 
 目标：
 
