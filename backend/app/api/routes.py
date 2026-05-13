@@ -10,7 +10,7 @@ from app.db.session import get_db
 from app.models.tables import Keyword, KeywordProductSnapshot, Product, Project, ScraperRun, SelectionReport
 from app.schemas.analysis import AnalyzeRequest, AnalyzeResponse, ProductOut, ReportListItem
 from app.schemas.project import ProjectCreate, ProjectOut, ProjectUpdate
-from app.services.scoring import SCORING_VERSION, analyze_products
+from app.services.scoring import analyze_products
 from app.services.scrapers import get_search_scraper
 from app.services.scrapers.base import ScraperError
 
@@ -248,7 +248,7 @@ def analyze(request: AnalyzeRequest, db: Session = Depends(get_db)) -> AnalyzeRe
         products_snapshot=[product.model_dump() for product in saved_products],
         score_details=details.model_dump(),
         input_payload=request.model_dump(mode="json"),
-        scoring_version=SCORING_VERSION,
+        scoring_version=score["scoring_version"],
         analysis_status="completed",
         error_message=None,
     )

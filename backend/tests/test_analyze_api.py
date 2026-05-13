@@ -2,6 +2,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
 from app.models.tables import ScraperRun
+from app.services.scoring import SCORING_VERSION
 
 
 def analyze_payload() -> dict:
@@ -29,7 +30,7 @@ def test_analyze_creates_report(client: TestClient) -> None:
     assert data["recommendation"] in {"Strongly Recommended", "Worth Research", "Caution", "Avoid"}
     assert len(data["products"]) == 20
     assert data["input_payload"] == analyze_payload() | {"project_id": None}
-    assert data["scoring_version"] == "v1.0.0"
+    assert data["scoring_version"] == SCORING_VERSION
     assert data["analysis_status"] == "completed"
     assert data["error_message"] is None
 
