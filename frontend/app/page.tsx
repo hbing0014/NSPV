@@ -20,8 +20,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  async function onSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function runAnalyze() {
     setLoading(true);
     setError("");
 
@@ -41,6 +40,11 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
+  }
+
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    await runAnalyze();
   }
 
   return (
@@ -151,8 +155,9 @@ export default function Home() {
 
               <button
                 className="flex items-center justify-center gap-2 bg-accent px-4 py-3 font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
-                type="submit"
+                type="button"
                 disabled={loading}
+                onClick={runAnalyze}
               >
                 <Search size={18} aria-hidden="true" />
                 {loading ? "Analyzing..." : "Analyze"}
@@ -180,4 +185,3 @@ function Signal({ label, text }: { label: string; text: string }) {
     </div>
   );
 }
-

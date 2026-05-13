@@ -44,9 +44,9 @@
 
 Last updated: 2026-05-13
 
-Overall V1 progress: 50%
+Overall V1 progress: 55%
 
-Current branch: `phase-1/task-1.4-project-crud`
+Current branch: `phase-1/task-1.5-analysis-persistence`
 
 Current branch status: `active`
 
@@ -57,17 +57,17 @@ Latest commits:
 - `ef4fa17 Add VSCode workspace`
 - `caa2642 Initial NSPV project scaffold`
 
-Current active task: `Task 1.4 Add Project CRUD`
+Current active task: `Task 1.5 Add Analysis Input Persistence`
 
-Next recommended task: `Task 1.5 Add Analysis Input Persistence`
+Next recommended task: `Task 2.1 Define Scraper Interface`
 
 Phase progress:
 
 | Phase | Scope | Status | Progress | Branch Status | Test Status |
 | --- | --- | --- | --- | --- | --- |
 | Phase 0 | Project bootstrap, docs, Git, VSCode workspace | `[DONE]` | 100% | `merged: main` | `manual` |
-| Phase 1 | Stabilize current V1 prototype | `[IN PROGRESS]` | 80% | `active: phase-1/task-1.4-project-crud` | `passed` |
-| Phase 2 | Real Amazon data integration | `[TODO]` | 0% | `planned` | `not run` |
+| Phase 1 | Stabilize current V1 prototype | `[DONE]` | 100% | `active: phase-1/task-1.5-analysis-persistence` | `passed` |
+| Phase 2 | Real Amazon data integration | `[NEXT]` | 0% | `planned` | `not run` |
 | Phase 3 | Improve scoring and risk engine | `[TODO]` | 0% | `planned` | `not run` |
 | Phase 4 | Frontend V1 completion | `[TODO]` | 0% | `planned` | `not run` |
 | Phase 5 | Basic auth | `[TODO]` | 0% | `planned` | `not run` |
@@ -80,9 +80,9 @@ Task progress:
 | Task 1.1 Add Backend Test Setup | `[DONE]` | `phase-1/task-1.1-backend-tests` | `merged: main` | `passed` |
 | Task 1.2 Add Frontend Test or Smoke Check | `[DONE]` | `phase-1/task-1.2-frontend-smoke` | `merged: main` | `passed` |
 | Task 1.3 Normalize API Error Contract | `[DONE]` | `phase-1/task-1.3-api-errors` | `merged: main` | `passed` |
-| Task 1.4 Add Project CRUD | `[DONE]` | `phase-1/task-1.4-project-crud` | `active` | `passed` |
-| Task 1.5 Add Analysis Input Persistence | `[NEXT]` | `phase-1/task-1.5-analysis-persistence` | `planned` | `not run` |
-| Task 2.1 Define Scraper Interface | `[TODO]` | `phase-2/task-2.1-scraper-interface` | `planned` | `not run` |
+| Task 1.4 Add Project CRUD | `[DONE]` | `phase-1/task-1.4-project-crud` | `merged: main` | `passed` |
+| Task 1.5 Add Analysis Input Persistence | `[DONE]` | `phase-1/task-1.5-analysis-persistence` | `active` | `passed` |
+| Task 2.1 Define Scraper Interface | `[NEXT]` | `phase-2/task-2.1-scraper-interface` | `planned` | `not run` |
 | Task 2.2 Implement Playwright Amazon Search Scraper | `[TODO]` | `phase-2/task-2.2-playwright-scraper` | `planned` | `not run` |
 | Task 2.3 Add Scraper Run Logging | `[TODO]` | `phase-2/task-2.3-scraper-logging` | `planned` | `not run` |
 | Task 3.1 Extract Risk Warning Engine | `[TODO]` | `phase-3/task-3.1-risk-engine` | `planned` | `not run` |
@@ -109,6 +109,7 @@ Task progress:
 - `GET /api/reports`
 - `GET /api/reports/{report_id}`
 - `GET /api/projects/{project_id}/reports`
+- 报告保存分析输入参数和评分版本
 - NSFS 评分引擎基础版
 - 首页、报告页、历史报告页
 
@@ -309,7 +310,7 @@ Completion record:
 - Database: Supabase MCP migration `002_add_project_crud_fields.sql` applied.
 - Notes: Project CRUD supports create, list, detail, update, delete. Analyze can reuse an existing `project_id` or auto-create a project when omitted.
 
-### Task 1.5 Add Analysis Input Persistence `[NEXT]`
+### Task 1.5 Add Analysis Input Persistence `[DONE]`
 
 目标：
 
@@ -343,7 +344,15 @@ cd backend
 .\.venv\Scripts\pytest
 ```
 
-## Phase 2: Real Amazon Data Integration `[TODO]`
+Completion record:
+
+- Branch: `phase-1/task-1.5-analysis-persistence`
+- Status: `[DONE]`
+- Test result: `35 passed, 2 warnings`
+- Database: Supabase MCP migration `003_add_analysis_persistence_fields.sql` applied.
+- Notes: Reports now save `input_payload`, `scoring_version`, `analysis_status`, and `error_message`. Report detail and report list expose the status metadata.
+
+## Phase 2: Real Amazon Data Integration `[NEXT]`
 
 目标：
 

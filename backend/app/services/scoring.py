@@ -5,6 +5,7 @@ from app.services.mock_crawler import estimate_search_volume
 
 
 USD_TO_RMB = 7.2
+SCORING_VERSION = "v1.0.0"
 
 
 def clamp(value: float, low: float = 0, high: float = 100) -> float:
@@ -215,4 +216,3 @@ def build_summary(nsfs: float, warnings: list[str], avg_reviews_top10: float, sp
     ad_text = "广告竞争偏强" if sponsored_density > 0.3 else "广告密度尚可"
     risk_text = f"，主要风险：{warnings[0]}" if warnings else ""
     return f"{base}，{review_text}，{ad_text}{risk_text}。"
-

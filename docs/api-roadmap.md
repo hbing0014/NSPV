@@ -86,7 +86,20 @@ Response:
     "Recommended first order quantity: 300-500 units"
   ],
   "score_details": {},
-  "products": []
+  "products": [],
+  "input_payload": {
+    "keyword": "sink organizer",
+    "marketplace": "US",
+    "category": "Kitchen & Dining",
+    "budget_rmb": 100000,
+    "target_price_min": 20,
+    "target_price_max": 40,
+    "project_id": 1,
+    "exclude_red_ocean": true
+  },
+  "scoring_version": "v1.0.0",
+  "analysis_status": "completed",
+  "error_message": null
 }
 ```
 
@@ -99,6 +112,7 @@ V1 required behavior:
 - Save report if analysis succeeds.
 - If `project_id` is provided, attach the report to that project.
 - If `project_id` is omitted, create a project automatically from the analysis input.
+- Save `input_payload`, `scoring_version`, `analysis_status`, and `error_message` on the report.
 
 ### Report Detail
 
@@ -110,6 +124,7 @@ V1 required behavior:
 
 - Return full report detail.
 - Include products snapshot used at analysis time.
+- Include analysis input and scoring version metadata.
 - Return `404` if report does not exist.
 
 ### Report List
@@ -121,6 +136,7 @@ GET /api/reports
 V1 required behavior:
 
 - Return latest reports.
+- Include `analysis_status`.
 - Support future pagination fields:
   - `limit`
   - `offset`

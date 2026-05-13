@@ -92,7 +92,7 @@ export async function analyzeKeyword(payload: {
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
-    throw new Error(error.detail ?? "Analyze request failed");
+    throw new Error(error.error?.message ?? error.detail ?? "Analyze request failed");
   }
 
   return (await response.json()) as AnalyzeResponse;
@@ -121,4 +121,3 @@ export async function getReports() {
 
   return (await response.json()) as ReportListItem[];
 }
-

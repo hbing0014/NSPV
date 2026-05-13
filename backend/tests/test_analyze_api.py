@@ -24,6 +24,10 @@ def test_analyze_creates_report(client: TestClient) -> None:
     assert 0 <= data["nsfs_score"] <= 100
     assert data["recommendation"] in {"Strongly Recommended", "Worth Research", "Caution", "Avoid"}
     assert len(data["products"]) == 20
+    assert data["input_payload"] == analyze_payload() | {"project_id": None}
+    assert data["scoring_version"] == "v1.0.0"
+    assert data["analysis_status"] == "completed"
+    assert data["error_message"] is None
 
 
 def test_report_detail_returns_saved_snapshot(client: TestClient) -> None:
@@ -35,6 +39,9 @@ def test_report_detail_returns_saved_snapshot(client: TestClient) -> None:
     data = response.json()
     assert data["report_id"] == created["report_id"]
     assert data["products"] == created["products"]
+    assert data["input_payload"] == created["input_payload"]
+    assert data["scoring_version"] == created["scoring_version"]
+    assert data["analysis_status"] == "completed"
 
 
 def test_analyze_rejects_invalid_price_range(client: TestClient) -> None:
