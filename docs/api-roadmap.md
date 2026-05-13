@@ -17,6 +17,11 @@
 ```text
 GET  /health
 POST /api/analyze
+POST /api/projects
+GET  /api/projects
+GET  /api/projects/{project_id}
+PUT  /api/projects/{project_id}
+DELETE /api/projects/{project_id}
 GET  /api/reports
 GET  /api/reports/{report_id}
 GET  /api/projects/{project_id}/reports
@@ -50,6 +55,7 @@ Request:
   "budget_rmb": 100000,
   "target_price_min": 20,
   "target_price_max": 40,
+  "project_id": 1,
   "exclude_red_ocean": true
 }
 ```
@@ -91,6 +97,8 @@ V1 required behavior:
 - Return `400` for invalid input.
 - Return `502` or `503` for scraper/data provider failure.
 - Save report if analysis succeeds.
+- If `project_id` is provided, attach the report to that project.
+- If `project_id` is omitted, create a project automatically from the analysis input.
 
 ### Report Detail
 
@@ -132,7 +140,7 @@ V1 required behavior:
 
 ## V1 Project APIs
 
-To implement:
+Implemented:
 
 ```text
 POST   /api/projects
@@ -156,6 +164,8 @@ Project create request:
 ```
 
 V1 project API can be anonymous or default-user based. Full auth is not required before the core analysis workflow is stable.
+
+Project update accepts partial fields. `target_price_min` cannot exceed `target_price_max` on create or update.
 
 ## V1 Auth APIs, Basic
 
@@ -287,4 +297,5 @@ Currently implemented:
 - Invalid analyze price range returns `400` with `VALIDATION_ERROR`.
 - Pydantic request validation returns `422` with `VALIDATION_ERROR`.
 - Missing report returns `404` with `REPORT_NOT_FOUND`.
+- Missing project returns `404` with `PROJECT_NOT_FOUND`.
 - Empty scraper result returns `503` with `SCRAPER_EMPTY_RESULT`.

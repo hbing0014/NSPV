@@ -17,11 +17,18 @@ The following tables exist in the `public` schema:
 - `keyword_product_snapshots`
 - `selection_reports`
 
-The migration applied through Supabase MCP is tracked in:
+The migrations applied through Supabase MCP are tracked in:
 
 ```text
 backend/migrations/supabase/001_create_nspv_v1_schema.sql
+backend/migrations/supabase/002_add_project_crud_fields.sql
 ```
+
+Migration `002_add_project_crud_fields.sql` adds the Project CRUD fields:
+
+- `projects.target_price_min`
+- `projects.target_price_max`
+- `projects.status`
 
 ## Backend Connection
 

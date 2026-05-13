@@ -6,10 +6,77 @@ from app.core.errors import ApiError
 from app.db.session import get_db
 from app.models.tables import Keyword, KeywordProductSnapshot, Product, Project, SelectionReport
 from app.schemas.analysis import AnalyzeRequest, AnalyzeResponse, ProductOut, ReportListItem
+from app.schemas.project import ProjectCreate, ProjectOut, ProjectUpdate
 from app.services.mock_crawler import fetch_top20_products
 from app.services.scoring import analyze_products
 
 router = APIRouter(prefix="/api")
+
+
+def get_project_or_404(project_id: int, db: Session) -> Project:
+    project = db.get(Project, project_id)
+    if project is None:
+        raise ApiError(
+            code="PROJECT_NOT_FOUND",
+            message="Project not found",
+            status_code=status.HTTP_404_NOT_FOUND,
+            details={"project_id": project_id},
+        )
+    return project
+
+
+@router.post("/projects", response_model=ProjectOut)
+def create_project(request: ProjectCreate, db: Session = Depends(get_db)) -> ProjectOut:
+    project = Project(**request.model_dump(), status="active")
+    db.add(project)
+    db.commit()
+    db.refresh(project)
+    return project_to_response(project)
+
+
+@router.get("/projects", response_model=list[ProjectOut])
+def list_projects(db: Session = Depends(get_db)) -> list[ProjectOut]:
+    projects = db.scalars(select(Project).order_by(Project.created_at.desc()).limit(100)).all()
+    return [project_to_response(project) for project in projects]
+
+
+@router.get("/projects/{project_id}", response_model=ProjectOut)
+def get_project(project_id: int, db: Session = Depends(get_db)) -> ProjectOut:
+    return project_to_response(get_project_or_404(project_id, db))
+
+
+@router.put("/projects/{project_id}", response_model=ProjectOut)
+def update_project(project_id: int, request: ProjectUpdate, db: Session = Depends(get_db)) -> ProjectOut:
+    project = get_project_or_404(project_id, db)
+    updates = request.model_dump(exclude_unset=True)
+    next_target_price_min = updates.get("target_price_min", project.target_price_min)
+    next_target_price_max = updates.get("target_price_max", project.target_price_max)
+    if next_target_price_min is not None and next_target_price_max is not None and next_target_price_min > next_target_price_max:
+        raise ApiError(
+            code="VALIDATION_ERROR",
+            message="target_price_min cannot exceed target_price_max",
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details={
+                "field": "target_price_min",
+                "target_price_min": next_target_price_min,
+                "target_price_max": next_target_price_max,
+            },
+        )
+
+    for field, value in updates.items():
+        setattr(project, field, value)
+
+    db.commit()
+    db.refresh(project)
+    return project_to_response(project)
+
+
+@router.delete("/projects/{project_id}")
+def delete_project(project_id: int, db: Session = Depends(get_db)) -> dict[str, bool]:
+    project = get_project_or_404(project_id, db)
+    db.delete(project)
+    db.commit()
+    return {"deleted": True}
 
 
 @router.post("/analyze", response_model=AnalyzeResponse)
@@ -42,14 +109,20 @@ def analyze(request: AnalyzeRequest, db: Session = Depends(get_db)) -> AnalyzeRe
         target_price_max=request.target_price_max,
     )
 
-    project = Project(
-        project_name=f"{request.keyword} analysis",
-        category=request.category,
-        budget_rmb=request.budget_rmb,
-        marketplace=request.marketplace,
-    )
-    db.add(project)
-    db.flush()
+    if request.project_id is not None:
+        project = get_project_or_404(request.project_id, db)
+    else:
+        project = Project(
+            project_name=f"{request.keyword} analysis",
+            category=request.category,
+            budget_rmb=request.budget_rmb,
+            marketplace=request.marketplace,
+            target_price_min=request.target_price_min,
+            target_price_max=request.target_price_max,
+            status="active",
+        )
+        db.add(project)
+        db.flush()
 
     details = score["score_details"]
     keyword = Keyword(
@@ -194,4 +267,19 @@ def report_to_list_item(report: SelectionReport) -> ReportListItem:
         recommendation=report.recommendation,
         risk_level=report.risk_level,
         created_at=report.created_at,
+    )
+
+
+def project_to_response(project: Project) -> ProjectOut:
+    return ProjectOut(
+        id=project.id,
+        project_name=project.project_name,
+        category=project.category,
+        budget_rmb=project.budget_rmb,
+        marketplace=project.marketplace,
+        target_price_min=project.target_price_min,
+        target_price_max=project.target_price_max,
+        status=project.status,
+        created_at=project.created_at,
+        updated_at=project.updated_at,
     )
