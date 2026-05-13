@@ -2,9 +2,9 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Search } from "lucide-react";
+import { AlertTriangle, Loader2, RotateCcw, Search } from "lucide-react";
 import { Header } from "@/components/Header";
-import { analyzeKeyword } from "@/lib/api";
+import { ApiRequestError, analyzeKeyword } from "@/lib/api";
 
 const categories = ["Kitchen & Dining", "Home & Kitchen", "Storage & Organization", "Tools & Home Improvement"];
 
@@ -18,11 +18,15 @@ export default function Home() {
   const [priceMax, setPriceMax] = useState(40);
   const [excludeRedOcean, setExcludeRedOcean] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState<{ message: string; code?: string; status?: number } | null>(null);
 
   async function runAnalyze() {
+    if (loading) {
+      return;
+    }
+
     setLoading(true);
-    setError("");
+    setError(null);
 
     try {
       const report = await analyzeKeyword({
@@ -36,7 +40,19 @@ export default function Home() {
       });
       router.push(`/reports/${report.report_id}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Analyze failed");
+      if (err instanceof ApiRequestError) {
+        setError({ message: err.message, code: err.code, status: err.status });
+      } else {
+        setError({
+          message:
+            err instanceof TypeError
+              ? "Cannot connect to NSPV API. Check the backend server and try again."
+              : err instanceof Error
+                ? err.message
+                : "Analyze failed. Please try again.",
+          code: "CLIENT_ERROR"
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -62,7 +78,7 @@ export default function Home() {
             </p>
           </div>
 
-          <form onSubmit={onSubmit} className="border border-line bg-white p-5">
+          <form onSubmit={onSubmit} className="border border-line bg-white p-5" aria-busy={loading}>
             <div className="grid gap-4">
               <label className="grid gap-2">
                 <span className="text-sm font-medium text-ink">Keyword</span>
@@ -148,19 +164,34 @@ export default function Home() {
               </label>
 
               {error ? (
-                <div className="border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-                  {error}
+                <div className="border border-red-200 bg-red-50 p-3 text-sm text-red-800" role="alert">
+                  <div className="flex gap-3">
+                    <AlertTriangle className="mt-0.5 shrink-0 text-red-600" size={18} aria-hidden="true" />
+                    <div className="min-w-0">
+                      <div className="font-medium">Analysis failed</div>
+                      <p className="mt-1 leading-6">{error.message}</p>
+                      <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-red-700/80">
+                        {error.code ? <span>{error.code}</span> : null}
+                        {error.status ? <span>HTTP {error.status}</span> : null}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               ) : null}
 
               <button
                 className="flex items-center justify-center gap-2 bg-accent px-4 py-3 font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
-                type="button"
+                type="submit"
                 disabled={loading}
-                onClick={runAnalyze}
               >
-                <Search size={18} aria-hidden="true" />
-                {loading ? "Analyzing..." : "Analyze"}
+                {loading ? (
+                  <Loader2 className="animate-spin" size={18} aria-hidden="true" />
+                ) : error ? (
+                  <RotateCcw size={18} aria-hidden="true" />
+                ) : (
+                  <Search size={18} aria-hidden="true" />
+                )}
+                {loading ? "Analyzing Amazon Top20..." : error ? "Retry Analyze" : "Analyze"}
               </button>
             </div>
           </form>
