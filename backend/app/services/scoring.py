@@ -2,6 +2,7 @@ from collections import Counter
 
 from app.schemas.analysis import ProductOut, ScoreDetails
 from app.services.mock_crawler import estimate_search_volume
+from app.services.risk import generate_risk_warnings
 
 
 USD_TO_RMB = 7.2
@@ -140,20 +141,6 @@ def analyze_products(
     prof_score = profit_score(net_margin)
     nsfs = dem_score * 0.25 + comp_score * 0.30 + prof_score * 0.25 + opp_score * 0.20
 
-    warnings: list[str] = []
-    if avg_reviews_top10 > 2500:
-        warnings.append("Top10平均Review过高，新店进入难度大")
-    if sponsored_density > 0.50:
-        warnings.append("广告竞争激烈，PPC成本风险高")
-    if amazon_basics_present:
-        warnings.append("存在Amazon自营品牌竞争风险")
-    if avg_price < 15:
-        warnings.append("客单价偏低，广告和利润空间不足")
-    if avg_rating > 4.8 and avg_reviews_top10 > 2000:
-        warnings.append("产品成熟度高，差异化难度大")
-    if avg_price < target_price_min or avg_price > target_price_max:
-        warnings.append("首页均价与目标售价区间不匹配")
-
     suggestions = [
         "Avoid competing on main keyword only",
         "Focus on long-tail keywords",
@@ -163,7 +150,6 @@ def analyze_products(
         "Review数量较低的Listing可作为差异化切入口",
         "优先验证可升级的功能点和包装组合",
     ]
-    summary = build_summary(nsfs, warnings, avg_reviews_top10, sponsored_density)
 
     details = ScoreDetails(
         monthly_search_volume=monthly_search_volume,
@@ -187,6 +173,8 @@ def analyze_products(
         homogenization_level=round(homogenization_level, 2),
         upgrade_potential=round(upgrade_potential, 2),
     )
+    warnings = generate_risk_warnings(details, target_price_min, target_price_max)
+    summary = build_summary(nsfs, warnings, avg_reviews_top10, sponsored_density)
 
     return {
         "nsfs_score": round(nsfs, 1),
