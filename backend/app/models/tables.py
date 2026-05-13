@@ -32,6 +32,9 @@ class Project(Base):
     category: Mapped[str] = mapped_column(String(100))
     budget_rmb: Mapped[float] = mapped_column(Float)
     marketplace: Mapped[str] = mapped_column(String(20), default="US")
+    target_price_min: Mapped[float | None] = mapped_column(Float, nullable=True)
+    target_price_max: Mapped[float | None] = mapped_column(Float, nullable=True)
+    status: Mapped[str] = mapped_column(String(50), default="active")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now_utc)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)
 
@@ -131,4 +134,3 @@ class SelectionReport(Base):
 
     project: Mapped[Project] = relationship(back_populates="reports")
     keyword: Mapped[Keyword] = relationship(back_populates="reports")
-

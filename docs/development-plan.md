@@ -42,11 +42,11 @@
 
 ## Progress Dashboard
 
-Last updated: 2026-05-12
+Last updated: 2026-05-13
 
-Overall V1 progress: 45%
+Overall V1 progress: 50%
 
-Current branch: `phase-1/task-1.3-api-errors`
+Current branch: `phase-1/task-1.4-project-crud`
 
 Current branch status: `active`
 
@@ -59,14 +59,14 @@ Latest commits:
 
 Current active task: `Task 1.4 Add Project CRUD`
 
-Next recommended task: `Task 1.4 Add Project CRUD`
+Next recommended task: `Task 1.5 Add Analysis Input Persistence`
 
 Phase progress:
 
 | Phase | Scope | Status | Progress | Branch Status | Test Status |
 | --- | --- | --- | --- | --- | --- |
 | Phase 0 | Project bootstrap, docs, Git, VSCode workspace | `[DONE]` | 100% | `merged: main` | `manual` |
-| Phase 1 | Stabilize current V1 prototype | `[IN PROGRESS]` | 60% | `active: phase-1/task-1.3-api-errors` | `passed` |
+| Phase 1 | Stabilize current V1 prototype | `[IN PROGRESS]` | 80% | `active: phase-1/task-1.4-project-crud` | `passed` |
 | Phase 2 | Real Amazon data integration | `[TODO]` | 0% | `planned` | `not run` |
 | Phase 3 | Improve scoring and risk engine | `[TODO]` | 0% | `planned` | `not run` |
 | Phase 4 | Frontend V1 completion | `[TODO]` | 0% | `planned` | `not run` |
@@ -79,9 +79,9 @@ Task progress:
 | --- | --- | --- | --- | --- |
 | Task 1.1 Add Backend Test Setup | `[DONE]` | `phase-1/task-1.1-backend-tests` | `merged: main` | `passed` |
 | Task 1.2 Add Frontend Test or Smoke Check | `[DONE]` | `phase-1/task-1.2-frontend-smoke` | `merged: main` | `passed` |
-| Task 1.3 Normalize API Error Contract | `[DONE]` | `phase-1/task-1.3-api-errors` | `active` | `passed` |
-| Task 1.4 Add Project CRUD | `[NEXT]` | `phase-1/task-1.4-project-crud` | `planned` | `not run` |
-| Task 1.5 Add Analysis Input Persistence | `[TODO]` | `phase-1/task-1.5-analysis-persistence` | `planned` | `not run` |
+| Task 1.3 Normalize API Error Contract | `[DONE]` | `phase-1/task-1.3-api-errors` | `merged: main` | `passed` |
+| Task 1.4 Add Project CRUD | `[DONE]` | `phase-1/task-1.4-project-crud` | `active` | `passed` |
+| Task 1.5 Add Analysis Input Persistence | `[NEXT]` | `phase-1/task-1.5-analysis-persistence` | `planned` | `not run` |
 | Task 2.1 Define Scraper Interface | `[TODO]` | `phase-2/task-2.1-scraper-interface` | `planned` | `not run` |
 | Task 2.2 Implement Playwright Amazon Search Scraper | `[TODO]` | `phase-2/task-2.2-playwright-scraper` | `planned` | `not run` |
 | Task 2.3 Add Scraper Run Logging | `[TODO]` | `phase-2/task-2.3-scraper-logging` | `planned` | `not run` |
@@ -116,8 +116,7 @@ Task progress:
 
 - Amazon 数据源仍为 mock。
 - 用户系统未真正实现注册登录。
-- 项目 CRUD 未独立实现。
-- 缺少自动化测试。
+- 前端尚未接入项目选择。
 - 缺少真实 scraper 错误处理和监控。
 
 ## Phase 1: Stabilize Current V1 Prototype `[IN PROGRESS]`
@@ -256,7 +255,7 @@ Completion record:
 - Test result: `31 passed, 2 warnings`
 - Error contract: `{"error": {"code": "...", "message": "...", "details": {...}}}`
 
-### Task 1.4 Add Project CRUD `[NEXT]`
+### Task 1.4 Add Project CRUD `[DONE]`
 
 目标：
 
@@ -302,7 +301,15 @@ cd backend
 .\.venv\Scripts\pytest
 ```
 
-### Task 1.5 Add Analysis Input Persistence `[TODO]`
+Completion record:
+
+- Branch: `phase-1/task-1.4-project-crud`
+- Status: `[DONE]`
+- Test result: `35 passed, 2 warnings`
+- Database: Supabase MCP migration `002_add_project_crud_fields.sql` applied.
+- Notes: Project CRUD supports create, list, detail, update, delete. Analyze can reuse an existing `project_id` or auto-create a project when omitted.
+
+### Task 1.5 Add Analysis Input Persistence `[NEXT]`
 
 目标：
 

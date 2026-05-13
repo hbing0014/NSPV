@@ -36,13 +36,22 @@ async def api_error_handler(_: Request, exc: ApiError) -> JSONResponse:
     )
 
 
+def serializable_validation_errors(errors: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    cleaned_errors: list[dict[str, Any]] = []
+    for error in errors:
+        cleaned_error = dict(error)
+        if isinstance(cleaned_error.get("ctx"), dict):
+            cleaned_error["ctx"] = {key: str(value) for key, value in cleaned_error["ctx"].items()}
+        cleaned_errors.append(cleaned_error)
+    return cleaned_errors
+
+
 async def validation_error_handler(_: Request, exc: RequestValidationError) -> JSONResponse:
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content=error_payload(
             "VALIDATION_ERROR",
             "Request validation failed.",
-            {"errors": exc.errors()},
+            {"errors": serializable_validation_errors(exc.errors())},
         ),
     )
-

@@ -73,14 +73,11 @@ Current fields:
 - `category`
 - `budget_rmb`
 - `marketplace`
-- `created_at`
-- `updated_at`
-
-V1 recommended additions:
-
 - `target_price_min`
 - `target_price_max`
 - `status`
+- `created_at`
+- `updated_at`
 
 `status` values:
 
@@ -390,4 +387,3 @@ Before production:
    - `selection_reports.created_at`
    - `keyword_product_snapshots.keyword_id`
    - `keyword_product_snapshots.asin`
-
