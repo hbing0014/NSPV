@@ -9,6 +9,7 @@ from app.schemas.analysis import AnalyzeRequest, AnalyzeResponse, ProductOut, Re
 from app.schemas.project import ProjectCreate, ProjectOut, ProjectUpdate
 from app.services.scoring import SCORING_VERSION, analyze_products
 from app.services.scrapers import get_search_scraper
+from app.services.scrapers.base import ScraperError
 
 router = APIRouter(prefix="/api")
 
@@ -95,6 +96,13 @@ def analyze(request: AnalyzeRequest, db: Session = Depends(get_db)) -> AnalyzeRe
 
     try:
         products = get_search_scraper().fetch_top20_products(request.keyword, request.marketplace)
+    except ScraperError as exc:
+        raise ApiError(
+            code="SCRAPER_FAILED",
+            message=str(exc),
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            details={"keyword": request.keyword, "marketplace": request.marketplace},
+        ) from exc
     except NotImplementedError as exc:
         raise ApiError(
             code="SCRAPER_FAILED",

@@ -27,7 +27,7 @@ GET  /api/reports/{report_id}
 GET  /api/projects/{project_id}/reports
 ```
 
-当前 `POST /api/analyze` 使用 mock Amazon Top20 数据源，用于打通业务闭环。
+当前 `POST /api/analyze` 默认使用 mock Amazon Top20 数据源，用于打通业务闭环。
 
 Scraper provider is selected by backend configuration:
 
@@ -37,7 +37,18 @@ SCRAPER_PROVIDER=playwright
 SCRAPER_PROVIDER=brightdata
 ```
 
-Currently only `mock` is implemented. `playwright` and `brightdata` return a structured scraper failure until their providers are implemented.
+Currently implemented:
+
+- `mock`: deterministic local product data for stable development and tests.
+- `playwright`: live Amazon US search page scraping for Top20 product cards.
+
+`brightdata` remains a placeholder and returns a structured scraper failure until implemented.
+
+Playwright scraper notes:
+
+- Requires `python -m playwright install chromium`.
+- Extracts ASIN, title, price, rating, review count, image URL, product URL, and sponsored status.
+- Amazon may render localized currencies based on the running network location. The current scraper normalizes JPY to approximate USD for scoring, but production should use US proxy/location control or a live FX source.
 
 ## V1 API Target
 
