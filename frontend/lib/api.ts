@@ -91,6 +91,19 @@ export type AnalyzeResponse = {
   created_at: string;
 };
 
+export type Project = {
+  id: number;
+  project_name: string;
+  category: string;
+  budget_rmb: number;
+  marketplace: string;
+  target_price_min: number | null;
+  target_price_max: number | null;
+  status: string;
+  created_at: string;
+  updated_at: string;
+};
+
 export type ReportListItem = {
   report_id: number;
   project_id: number;
@@ -104,6 +117,7 @@ export type ReportListItem = {
 };
 
 export async function analyzeKeyword(payload: {
+  project_id?: number;
   keyword: string;
   marketplace: string;
   category: string;
@@ -125,6 +139,18 @@ export async function analyzeKeyword(payload: {
   }
 
   return (await response.json()) as AnalyzeResponse;
+}
+
+export async function getProjects() {
+  const response = await fetch(`${API_BASE}/api/projects`, {
+    cache: "no-store"
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, "Failed to load projects");
+  }
+
+  return (await response.json()) as Project[];
 }
 
 export async function getReport(reportId: string) {
