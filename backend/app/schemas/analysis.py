@@ -73,6 +73,10 @@ class AnalyzeResponse(BaseModel):
     opportunities: list[str]
     score_details: ScoreDetails
     products: list[ProductOut]
+    input_payload: dict
+    scoring_version: str
+    analysis_status: str
+    error_message: str | None = None
     created_at: datetime
 
 
@@ -83,4 +87,5 @@ class ReportListItem(BaseModel):
     nsfs_score: float
     recommendation: str
     risk_level: str
+    analysis_status: str
     created_at: datetime

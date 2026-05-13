@@ -130,6 +130,10 @@ class SelectionReport(Base):
     action_suggestions: Mapped[list[str]] = mapped_column(JSON, default=list)
     products_snapshot: Mapped[list[dict]] = mapped_column(JSON, default=list)
     score_details: Mapped[dict] = mapped_column(JSON, default=dict)
+    input_payload: Mapped[dict] = mapped_column(JSON, default=dict)
+    scoring_version: Mapped[str] = mapped_column(String(50), default="v1.0.0")
+    analysis_status: Mapped[str] = mapped_column(String(50), default="completed")
+    error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now_utc)
 
     project: Mapped[Project] = relationship(back_populates="reports")

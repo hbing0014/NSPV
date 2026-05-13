@@ -8,7 +8,7 @@ from app.models.tables import Keyword, KeywordProductSnapshot, Product, Project,
 from app.schemas.analysis import AnalyzeRequest, AnalyzeResponse, ProductOut, ReportListItem
 from app.schemas.project import ProjectCreate, ProjectOut, ProjectUpdate
 from app.services.mock_crawler import fetch_top20_products
-from app.services.scoring import analyze_products
+from app.services.scoring import SCORING_VERSION, analyze_products
 
 router = APIRouter(prefix="/api")
 
@@ -198,6 +198,10 @@ def analyze(request: AnalyzeRequest, db: Session = Depends(get_db)) -> AnalyzeRe
         action_suggestions=score["suggestions"],
         products_snapshot=[product.model_dump() for product in saved_products],
         score_details=details.model_dump(),
+        input_payload=request.model_dump(mode="json"),
+        scoring_version=SCORING_VERSION,
+        analysis_status="completed",
+        error_message=None,
     )
     db.add(report)
     db.commit()
@@ -254,6 +258,10 @@ def report_to_response(report: SelectionReport, keyword_text: str) -> AnalyzeRes
         opportunities=report.key_opportunities or [],
         score_details=report.score_details,
         products=[ProductOut(**product) for product in (report.products_snapshot or [])],
+        input_payload=report.input_payload or {},
+        scoring_version=report.scoring_version,
+        analysis_status=report.analysis_status,
+        error_message=report.error_message,
         created_at=report.created_at,
     )
 
@@ -266,6 +274,7 @@ def report_to_list_item(report: SelectionReport) -> ReportListItem:
         nsfs_score=report.nsfs_score,
         recommendation=report.recommendation,
         risk_level=report.risk_level,
+        analysis_status=report.analysis_status,
         created_at=report.created_at,
     )
 

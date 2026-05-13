@@ -22,6 +22,7 @@ The migrations applied through Supabase MCP are tracked in:
 ```text
 backend/migrations/supabase/001_create_nspv_v1_schema.sql
 backend/migrations/supabase/002_add_project_crud_fields.sql
+backend/migrations/supabase/003_add_analysis_persistence_fields.sql
 ```
 
 Migration `002_add_project_crud_fields.sql` adds the Project CRUD fields:
@@ -29,6 +30,13 @@ Migration `002_add_project_crud_fields.sql` adds the Project CRUD fields:
 - `projects.target_price_min`
 - `projects.target_price_max`
 - `projects.status`
+
+Migration `003_add_analysis_persistence_fields.sql` adds the report persistence fields:
+
+- `selection_reports.input_payload`
+- `selection_reports.scoring_version`
+- `selection_reports.analysis_status`
+- `selection_reports.error_message`
 
 ## Backend Connection
 

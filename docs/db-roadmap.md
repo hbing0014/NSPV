@@ -214,14 +214,11 @@ Current fields:
 - `action_suggestions`
 - `products_snapshot`
 - `score_details`
-- `created_at`
-
-V1 recommended additions:
-
 - `analysis_status`
 - `error_message`
 - `input_payload`
 - `scoring_version`
+- `created_at`
 
 `analysis_status` values:
 
