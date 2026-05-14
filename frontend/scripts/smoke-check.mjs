@@ -1,27 +1,33 @@
 const baseUrl = process.env.FRONTEND_BASE_URL ?? "http://127.0.0.1:3000";
 const reportId = process.env.SMOKE_REPORT_ID;
+const locale = process.env.SMOKE_LOCALE ?? "zh-CN";
+const isEnglish = locale === "en";
 
 const checks = [
   {
     path: "/",
-    text: "Amazon 新店选品风险判断"
+    text: isEnglish ? "Amazon New Seller Product Validator" : "Amazon 新店选品风险判断"
   },
   {
     path: "/reports",
-    text: "Historical Reports"
+    text: isEnglish ? "Historical Reports" : "历史报告"
   }
 ];
 
 if (reportId) {
   checks.push({
     path: `/reports/${reportId}`,
-    text: "NSFS Score"
+    text: isEnglish ? "NSFS Score" : "NSFS 评分"
   });
 }
 
 async function checkPage({ path, text }) {
   const url = new URL(path, baseUrl);
-  const response = await fetch(url);
+  const response = await fetch(url, {
+    headers: {
+      Cookie: `nspv-locale=${locale}`
+    }
+  });
   if (!response.ok) {
     throw new Error(`${url} returned ${response.status}`);
   }
@@ -37,4 +43,3 @@ async function checkPage({ path, text }) {
 for (const check of checks) {
   await checkPage(check);
 }
-

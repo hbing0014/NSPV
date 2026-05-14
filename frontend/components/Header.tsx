@@ -1,7 +1,13 @@
+"use client";
+
 import Link from "next/link";
 import { BarChart3 } from "lucide-react";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useI18n } from "@/lib/i18n/LocaleProvider";
 
 export function Header() {
+  const { t } = useI18n();
+
   return (
     <header className="border-b border-line bg-white">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4">
@@ -11,12 +17,14 @@ export function Header() {
           </span>
           <span>NSPV</span>
         </Link>
-        <nav className="flex items-center gap-5 text-sm text-ink/70">
-          <Link href="/">Analyze</Link>
-          <Link href="/reports">Reports</Link>
-        </nav>
+        <div className="flex items-center gap-5">
+          <nav className="flex items-center gap-5 text-sm text-ink/70">
+            <Link href="/">{t.nav.analyze}</Link>
+            <Link href="/reports">{t.nav.reports}</Link>
+          </nav>
+          <LanguageSwitcher />
+        </div>
       </div>
     </header>
   );
 }
-

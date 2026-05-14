@@ -9,6 +9,13 @@ from app.core.errors import ApiError, api_error_handler, validation_error_handle
 from app.db.session import init_db
 
 settings = get_settings()
+frontend_origins = {
+    settings.frontend_origin,
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:3001",
+    "http://127.0.0.1:3001",
+}
 
 app = FastAPI(title=settings.app_name)
 app.add_exception_handler(ApiError, api_error_handler)
@@ -16,7 +23,7 @@ app.add_exception_handler(RequestValidationError, validation_error_handler)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[settings.frontend_origin, "http://127.0.0.1:3000"],
+    allow_origins=sorted(frontend_origins),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
