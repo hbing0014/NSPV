@@ -409,7 +409,7 @@ cd backend
 - 新增：`backend/tests/test_supplier_score.py`
 - 验证：`tests/test_supplier_score.py` 通过。
 
-### Task 3.3 实现 NPFS Engine `[NEXT]`
+### Task 3.3 实现 NPFS Engine `[DONE]`
 
 建议分支：
 
@@ -447,6 +447,9 @@ Supplier × 0.10
   - `caution`
   - `avoid`
 - 输出风险等级。
+- 输出各维度加权贡献，便于报告解释。
+- 对异常子分做 0-100 裁剪。
+- 风险 warning 会影响 `risk_level`。
 
 测试：
 
@@ -455,9 +458,16 @@ cd backend
 .\.venv\Scripts\pytest tests\test_npfs.py
 ```
 
+完成记录：
+
+- 分支：`v2/task-3.3-npfs-engine`
+- 新增：`backend/app/services/discovery/npfs.py`
+- 新增：`backend/tests/test_npfs.py`
+- 验证：`tests/test_npfs.py` 通过。
+
 ## Phase 4：Product Radar API
 
-### Task 4.1 新增 Discover API `[TODO]`
+### Task 4.1 新增 Discover API `[NEXT]`
 
 建议分支：
 
