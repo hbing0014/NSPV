@@ -1,8 +1,8 @@
-# NSPV Database Roadmap
+# NSPV 数据库路线图
 
 本文档定义 NSPV 数据库从当前原型到 V1、V2、V3 的表结构演进。
 
-## Database Principles
+## 数据库原则
 
 - V1 优先保存分析报告和分析时的商品快照。
 - 报告必须可复现，不能只引用实时商品表。
@@ -10,7 +10,7 @@
 - 后续 Review、AI、历史趋势、支付、开放 API 独立扩展。
 - 评分规则结果需要保存详细字段，方便后续解释和回归测试。
 
-## Current Implemented Tables
+## 当前已实现数据表
 
 当前项目已有 SQLAlchemy models：
 
@@ -29,15 +29,15 @@
 
 - PostgreSQL
 
-## V1 Tables
+## V1 数据表
 
 ### users
 
-Purpose:
+用途：
 
 - 存储用户基础信息。
 
-Current fields:
+当前字段：
 
 - `id`
 - `email`
@@ -47,13 +47,13 @@ Current fields:
 - `created_at`
 - `updated_at`
 
-V1 recommended additions:
+V1 建议新增字段：
 
 - `email_verified`
 - `monthly_analysis_limit`
 - `monthly_analysis_used`
 
-Deferred:
+暂缓：
 
 - `stripe_customer_id`
 - `api_key_hash`
@@ -61,11 +61,11 @@ Deferred:
 
 ### projects
 
-Purpose:
+用途：
 
 - 存储用户的选品项目。
 
-Current fields:
+当前字段：
 
 - `id`
 - `user_id`
@@ -79,18 +79,18 @@ Current fields:
 - `created_at`
 - `updated_at`
 
-`status` values:
+`status` 取值：
 
 - `active`
 - `archived`
 
 ### keywords
 
-Purpose:
+用途：
 
 - 存储每次分析的关键词指标。
 
-Current fields:
+当前字段：
 
 - `id`
 - `project_id`
@@ -108,13 +108,13 @@ Current fields:
 - `created_at`
 - `updated_at`
 
-V1 recommended additions:
+V1 建议新增字段：
 
 - `search_trend`
 - `seasonality_score`
 - `keyword_difficulty`
 
-V2 additions:
+V2 新增字段：
 
 - `long_tail_keywords`
 - `keyword_opportunity`
@@ -122,11 +122,11 @@ V2 additions:
 
 ### products
 
-Purpose:
+用途：
 
 - 存储商品主数据，按 ASIN 去重。
 
-Current fields:
+当前字段：
 
 - `id`
 - `asin`
@@ -146,13 +146,13 @@ Current fields:
 - `created_at`
 - `updated_at`
 
-V1 recommended additions:
+V1 建议新增字段：
 
 - `category`
 - `seller_name`
 - `availability`
 
-V2 additions:
+V2 新增字段：
 
 - `variation_count`
 - `has_video`
@@ -161,11 +161,11 @@ V2 additions:
 
 ### keyword_product_snapshots
 
-Purpose:
+用途：
 
 - 保存关键词分析当时的搜索结果快照。
 
-Current fields:
+当前字段：
 
 - `id`
 - `keyword_id`
@@ -180,23 +180,23 @@ Current fields:
 - `review_count`
 - `captured_at`
 
-V1 recommended additions:
+V1 建议新增字段：
 
 - `search_position`
 - `raw_badges`
 - `scraper_source`
 
-Important:
+重要说明：
 
 - 报告展示应优先使用 snapshot 或 report 内保存的产品快照，而不是实时 `products`。
 
 ### selection_reports
 
-Purpose:
+用途：
 
 - 保存完整分析报告。
 
-Current fields:
+当前字段：
 
 - `id`
 - `project_id`
@@ -227,15 +227,15 @@ Current fields:
 - `failed`
 - `partial`
 
-## V1 New Table Candidates
+## V1 新增候选表
 
 ### profit_calculations
 
-Purpose:
+用途：
 
 - 把利润计算从 report JSON 中拆出来，便于后续单独调整。
 
-Suggested fields:
+建议字段：
 
 - `id`
 - `report_id`
@@ -252,17 +252,17 @@ Suggested fields:
 - `recommended_order_qty`
 - `created_at`
 
-V1 priority:
+V1 优先级：
 
-- Medium. 当前可以先存在 `selection_reports.score_details`。
+- 中等。当前可以先存在 `selection_reports.score_details`。
 
 ### scraper_runs
 
-Purpose:
+用途：
 
 - 记录每次 Amazon 抓取执行状态。
 
-Current fields:
+当前字段：
 
 - `id`
 - `keyword`
@@ -274,22 +274,22 @@ Current fields:
 - `started_at`
 - `finished_at`
 
-`status` values:
+`status` 取值：
 
 - `running`
 - `completed`
 - `empty`
 - `failed`
 
-## V2 Tables
+## V2 数据表
 
 ### review_analysis
 
-Purpose:
+用途：
 
 - 保存 Review NLP 和 AI 分析结果。
 
-Suggested fields:
+建议字段：
 
 - `id`
 - `report_id`
@@ -303,11 +303,11 @@ Suggested fields:
 
 ### history_snapshots
 
-Purpose:
+用途：
 
 - 保存长期趋势数据。
 
-Suggested fields:
+建议字段：
 
 - `id`
 - `entity_type`
@@ -324,11 +324,11 @@ Suggested fields:
 
 ### ai_advisor_outputs
 
-Purpose:
+用途：
 
 - 保存 AI 输出，支持缓存和回看。
 
-Suggested fields:
+建议字段：
 
 - `id`
 - `report_id`
@@ -339,7 +339,7 @@ Suggested fields:
 - `token_usage`
 - `created_at`
 
-## V3 Tables
+## V3 数据表
 
 ### subscriptions
 
@@ -372,19 +372,19 @@ Suggested fields:
 - `cost_units`
 - `created_at`
 
-## Migration Guidance
+## 迁移指南
 
-Current project uses Alembic for formal schema migration.
+当前项目使用 Alembic 进行正式数据库结构迁移。
 
-`Base.metadata.create_all()` is retained only for quick SQLite local startup and tests.
+`Base.metadata.create_all()` 仅保留给 SQLite 本地快速启动和测试使用。
 
-Current migration command:
+当前迁移命令：
 
 ```powershell
 cd backend
 .\.venv\Scripts\alembic upgrade head
 ```
 
-Current Alembic revision:
+当前 Alembic 版本：
 
 - `0001_initial_schema`

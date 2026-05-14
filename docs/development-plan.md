@@ -1,13 +1,18 @@
-# NSPV Development Plan for Codex
+# NSPV Codex 开发计划
 
 本文档用于指导 Codex 分阶段开发 NSPV。每个任务都包含目标、建议修改位置、完成标准和测试方式。
 
-## How Codex Should Use This Document
+## 文档语言规范
+
+- `docs/` 下新增或更新的文档默认使用中文。
+- 代码标识符、API 路径、字段名、命令、环境变量、枚举值和第三方产品名保持原文。
+
+## Codex 如何使用本文档
 
 每次开发前：
 
 1. 先阅读 `docs/v1-scope.md`，确认当前是否属于 V1。
-2. 再阅读 `Progress Dashboard` 和本文件对应阶段任务。
+2. 再阅读 `进度看板` 和本文件对应阶段任务。
 3. 创建或切换到任务分支，分支命名建议：`phase-{number}/task-{number}-{short-name}`。
 4. 只修改任务涉及的模块，避免扩散到 V2/V3。
 5. 每完成一个任务，运行该任务列出的测试。
@@ -15,7 +20,7 @@
 7. 如果任务影响表结构，更新 `docs/db-roadmap.md`。
 8. 任务完成后更新本文件中的任务状态、测试状态、分支状态和整体完成度。
 
-## Status Legend
+## 状态图例
 
 任务状态：
 
@@ -40,63 +45,63 @@
 - `manual` 仅完成手工验证。
 - `blocked` 测试无法执行，需要说明原因。
 
-## Progress Dashboard
+## 进度看板
 
-Last updated: 2026-05-14
+最后更新： 2026-05-14
 
-Overall V1 progress: 100%
+V1 总体进度： 100%
 
-Current branch: `phase-6/task-6.2-alembic`
+当前分支： `main`
 
-Current branch status: `active`
+当前分支状态： `V1 complete`
 
-Remote repository: `https://github.com/hbing0014/NSPV.git`
+远程仓库： `https://github.com/hbing0014/NSPV.git`
 
-Latest commits:
+最近提交：
 
 - `ef4fa17 Add VSCode workspace`
 - `caa2642 Initial NSPV project scaffold`
 
-Current active task: `Task 6.2 Add Alembic`
+当前执行任务：`V1 文档中文化`
 
-Next recommended task: `V1 acceptance testing`
+下一建议任务：`V1 验收测试或阶段 7 规划`
 
-Phase progress:
+阶段进度：
 
-| Phase | Scope | Status | Progress | Branch Status | Test Status |
+| 阶段 | 范围 | 状态 | 进度 | 分支状态 | 测试状态 |
 | --- | --- | --- | --- | --- | --- |
-| Phase 0 | Project bootstrap, docs, Git, VSCode workspace | `[DONE]` | 100% | `merged: main` | `manual` |
-| Phase 1 | Stabilize current V1 prototype | `[DONE]` | 100% | `merged: main` | `passed` |
-| Phase 2 | Real Amazon data integration | `[DONE]` | 100% | `merged: main` | `passed` |
-| Phase 3 | Improve scoring and risk engine | `[DONE]` | 100% | `merged: main` | `passed` |
-| Phase 4 | Frontend V1 completion | `[DONE]` | 100% | `merged: main` | `passed` |
-| Phase 5 | Basic auth | `[DONE]` | 100% | `merged: main` | `passed` |
-| Phase 6 | Deployment readiness | `[DONE]` | 100% | `active: phase-6/task-6.2-alembic` | `passed` |
+| 阶段 0 | 项目初始化、文档、Git、VSCode 工作区 | `[DONE]` | 100% | `merged: main` | `manual` |
+| 阶段 1 | 稳定当前 V1 原型 | `[DONE]` | 100% | `merged: main` | `passed` |
+| 阶段 2 | 真实 Amazon 数据集成 | `[DONE]` | 100% | `merged: main` | `passed` |
+| 阶段 3 | 改进评分和风险引擎 | `[DONE]` | 100% | `merged: main` | `passed` |
+| 阶段 4 | 前端 V1 完成 | `[DONE]` | 100% | `merged: main` | `passed` |
+| 阶段 5 | 基础认证 | `[DONE]` | 100% | `merged: main` | `passed` |
+| 阶段 6 | 部署就绪 | `[DONE]` | 100% | `merged: main` | `passed` |
 
-Task progress:
+任务进度：
 
-| Task | Status | Suggested Branch | Branch Status | Test Status |
+| 任务 | 状态 | 建议分支 | 分支状态 | 测试状态 |
 | --- | --- | --- | --- | --- |
-| Task 1.1 Add Backend Test Setup | `[DONE]` | `phase-1/task-1.1-backend-tests` | `merged: main` | `passed` |
-| Task 1.2 Add Frontend Test or Smoke Check | `[DONE]` | `phase-1/task-1.2-frontend-smoke` | `merged: main` | `passed` |
-| Task 1.3 Normalize API Error Contract | `[DONE]` | `phase-1/task-1.3-api-errors` | `merged: main` | `passed` |
-| Task 1.4 Add Project CRUD | `[DONE]` | `phase-1/task-1.4-project-crud` | `merged: main` | `passed` |
-| Task 1.5 Add Analysis Input Persistence | `[DONE]` | `phase-1/task-1.5-analysis-persistence` | `merged: main` | `passed` |
-| Task 2.1 Define Scraper Interface | `[DONE]` | `phase-2/task-2.1-scraper-interface` | `merged: main` | `passed` |
-| Task 2.2 Implement Playwright Amazon Search Scraper | `[DONE]` | `phase-2/task-2.2-playwright-scraper` | `merged: main` | `passed` |
-| Task 2.3 Add Scraper Run Logging | `[DONE]` | `phase-2/task-2.3-scraper-logging` | `merged: main` | `passed` |
-| Task 3.1 Extract Risk Warning Engine | `[DONE]` | `phase-3/task-3.1-risk-engine` | `merged: main` | `passed` |
-| Task 3.2 Add Scoring Fixtures | `[DONE]` | `phase-3/task-3.2-scoring-fixtures` | `merged: main` | `passed` |
-| Task 3.3 Add Scoring Version | `[DONE]` | `phase-3/task-3.3-scoring-version` | `merged: main` | `passed` |
-| Task 4.1 Improve Loading and Error States | `[DONE]` | `phase-4/task-4.1-loading-errors` | `merged: main` | `passed` |
-| Task 4.2 Add Project Selection to Home Page | `[DONE]` | `phase-4/task-4.2-project-selection` | `merged: main` | `passed` |
-| Task 4.3 Improve Report Detail Layout | `[DONE]` | `phase-4/task-4.3-report-layout` | `merged: main` | `passed` |
-| Task 5.1 Add Password Hash and JWT | `[DONE]` | `phase-5/task-5.1-auth-jwt` | `merged: main` | `passed` |
-| Task 5.2 Scope Projects and Reports by User | `[DONE]` | `phase-5/task-5.2-user-scope` | `merged: main` | `passed` |
-| Task 6.1 Add Environment Documentation | `[DONE]` | `phase-6/task-6.1-env-docs` | `merged: main` | `manual` |
-| Task 6.2 Add Alembic | `[DONE]` | `phase-6/task-6.2-alembic` | `active` | `passed` |
+| 任务 1.1 添加后端测试基础 | `[DONE]` | `phase-1/task-1.1-backend-tests` | `merged: main` | `passed` |
+| 任务 1.2 添加前端测试或冒烟检查 | `[DONE]` | `phase-1/task-1.2-frontend-smoke` | `merged: main` | `passed` |
+| 任务 1.3 统一 API 错误契约 | `[DONE]` | `phase-1/task-1.3-api-errors` | `merged: main` | `passed` |
+| 任务 1.4 添加项目 CRUD | `[DONE]` | `phase-1/task-1.4-project-crud` | `merged: main` | `passed` |
+| 任务 1.5 添加分析输入持久化 | `[DONE]` | `phase-1/task-1.5-analysis-persistence` | `merged: main` | `passed` |
+| 任务 2.1 定义抓取器接口 | `[DONE]` | `phase-2/task-2.1-scraper-interface` | `merged: main` | `passed` |
+| 任务 2.2 实现 Playwright Amazon 搜索抓取器 | `[DONE]` | `phase-2/task-2.2-playwright-scraper` | `merged: main` | `passed` |
+| 任务 2.3 添加抓取运行日志 | `[DONE]` | `phase-2/task-2.3-scraper-logging` | `merged: main` | `passed` |
+| 任务 3.1 抽取风险预警引擎 | `[DONE]` | `phase-3/task-3.1-risk-engine` | `merged: main` | `passed` |
+| 任务 3.2 添加评分固定样例 | `[DONE]` | `phase-3/task-3.2-scoring-fixtures` | `merged: main` | `passed` |
+| 任务 3.3 添加评分版本 | `[DONE]` | `phase-3/task-3.3-scoring-version` | `merged: main` | `passed` |
+| 任务 4.1 改进加载和错误状态 | `[DONE]` | `phase-4/task-4.1-loading-errors` | `merged: main` | `passed` |
+| 任务 4.2 在首页添加项目选择 | `[DONE]` | `phase-4/task-4.2-project-selection` | `merged: main` | `passed` |
+| 任务 4.3 改进报告详情布局 | `[DONE]` | `phase-4/task-4.3-report-layout` | `merged: main` | `passed` |
+| 任务 5.1 添加密码哈希和 JWT | `[DONE]` | `phase-5/task-5.1-auth-jwt` | `merged: main` | `passed` |
+| 任务 5.2 按用户隔离项目和报告 | `[DONE]` | `phase-5/task-5.2-user-scope` | `merged: main` | `passed` |
+| 任务 6.1 添加环境变量文档 | `[DONE]` | `phase-6/task-6.1-env-docs` | `merged: main` | `manual` |
+| 任务 6.2 添加 Alembic | `[DONE]` | `phase-6/task-6.2-alembic` | `merged: main` | `passed` |
 
-## Current Project State
+## 当前项目状态
 
 当前已完成：
 
@@ -120,13 +125,13 @@ Task progress:
 - 前端尚未接入项目选择。
 - 缺少真实 scraper 错误处理和监控。
 
-## Phase 1: Stabilize Current V1 Prototype `[IN PROGRESS]`
+## 阶段 1：稳定当前 V1 原型 `[IN PROGRESS]`
 
 目标：
 
 - 把当前可运行原型整理成可持续开发的 V1 基线。
 
-### Task 1.1 Add Backend Test Setup `[DONE]`
+### 任务 1.1 添加后端测试基础 `[DONE]`
 
 目标：
 
@@ -161,14 +166,14 @@ cd backend
 .\.venv\Scripts\pytest
 ```
 
-Completion record:
+完成记录：
 
-- Branch: `phase-1/task-1.1-backend-tests`
-- Status: `[DONE]`
-- Test result: `30 passed, 2 warnings`
-- Notes: warnings are FastAPI `on_event` deprecation warnings and do not block this task.
+- 分支： `phase-1/task-1.1-backend-tests`
+- 状态： `[DONE]`
+- 测试结果： `30 passed, 2 warnings`
+- 说明：当前 warnings 是 FastAPI `on_event` 废弃提示，不阻塞本任务。
 
-### Task 1.2 Add Frontend Test or Smoke Check `[DONE]`
+### 任务 1.2 添加前端测试或冒烟检查 `[DONE]`
 
 目标：
 
@@ -198,14 +203,14 @@ cd frontend
 npm run build
 ```
 
-Completion record:
+完成记录：
 
-- Branch: `phase-1/task-1.2-frontend-smoke`
-- Status: `[DONE]`
-- Build result: `npm run build` passed.
-- Smoke result: `SMOKE_REPORT_ID=1 npm run smoke` passed for `/`, `/reports`, and `/reports/1`.
+- 分支： `phase-1/task-1.2-frontend-smoke`
+- 状态： `[DONE]`
+- 构建结果：`npm run build` 通过。
+- 冒烟结果：`SMOKE_REPORT_ID=1 npm run smoke` 对 `/`、`/reports`、`/reports/1` 通过。
 
-### Task 1.3 Normalize API Error Contract `[DONE]`
+### 任务 1.3 统一 API 错误契约 `[DONE]`
 
 目标：
 
@@ -249,14 +254,14 @@ cd backend
 .\.venv\Scripts\pytest
 ```
 
-Completion record:
+完成记录：
 
-- Branch: `phase-1/task-1.3-api-errors`
-- Status: `[DONE]`
-- Test result: `31 passed, 2 warnings`
-- Error contract: `{"error": {"code": "...", "message": "...", "details": {...}}}`
+- 分支： `phase-1/task-1.3-api-errors`
+- 状态： `[DONE]`
+- 测试结果： `31 passed, 2 warnings`
+- 错误契约：`{"error": {"code": "...", "message": "...", "details": {...}}}`
 
-### Task 1.4 Add Project CRUD `[DONE]`
+### 任务 1.4 添加项目 CRUD `[DONE]`
 
 目标：
 
@@ -293,7 +298,7 @@ DELETE /api/projects/{project_id}
 完成标准：
 
 - API 可创建、查询、更新、删除项目。
-- Analyze 可以选择已有 project，或未传时自动创建。
+- Analyze 可以选择已有 project；未传时自动创建。
 
 测试命令：
 
@@ -302,15 +307,15 @@ cd backend
 .\.venv\Scripts\pytest
 ```
 
-Completion record:
+完成记录：
 
-- Branch: `phase-1/task-1.4-project-crud`
-- Status: `[DONE]`
-- Test result: `35 passed, 2 warnings`
-- Database: Supabase MCP migration `002_add_project_crud_fields.sql` applied.
-- Notes: Project CRUD supports create, list, detail, update, delete. Analyze can reuse an existing `project_id` or auto-create a project when omitted.
+- 分支： `phase-1/task-1.4-project-crud`
+- 状态： `[DONE]`
+- 测试结果： `35 passed, 2 warnings`
+- 数据库： Supabase MCP migration `002_add_project_crud_fields.sql` applied.
+- 说明：Project CRUD 支持创建、列表、详情、更新、删除。Analyze 可以复用已有 `project_id`；未传时自动创建项目。
 
-### Task 1.5 Add Analysis Input Persistence `[DONE]`
+### 任务 1.5 添加分析输入持久化 `[DONE]`
 
 目标：
 
@@ -344,21 +349,21 @@ cd backend
 .\.venv\Scripts\pytest
 ```
 
-Completion record:
+完成记录：
 
-- Branch: `phase-1/task-1.5-analysis-persistence`
-- Status: `[DONE]`
-- Test result: `35 passed, 2 warnings`
-- Database: Supabase MCP migration `003_add_analysis_persistence_fields.sql` applied.
-- Notes: Reports now save `input_payload`, `scoring_version`, `analysis_status`, and `error_message`. Report detail and report list expose the status metadata.
+- 分支： `phase-1/task-1.5-analysis-persistence`
+- 状态： `[DONE]`
+- 测试结果： `35 passed, 2 warnings`
+- 数据库： Supabase MCP migration `003_add_analysis_persistence_fields.sql` applied.
+- 说明：报告现在保存 `input_payload`、`scoring_version`、`analysis_status` 和 `error_message`。报告详情与报告列表会返回状态元数据。
 
-## Phase 2: Real Amazon Data Integration `[NEXT]`
+## 阶段 2：真实 Amazon 数据集成 `[NEXT]`
 
 目标：
 
 - 替换 mock crawler，接入真实 Amazon 搜索数据。
 
-### Task 2.1 Define Scraper Interface `[DONE]`
+### 任务 2.1 定义抓取器接口 `[DONE]`
 
 目标：
 
@@ -398,14 +403,14 @@ cd backend
 .\.venv\Scripts\pytest
 ```
 
-Completion record:
+完成记录：
 
-- Branch: `phase-2/task-2.1-scraper-interface`
-- Status: `[DONE]`
-- Test result: `37 passed, 2 warnings`
-- Notes: API now uses `get_search_scraper()` and supports `SCRAPER_PROVIDER=mock|playwright|brightdata`. Mock provider remains the default and the only implemented provider in this task.
+- 分支： `phase-2/task-2.1-scraper-interface`
+- 状态： `[DONE]`
+- 测试结果： `37 passed, 2 warnings`
+- 说明：API 现在使用 `get_search_scraper()`，并支持 `SCRAPER_PROVIDER=mock|playwright|brightdata`。mock provider 仍是默认值，也是本任务中唯一已实现的 provider。
 
-### Task 2.2 Implement Playwright Amazon Search Scraper `[DONE]`
+### 任务 2.2 实现 Playwright Amazon 搜索抓取器 `[DONE]`
 
 目标：
 
@@ -455,16 +460,16 @@ cd backend
 Invoke-RestMethod -Uri http://127.0.0.1:8000/api/analyze -Method Post -ContentType 'application/json' -Body '{"keyword":"sink organizer","marketplace":"US","category":"Kitchen & Dining","budget_rmb":100000,"target_price_min":20,"target_price_max":40,"exclude_red_ocean":true}'
 ```
 
-Completion record:
+完成记录：
 
-- Branch: `phase-2/task-2.2-playwright-scraper`
-- Status: `[DONE]`
-- Test result: `40 passed, 2 warnings`
-- Build result: `frontend npm run build` passed.
-- Manual scraper result: `PlaywrightAmazonSearchScraper().fetch_top20_products("sink organizer", "US")` returned 20 products.
-- Notes: Current local Amazon response displays JPY prices by geolocation, so the scraper normalizes JPY to approximate USD for scoring. This should be replaced with proxy/location control or a live FX source before production.
+- 分支： `phase-2/task-2.2-playwright-scraper`
+- 状态： `[DONE]`
+- 测试结果： `40 passed, 2 warnings`
+- 构建结果：`frontend npm run build` 通过。
+- 手工抓取结果：`PlaywrightAmazonSearchScraper().fetch_top20_products("sink organizer", "US")` 返回 20 个商品。
+- 说明：当前本地 Amazon 响应会因地理位置显示 JPY 价格，因此抓取器会将 JPY 粗略换算为 USD 参与评分。生产前应改为代理/地区控制或实时汇率来源。
 
-### Task 2.3 Add Scraper Run Logging `[DONE]`
+### 任务 2.3 添加抓取运行日志 `[DONE]`
 
 目标：
 
@@ -501,21 +506,21 @@ cd backend
 .\.venv\Scripts\pytest
 ```
 
-Completion record:
+完成记录：
 
-- Branch: `phase-2/task-2.3-scraper-logging`
-- Status: `[DONE]`
-- Test result: `41 passed, 2 warnings`
-- Database: Supabase MCP migration `004_add_scraper_runs.sql` applied.
-- Notes: Successful, empty, and failed scraper attempts are recorded in `scraper_runs`. Reports now include `scraper_run_id`.
+- 分支： `phase-2/task-2.3-scraper-logging`
+- 状态： `[DONE]`
+- 测试结果： `41 passed, 2 warnings`
+- 数据库： Supabase MCP migration `004_add_scraper_runs.sql` applied.
+- 说明：成功、空结果和失败的抓取尝试都会记录到 `scraper_runs`。报告现在包含 `scraper_run_id`。
 
-## Phase 3: Improve Scoring and Risk Engine `[DONE]`
+## 阶段 3：改进评分和风险引擎 `[DONE]`
 
 目标：
 
 - 让 NSFS 更稳定、可解释、可回归测试。
 
-### Task 3.1 Extract Risk Warning Engine `[DONE]`
+### 任务 3.1 抽取风险预警引擎 `[DONE]`
 
 目标：
 
@@ -551,14 +556,14 @@ cd backend
 .\.venv\Scripts\pytest
 ```
 
-Completion record:
+完成记录：
 
-- Branch: `phase-3/task-3.1-risk-engine`
-- Status: `[DONE]`
-- Test result: `48 passed, 2 warnings`
-- Notes: Risk warning rules now live in `backend/app/services/risk.py`; scoring output remains unchanged.
+- 分支： `phase-3/task-3.1-risk-engine`
+- 状态： `[DONE]`
+- 测试结果： `48 passed, 2 warnings`
+- 说明：风险预警规则现在位于 `backend/app/services/risk.py`；评分输出保持不变。
 
-### Task 3.2 Add Scoring Fixtures `[DONE]`
+### 任务 3.2 添加评分固定样例 `[DONE]`
 
 目标：
 
@@ -586,14 +591,14 @@ cd backend
 .\.venv\Scripts\pytest
 ```
 
-Completion record:
+完成记录：
 
-- Branch: `phase-3/task-3.2-scoring-fixtures`
-- Status: `[DONE]`
-- Test result: `51 passed, 2 warnings`
-- Notes: Added fixed scoring cases for strong recommendation, red-ocean avoidance, and moderate-market worth-research paths.
+- 分支： `phase-3/task-3.2-scoring-fixtures`
+- 状态： `[DONE]`
+- 测试结果： `51 passed, 2 warnings`
+- 说明：新增了强推荐、红海规避和中等市场可研究路径的固定评分样例。
 
-### Task 3.3 Add Scoring Version `[DONE]`
+### 任务 3.3 添加评分版本 `[DONE]`
 
 目标：
 
@@ -613,7 +618,7 @@ Completion record:
 
 完成标准：
 
-- Report detail 能看到或内部保存评分版本。
+- 报告详情可以展示或内部保存评分版本。
 
 测试命令：
 
@@ -622,20 +627,20 @@ cd backend
 .\.venv\Scripts\pytest
 ```
 
-Completion record:
+完成记录：
 
-- Branch: `phase-3/task-3.3-scoring-version`
-- Status: `[DONE]`
-- Test result: `51 passed, 2 warnings`
-- Notes: Scoring output now carries `scoring_version`; report persistence uses the version returned by the scoring engine.
+- 分支： `phase-3/task-3.3-scoring-version`
+- 状态： `[DONE]`
+- 测试结果： `51 passed, 2 warnings`
+- 说明：评分输出现在携带 `scoring_version`；报告持久化使用评分引擎返回的版本。
 
-## Phase 4: Frontend V1 Completion `[DONE]`
+## 阶段 4：前端 V1 完成 `[DONE]`
 
 目标：
 
 - 让用户可以完整使用 V1。
 
-### Task 4.1 Improve Loading and Error States `[DONE]`
+### 任务 4.1 改进加载和错误状态 `[DONE]`
 
 目标：
 
@@ -663,14 +668,14 @@ cd frontend
 npm run build
 ```
 
-Completion record:
+完成记录：
 
-- Branch: `phase-4/task-4.1-loading-errors`
-- Status: `[DONE]`
-- Test result: `npm run build` passed; `npm run smoke` passed.
-- Notes: Analyze now shows loading state, parses backend error contract, displays retry-friendly error details, and handles API connection failures.
+- 分支： `phase-4/task-4.1-loading-errors`
+- 状态： `[DONE]`
+- 测试结果： `npm run build` passed; `npm run smoke` passed.
+- 说明：Analyze 现在会显示加载状态，解析后端错误契约，展示便于重试判断的错误详情，并处理 API 连接失败。
 
-### Task 4.2 Add Project Selection to Home Page `[DONE]`
+### 任务 4.2 在首页添加项目选择 `[DONE]`
 
 目标：
 
@@ -691,7 +696,7 @@ Completion record:
 完成标准：
 
 - 报告正确关联 project。
-- Project reports 页面可看到该项目报告。
+- 项目报告页面可以看到该项目的报告。
 
 测试命令：
 
@@ -704,14 +709,14 @@ cd ..\backend
 .\.venv\Scripts\pytest tests\test_projects_api.py
 ```
 
-Completion record:
+完成记录：
 
-- Branch: `phase-4/task-4.2-project-selection`
-- Status: `[DONE]`
-- Test result: `npm run build` passed; `npm run smoke` passed; `tests/test_projects_api.py` passed.
-- Notes: Home page now loads projects, supports selecting an existing project, applies project defaults, and sends `project_id` during analysis. Leaving the selector empty keeps automatic project creation.
+- 分支： `phase-4/task-4.2-project-selection`
+- 状态： `[DONE]`
+- 测试结果： `npm run build` passed; `npm run smoke` passed; `tests/test_projects_api.py` passed.
+- 说明：首页现在会加载项目，支持选择已有项目、应用项目默认值，并在分析时发送 `project_id`。项目选择为空时仍保持自动创建项目。
 
-### Task 4.3 Improve Report Detail Layout `[DONE]`
+### 任务 4.3 改进报告详情布局 `[DONE]`
 
 目标：
 
@@ -756,20 +761,20 @@ npm run build
 - 查看结果页
 - 查看 `Reports`
 
-Completion record:
+完成记录：
 
-- Branch: `phase-4/task-4.3-report-layout`
-- Status: `[DONE]`
-- Test result: `npm run build` passed; `npm run smoke` passed; `GET /reports/8` returned 200.
-- Notes: Report detail now emphasizes NSFS, recommendation, risk, decision summary, score breakdown, review competition, risk warnings, profit estimate, opportunity signals, action suggestions, and a horizontally scrollable Top20 table.
+- 分支： `phase-4/task-4.3-report-layout`
+- 状态： `[DONE]`
+- 测试结果： `npm run build` passed; `npm run smoke` passed; `GET /reports/8` returned 200.
+- 说明：报告详情现在突出展示 NSFS、推荐等级、风险、决策摘要、评分拆解、Review 竞争、风险预警、利润估算、机会信号、操作建议，以及可横向滚动的 Top20 商品表格。
 
-## Phase 5: Basic Auth `[DONE]`
+## 阶段 5：基础认证 `[DONE]`
 
 目标：
 
 - 支持真实用户注册登录，并将项目和报告归属用户。
 
-### Task 5.1 Add Password Hash and JWT `[DONE]`
+### 任务 5.1 添加密码哈希和 JWT `[DONE]`
 
 建议修改位置：
 
@@ -796,15 +801,15 @@ cd backend
 .\.venv\Scripts\pytest
 ```
 
-Completion record:
+完成记录：
 
-- Branch: `phase-5/task-5.1-auth-jwt`
-- Status: `[DONE]`
-- Test result: `56 passed, 2 warnings`
-- Database: Supabase migration `005_add_user_auth.sql` applied for `users.password_hash`.
-- Notes: Added password hashing, JWT access token generation/verification, `/api/auth/register`, `/api/auth/login`, and `/api/auth/profile`.
+- 分支： `phase-5/task-5.1-auth-jwt`
+- 状态： `[DONE]`
+- 测试结果： `56 passed, 2 warnings`
+- 数据库：已应用 Supabase migration `005_add_user_auth.sql`，用于 `users.password_hash`。
+- 说明：新增密码哈希、JWT access token 生成/校验、`/api/auth/register`、`/api/auth/login` 和 `/api/auth/profile`。
 
-### Task 5.2 Scope Projects and Reports by User `[DONE]`
+### 任务 5.2 按用户隔离项目和报告 `[DONE]`
 
 目标：
 
@@ -819,8 +824,8 @@ Completion record:
 实现要求：
 
 - Analyze 需要用户上下文，或支持匿名模式配置。
-- Report list 按 user 过滤。
-- Project list 按 user 过滤。
+- 报告列表按 user 过滤。
+- 项目列表按 user 过滤。
 
 完成标准：
 
@@ -833,20 +838,20 @@ cd backend
 .\.venv\Scripts\pytest
 ```
 
-Completion record:
+完成记录：
 
-- Branch: `phase-5/task-5.2-user-scope`
-- Status: `[DONE]`
-- Test result: `59 passed, 2 warnings`
-- Notes: Project and report endpoints now scope authenticated requests to the bearer token user. Anonymous requests remain supported and can only access anonymous projects and reports.
+- 分支： `phase-5/task-5.2-user-scope`
+- 状态： `[DONE]`
+- 测试结果： `59 passed, 2 warnings`
+- 说明：项目和报告端点现在会把已认证请求限制在 bearer token 对应用户范围内。匿名请求仍受支持，但只能访问匿名项目和报告。
 
-## Phase 6: Deployment Readiness `[DONE]`
+## 阶段 6：部署就绪 `[DONE]`
 
 目标：
 
 - 可以部署到 Vercel + Render/Railway/Fly.io + Supabase/Neon。
 
-### Task 6.1 Add Environment Documentation `[DONE]`
+### 任务 6.1 添加环境变量文档 `[DONE]`
 
 建议修改位置：
 
@@ -861,14 +866,14 @@ Completion record:
 - 记录前端 `NEXT_PUBLIC_API_BASE`。
 - 记录 PostgreSQL `DATABASE_URL`。
 
-Completion record:
+完成记录：
 
-- Branch: `phase-6/task-6.1-env-docs`
-- Status: `[DONE]`
-- Test result: `manual` documentation-only task.
-- Notes: Added `docs/deployment.md`, `frontend/.env.example`, and updated README, backend env example, and Supabase migration notes.
+- 分支： `phase-6/task-6.1-env-docs`
+- 状态： `[DONE]`
+- 测试结果：`manual`，仅文档任务。
+- 说明：新增 `docs/deployment.md`、`frontend/.env.example`，并更新 README、后端环境变量示例和 Supabase 迁移说明。
 
-### Task 6.2 Add Alembic `[DONE]`
+### 任务 6.2 添加 Alembic `[DONE]`
 
 目标：
 
@@ -892,14 +897,14 @@ cd backend
 .\.venv\Scripts\alembic upgrade head
 ```
 
-Completion record:
+完成记录：
 
-- Branch: `phase-6/task-6.2-alembic`
-- Status: `[DONE]`
-- Test result: `alembic upgrade head` passed with SQLite; `59 passed, 2 warnings`
-- Notes: Added Alembic config, initial schema migration, migration template, and restricted automatic `create_all()` to SQLite local startup.
+- 分支： `phase-6/task-6.2-alembic`
+- 状态： `[DONE]`
+- 测试结果： `alembic upgrade head` passed with SQLite; `59 passed, 2 warnings`
+- 说明：新增 Alembic 配置、初始 schema 迁移、迁移模板，并将自动 `create_all()` 限制为 SQLite 本地启动场景。
 
-## Definition of Done
+## 完成定义
 
 任一任务完成必须满足：
 

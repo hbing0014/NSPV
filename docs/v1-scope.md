@@ -1,8 +1,8 @@
-# NSPV V1 Scope
+# NSPV V1 范围
 
 本文档定义 V1 必须完成的范围、暂缓范围和验收标准。后续开发必须优先保证 V1 闭环完整，再进入 V2/V3 功能。
 
-## V1 Core Question
+## V1 核心问题
 
 V1 只回答一个核心问题：
 
@@ -10,9 +10,9 @@ V1 只回答一个核心问题：
 
 V1 不追求完整数据平台，不做 AI 顾问，不做复杂 PPC，不做 Chrome 插件。
 
-## V1 Must-Have Modules
+## V1 必须完成模块
 
-### 1. User System, Basic
+### 1. 用户系统，基础版
 
 目标：
 
@@ -31,7 +31,7 @@ V1 最小范围：
 - API Key
 - 付费套餐
 
-### 2. Project System
+### 2. 项目系统
 
 目标：
 
@@ -50,7 +50,7 @@ V1 最小范围：
 - 项目搜索
 - 项目统计仪表盘
 
-### 3. Keyword Analysis System
+### 3. 关键词分析系统
 
 目标：
 
@@ -72,7 +72,7 @@ V1 最小范围：
 - URL 分析
 - 长尾关键词扩展
 
-### 4. Amazon Search Scraper System
+### 4. Amazon 搜索抓取系统
 
 目标：
 
@@ -107,7 +107,7 @@ V1 最小范围：
 - 库存抓取
 - Seller 深度分析
 
-### 5. Product Analysis System
+### 5. 产品分析系统
 
 目标：
 
@@ -130,7 +130,7 @@ V1 最小输出：
 - 视频覆盖分析
 - Listing 深度质量分析
 
-### 6. NSFS Scoring Engine
+### 6. NSFS 评分引擎
 
 目标：
 
@@ -162,7 +162,7 @@ NSFS = Demand * 0.25
 - `Caution`: `50 <= NSFS < 70`
 - `Avoid`: `NSFS < 50`
 
-### 7. Profit Analysis System, Simplified
+### 7. 利润分析系统，简化版
 
 目标：
 
@@ -187,7 +187,7 @@ V1 最小输出：
 - 真实物流报价
 - PPC 高级预测
 
-### 8. Risk Warning System
+### 8. 风险预警系统
 
 目标：
 
@@ -206,7 +206,7 @@ V1 必须规则：
 
 - `warnings[]`
 
-### 9. Report System
+### 9. 报告系统
 
 目标：
 
@@ -230,7 +230,7 @@ V1 最小范围：
 - 分享链接
 - 报告对比
 
-### 10. Basic History
+### 10. 基础历史记录
 
 目标：
 
@@ -249,7 +249,7 @@ V1 最小范围：
 - 市场成熟度变化
 - 价格和 Review 增长曲线
 
-## V1 Explicitly Deferred
+## V1 明确暂缓内容
 
 以下功能不得进入 V1 主线，除非用户明确变更范围：
 
@@ -258,7 +258,7 @@ V1 最小范围：
 - 专利系统
 - Chrome 插件
 - 多 Marketplace
-- Open API Platform
+- 开放 API 平台
 - Stripe 支付
 - 高级 NLP
 - 自动供应链匹配
@@ -266,7 +266,7 @@ V1 最小范围：
 - PDF/Excel 导出
 - 多关键词批量分析
 
-## V1 Acceptance Criteria
+## V1 验收标准
 
 V1 完成必须满足：
 
