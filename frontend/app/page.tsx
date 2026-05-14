@@ -4,6 +4,7 @@ import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { AlertTriangle, CheckCircle2, Compass, Loader2, Search, SlidersHorizontal } from "lucide-react";
 import { Header } from "@/components/Header";
+import { ProductOpportunityCard } from "@/components/ProductOpportunityCard";
 import { ApiRequestError, DiscoverProductsResponse, discoverProducts } from "@/lib/api";
 import { useI18n } from "@/lib/i18n/LocaleProvider";
 
@@ -220,8 +221,8 @@ export default function Home() {
                           .replace("{filtered}", String(result.total_products_filtered))}
                       </p>
                       {result.products[0] ? (
-                        <div className="mt-3 text-sm font-medium text-emerald-950">
-                          {result.products[0].product_name} · NPFS {result.products[0].npfs_score}
+                        <div className="mt-4">
+                          <ProductOpportunityCard product={result.products[0]} labels={t.discover.card} />
                         </div>
                       ) : null}
                     </div>

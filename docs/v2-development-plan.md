@@ -689,7 +689,7 @@ npm run smoke
 - 更新：`frontend/scripts/smoke-check.mjs`
 - 验证：`npm run build`、`npm run smoke` 通过。
 
-### Task 5.3 实现 Product Opportunity Card `[NEXT]`
+### Task 5.3 实现 Product Opportunity Card `[DONE]`
 
 建议分支：
 
@@ -728,6 +728,9 @@ CTA：
 - mock/seed 产品可以稳定展示。
 - 无图片时使用安全 fallback，不显示破图。
 - 无真实链接时不渲染无效外链。
+- 卡片展示 Product Name、Primary Keyword、Category、Avg Price、NPFS、Launch、Risk、Budget、Tags。
+- CTA 包含 View Detail、Validate Keyword、Save。
+- 首页 Discover 成功后使用该组件展示首个机会产品。
 
 测试：
 
@@ -736,7 +739,15 @@ cd frontend
 npm run build
 ```
 
-### Task 5.4 实现 `/radar` 页面 `[TODO]`
+完成记录：
+
+- 分支：`v2/task-5.3-product-opportunity-card`
+- 新增：`frontend/components/ProductOpportunityCard.tsx`
+- 更新：`frontend/app/page.tsx`
+- 更新：`frontend/lib/i18n/dictionaries.ts`
+- 验证：`npm run build` 通过。
+
+### Task 5.4 实现 `/radar` 页面 `[NEXT]`
 
 建议分支：
 

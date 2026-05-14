@@ -58,6 +58,17 @@ export const dictionaries = {
         meta: "扫描 {scanned} 个候选产品，过滤 {filtered} 个高风险产品。",
         openRadar: "打开产品雷达"
       },
+      card: {
+        npfs: "NPFS",
+        launch: "Launch",
+        risk: "风险",
+        budget: "预算",
+        avgPrice: "均价",
+        primaryKeyword: "主关键词",
+        viewDetail: "查看详情",
+        validate: "验证关键词",
+        save: "保存"
+      },
       preview: {
         title: "优先发现类目",
         status: "即将接入"
@@ -238,6 +249,17 @@ export const dictionaries = {
         title: "Found {count} product opportunities",
         meta: "Scanned {scanned} candidates and filtered {filtered} high-risk products.",
         openRadar: "Open Product Radar"
+      },
+      card: {
+        npfs: "NPFS",
+        launch: "Launch",
+        risk: "Risk",
+        budget: "Budget",
+        avgPrice: "Avg Price",
+        primaryKeyword: "Primary Keyword",
+        viewDetail: "View Detail",
+        validate: "Validate Keyword",
+        save: "Save"
       },
       preview: {
         title: "Priority Discovery Categories",
