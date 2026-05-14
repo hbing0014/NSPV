@@ -28,7 +28,7 @@
 | --- | --- | --- | --- |
 | Phase 0 | V2 文档和任务拆分 | `[DONE]` | 固化产品设计和开发计划 |
 | Phase 1 | 数据库与模型 | `[IN PROGRESS]` | 建立 Discovery Layer 数据结构 |
-| Phase 2 | 种子数据与规则引擎 | `[TODO]` | 跑通产品机会生成 |
+| Phase 2 | 种子数据与规则引擎 | `[IN PROGRESS]` | 跑通产品机会生成 |
 | Phase 3 | Launch Score 与 NPFS | `[TODO]` | 完成 V2 评分闭环 |
 | Phase 4 | Product Radar API | `[TODO]` | 提供发现结果接口 |
 | Phase 5 | V2 首页与 Radar 页面 | `[TODO]` | 前端 Discover-first 体验 |
@@ -161,7 +161,7 @@ cd backend
 
 ## Phase 2：种子数据与规则引擎
 
-### Task 2.1 添加 V2 种子产品池 `[TODO]`
+### Task 2.1 添加 V2 种子产品池 `[DONE]`
 
 建议分支：
 
@@ -189,6 +189,8 @@ v2/task-2.1-seed-product-pool
 
 - seed 数据可稳定生成。
 - 测试中每次结果一致。
+- seed 数据不包含伪 Amazon 链接和伪图片。
+- seed 数据覆盖 Kitchen、Home、Storage 三个 P0 类目以及主要规则样本。
 
 测试：
 
@@ -197,7 +199,15 @@ cd backend
 .\.venv\Scripts\pytest tests\test_discovery_seed.py
 ```
 
-### Task 2.2 实现 Category Scanner 规则引擎 `[TODO]`
+完成记录：
+
+- 分支：`v2/task-2.1-seed-product-pool`
+- 新增：`backend/app/services/discovery/seed_products.py`
+- 新增：`backend/tests/fixtures/v2_seed_products.json`
+- 新增：`backend/tests/test_discovery_seed.py`
+- 验证：`tests/test_discovery_seed.py` 通过。
+
+### Task 2.2 实现 Category Scanner 规则引擎 `[NEXT]`
 
 建议分支：
 
