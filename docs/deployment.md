@@ -102,25 +102,46 @@ Use the direct Supabase connection only when the network supports IPv6:
 DATABASE_URL=postgresql+psycopg://postgres:[URL_ENCODED_DB_PASSWORD]@db.<project-ref>.supabase.co:5432/postgres
 ```
 
-Applied migration files are tracked under:
+Alembic is the migration entrypoint for application schema changes.
+
+For a new empty database:
+
+```powershell
+cd backend
+.\.venv\Scripts\alembic upgrade head
+```
+
+For the existing Supabase database that was already created from `backend/migrations/supabase/*.sql`, mark it as current once:
+
+```powershell
+cd backend
+.\.venv\Scripts\alembic stamp head
+```
+
+Alembic migration files are tracked under:
+
+```text
+backend/alembic/versions/
+```
+
+Earlier Supabase SQL migration files are retained for reference under:
 
 ```text
 backend/migrations/supabase/
 ```
 
-Until Alembic is introduced in Task 6.2, production database changes are applied from these SQL files.
-
 ## Deployment Checklist
 
 1. Create or update the Supabase database.
-2. Apply all SQL files under `backend/migrations/supabase/` in order.
-3. Configure backend environment variables.
-4. Deploy the FastAPI backend.
-5. Configure frontend `NEXT_PUBLIC_API_BASE`.
-6. Deploy the Next.js frontend.
-7. Set backend `FRONTEND_ORIGIN` to the frontend origin.
-8. Verify `GET /health`.
-9. Run a smoke analysis from the frontend.
+2. For a new database, run `alembic upgrade head` from `backend/`.
+3. For the existing manually migrated Supabase database, run `alembic stamp head` once instead.
+4. Configure backend environment variables.
+5. Deploy the FastAPI backend.
+6. Configure frontend `NEXT_PUBLIC_API_BASE`.
+7. Deploy the Next.js frontend.
+8. Set backend `FRONTEND_ORIGIN` to the frontend origin.
+9. Verify `GET /health`.
+10. Run a smoke analysis from the frontend.
 
 ## Security Notes
 

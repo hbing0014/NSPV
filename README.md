@@ -46,3 +46,12 @@ $env:DATABASE_URL="postgresql+psycopg://nspv:nspv@localhost:5432/nspv"
 Supabase is configured as the target hosted database. See `docs/supabase.md` for the migrated schema and connection string format.
 
 See `docs/deployment.md` for the complete environment variable and deployment checklist.
+
+Run database migrations with Alembic:
+
+```powershell
+cd backend
+.\.venv\Scripts\alembic upgrade head
+```
+
+For the existing Supabase database that was already migrated with SQL files, use `alembic stamp head` once instead of running the initial migration.

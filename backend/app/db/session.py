@@ -27,5 +27,5 @@ def get_db() -> Generator[Session, None, None]:
 def init_db() -> None:
     from app.models import tables  # noqa: F401
 
-    Base.metadata.create_all(bind=engine)
-
+    if settings.database_url.startswith("sqlite"):
+        Base.metadata.create_all(bind=engine)

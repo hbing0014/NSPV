@@ -44,9 +44,9 @@
 
 Last updated: 2026-05-14
 
-Overall V1 progress: 99%
+Overall V1 progress: 100%
 
-Current branch: `phase-6/task-6.1-env-docs`
+Current branch: `phase-6/task-6.2-alembic`
 
 Current branch status: `active`
 
@@ -57,9 +57,9 @@ Latest commits:
 - `ef4fa17 Add VSCode workspace`
 - `caa2642 Initial NSPV project scaffold`
 
-Current active task: `Task 6.1 Add Environment Documentation`
+Current active task: `Task 6.2 Add Alembic`
 
-Next recommended task: `Task 6.2 Add Alembic`
+Next recommended task: `V1 acceptance testing`
 
 Phase progress:
 
@@ -71,7 +71,7 @@ Phase progress:
 | Phase 3 | Improve scoring and risk engine | `[DONE]` | 100% | `merged: main` | `passed` |
 | Phase 4 | Frontend V1 completion | `[DONE]` | 100% | `merged: main` | `passed` |
 | Phase 5 | Basic auth | `[DONE]` | 100% | `merged: main` | `passed` |
-| Phase 6 | Deployment readiness | `[IN PROGRESS]` | 50% | `active: phase-6/task-6.1-env-docs` | `manual` |
+| Phase 6 | Deployment readiness | `[DONE]` | 100% | `active: phase-6/task-6.2-alembic` | `passed` |
 
 Task progress:
 
@@ -93,8 +93,8 @@ Task progress:
 | Task 4.3 Improve Report Detail Layout | `[DONE]` | `phase-4/task-4.3-report-layout` | `merged: main` | `passed` |
 | Task 5.1 Add Password Hash and JWT | `[DONE]` | `phase-5/task-5.1-auth-jwt` | `merged: main` | `passed` |
 | Task 5.2 Scope Projects and Reports by User | `[DONE]` | `phase-5/task-5.2-user-scope` | `merged: main` | `passed` |
-| Task 6.1 Add Environment Documentation | `[DONE]` | `phase-6/task-6.1-env-docs` | `active` | `manual` |
-| Task 6.2 Add Alembic | `[NEXT]` | `phase-6/task-6.2-alembic` | `planned` | `not run` |
+| Task 6.1 Add Environment Documentation | `[DONE]` | `phase-6/task-6.1-env-docs` | `merged: main` | `manual` |
+| Task 6.2 Add Alembic | `[DONE]` | `phase-6/task-6.2-alembic` | `active` | `passed` |
 
 ## Current Project State
 
@@ -840,7 +840,7 @@ Completion record:
 - Test result: `59 passed, 2 warnings`
 - Notes: Project and report endpoints now scope authenticated requests to the bearer token user. Anonymous requests remain supported and can only access anonymous projects and reports.
 
-## Phase 6: Deployment Readiness `[IN PROGRESS]`
+## Phase 6: Deployment Readiness `[DONE]`
 
 目标：
 
@@ -868,7 +868,7 @@ Completion record:
 - Test result: `manual` documentation-only task.
 - Notes: Added `docs/deployment.md`, `frontend/.env.example`, and updated README, backend env example, and Supabase migration notes.
 
-### Task 6.2 Add Alembic `[NEXT]`
+### Task 6.2 Add Alembic `[DONE]`
 
 目标：
 
@@ -891,6 +891,13 @@ Completion record:
 cd backend
 .\.venv\Scripts\alembic upgrade head
 ```
+
+Completion record:
+
+- Branch: `phase-6/task-6.2-alembic`
+- Status: `[DONE]`
+- Test result: `alembic upgrade head` passed with SQLite; `59 passed, 2 warnings`
+- Notes: Added Alembic config, initial schema migration, migration template, and restricted automatic `create_all()` to SQLite local startup.
 
 ## Definition of Done
 
