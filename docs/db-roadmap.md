@@ -374,17 +374,17 @@ Suggested fields:
 
 ## Migration Guidance
 
-Current project uses `Base.metadata.create_all()` for local speed.
+Current project uses Alembic for formal schema migration.
 
-Before production:
+`Base.metadata.create_all()` is retained only for quick SQLite local startup and tests.
 
-1. Add Alembic.
-2. Generate initial migration from current models.
-3. Stop relying on automatic create-all in production.
-4. Add indexes for:
-   - `products.asin`
-   - `keywords.keyword`
-   - `selection_reports.project_id`
-   - `selection_reports.created_at`
-   - `keyword_product_snapshots.keyword_id`
-   - `keyword_product_snapshots.asin`
+Current migration command:
+
+```powershell
+cd backend
+.\.venv\Scripts\alembic upgrade head
+```
+
+Current Alembic revision:
+
+- `0001_initial_schema`

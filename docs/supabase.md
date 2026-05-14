@@ -18,7 +18,7 @@ The following tables exist in the `public` schema:
 - `selection_reports`
 - `scraper_runs`
 
-The migrations applied through Supabase MCP are tracked in:
+Historical migrations applied through Supabase MCP are tracked in:
 
 ```text
 backend/migrations/supabase/001_create_nspv_v1_schema.sql
@@ -49,6 +49,20 @@ Migration `004_add_scraper_runs.sql` adds scraper execution logging:
 Migration `005_add_user_auth.sql` adds user authentication storage:
 
 - `users.password_hash`
+
+New schema changes should use Alembic:
+
+```powershell
+cd backend
+.\.venv\Scripts\alembic upgrade head
+```
+
+For the existing Supabase database that already has the SQL migrations applied, run this once before future Alembic migrations:
+
+```powershell
+cd backend
+.\.venv\Scripts\alembic stamp head
+```
 
 ## Backend Connection
 

@@ -28,14 +28,18 @@ class Project(Base):
     __tablename__ = "projects"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True)
+    user_id: Mapped[int | None] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL"),
+        index=True,
+        nullable=True,
+    )
     project_name: Mapped[str] = mapped_column(String(255))
     category: Mapped[str] = mapped_column(String(100))
     budget_rmb: Mapped[float] = mapped_column(Float)
     marketplace: Mapped[str] = mapped_column(String(20), default="US")
     target_price_min: Mapped[float | None] = mapped_column(Float, nullable=True)
     target_price_max: Mapped[float | None] = mapped_column(Float, nullable=True)
-    status: Mapped[str] = mapped_column(String(50), default="active")
+    status: Mapped[str] = mapped_column(String(50), default="active", index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now_utc)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)
 
@@ -48,7 +52,7 @@ class Keyword(Base):
     __tablename__ = "keywords"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"))
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id", ondelete="CASCADE"), index=True)
     keyword: Mapped[str] = mapped_column(String(255), index=True)
     marketplace: Mapped[str] = mapped_column(String(20), default="US")
     category: Mapped[str] = mapped_column(String(100))
@@ -96,8 +100,8 @@ class KeywordProductSnapshot(Base):
     __tablename__ = "keyword_product_snapshots"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    keyword_id: Mapped[int] = mapped_column(ForeignKey("keywords.id"))
-    product_id: Mapped[int] = mapped_column(ForeignKey("products.id"))
+    keyword_id: Mapped[int] = mapped_column(ForeignKey("keywords.id", ondelete="CASCADE"), index=True)
+    product_id: Mapped[int] = mapped_column(ForeignKey("products.id", ondelete="CASCADE"), index=True)
     asin: Mapped[str] = mapped_column(String(20), index=True)
     organic_rank: Mapped[int | None] = mapped_column(Integer, nullable=True)
     sponsored_rank: Mapped[int | None] = mapped_column(Integer, nullable=True)
@@ -132,9 +136,9 @@ class SelectionReport(Base):
     __tablename__ = "selection_reports"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"))
-    keyword_id: Mapped[int] = mapped_column(ForeignKey("keywords.id"))
-    scraper_run_id: Mapped[int | None] = mapped_column(ForeignKey("scraper_runs.id"), nullable=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id", ondelete="CASCADE"), index=True)
+    keyword_id: Mapped[int] = mapped_column(ForeignKey("keywords.id", ondelete="CASCADE"), index=True)
+    scraper_run_id: Mapped[int | None] = mapped_column(ForeignKey("scraper_runs.id"), index=True, nullable=True)
     nsfs_score: Mapped[float] = mapped_column(Float)
     demand_score: Mapped[float] = mapped_column(Float)
     competition_score: Mapped[float] = mapped_column(Float)
@@ -149,10 +153,10 @@ class SelectionReport(Base):
     products_snapshot: Mapped[list[dict]] = mapped_column(JSON, default=list)
     score_details: Mapped[dict] = mapped_column(JSON, default=dict)
     input_payload: Mapped[dict] = mapped_column(JSON, default=dict)
-    scoring_version: Mapped[str] = mapped_column(String(50), default="v1.0.0")
-    analysis_status: Mapped[str] = mapped_column(String(50), default="completed")
+    scoring_version: Mapped[str] = mapped_column(String(50), default="v1.0.0", index=True)
+    analysis_status: Mapped[str] = mapped_column(String(50), default="completed", index=True)
     error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now_utc)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now_utc, index=True)
 
     project: Mapped[Project] = relationship(back_populates="reports")
     keyword: Mapped[Keyword] = relationship(back_populates="reports")
