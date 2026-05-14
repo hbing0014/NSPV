@@ -147,11 +147,8 @@ export default function Home() {
                     className="w-full border border-line bg-field py-3 pl-10 pr-3 outline-none focus:border-accent"
                     value={selectedProjectId}
                     onChange={(event) => selectProject(event.target.value)}
-                    disabled={projectsLoading}
                   >
-                    <option value="">
-                      {projectsLoading ? t.home.fields.loadingProjects : t.home.fields.createProject}
-                    </option>
+                    <option value="">{t.home.fields.createProject}</option>
                     {projects.map((project) => (
                       <option key={project.id} value={project.id}>
                         {project.project_name}
@@ -159,6 +156,9 @@ export default function Home() {
                     ))}
                   </select>
                 </div>
+                {projectsLoading && !projects.length ? (
+                  <span className="text-xs text-ink/55">{t.home.fields.loadingProjects}</span>
+                ) : null}
                 {projectError ? <span className="text-xs text-red-700">{projectError}</span> : null}
               </label>
 

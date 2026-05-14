@@ -21,8 +21,8 @@ export const dictionaries = {
       subtitle: "输入一个美国站关键词，系统会分析首页 Top20 商品结构，生成 NSFS 评分、红海预警和进入建议。",
       fields: {
         project: "项目",
-        loadingProjects: "正在加载项目...",
-        createProject: "从本次分析创建新项目",
+        loadingProjects: "正在同步已有项目，不影响本次分析",
+        createProject: "不选择项目，本次分析自动创建新项目",
         keyword: "关键词",
         marketplace: "Marketplace",
         category: "类目",
@@ -154,8 +154,8 @@ export const dictionaries = {
       subtitle: "Enter a US Amazon keyword to analyze the Top20 product structure, NSFS score, red-ocean warnings, and entry recommendation.",
       fields: {
         project: "Project",
-        loadingProjects: "Loading projects...",
-        createProject: "Create new project from this analysis",
+        loadingProjects: "Syncing existing projects. This will not block analysis.",
+        createProject: "No project selected. Create one from this analysis",
         keyword: "Keyword",
         marketplace: "Marketplace",
         category: "Category",
