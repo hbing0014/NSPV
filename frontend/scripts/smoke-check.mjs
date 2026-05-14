@@ -6,6 +6,10 @@ const isEnglish = locale === "en";
 const checks = [
   {
     path: "/",
+    text: isEnglish ? "Find Amazon Products You Can Actually Launch" : "发现你当前真正启动得起的 Amazon 产品"
+  },
+  {
+    path: "/validate",
     text: isEnglish ? "Amazon New Seller Product Validator" : "Amazon 新店选品风险判断"
   },
   {

@@ -20,10 +20,43 @@ export const dictionaries = {
     discover: {
       eyebrow: "Product Discovery Engine",
       title: "发现你当前真正启动得起的 Amazon 产品",
-      subtitle: "V2 首页将从关键词验证升级为产品发现入口。现在先保留 Radar 入口和 V1 验证入口，后续任务会接入完整筛选器和产品机会榜。",
+      subtitle: "选择类目、预算和风险偏好，NSPV 会筛掉不适合新手的产品，并返回更适合继续研究的产品机会。",
       actions: {
-        discover: "查看产品雷达",
-        validate: "验证关键词"
+        discover: "发现产品",
+        validate: "验证关键词",
+        loading: "正在发现产品..."
+      },
+      fields: {
+        category: "类目",
+        budget: "启动预算",
+        risk: "风险偏好",
+        price: "客单价",
+        weight: "重量限制"
+      },
+      risk: {
+        low: "低风险",
+        balanced: "均衡",
+        aggressive: "进攻"
+      },
+      filters: {
+        title: "智能筛选",
+        redOcean: "排除红海",
+        amazonBasics: "排除 Amazon Basics",
+        fragile: "排除易碎品",
+        seasonal: "排除季节性",
+        lowMoq: "只看低 MOQ",
+        easyLaunch: "只看易启动",
+        highMargin: "只看高利润"
+      },
+      error: {
+        title: "发现失败",
+        connect: "无法连接 NSPV API，请检查后端服务后重试。",
+        failed: "产品发现失败，请重试。"
+      },
+      result: {
+        title: "已找到 {count} 个产品机会",
+        meta: "扫描 {scanned} 个候选产品，过滤 {filtered} 个高风险产品。",
+        openRadar: "打开产品雷达"
       },
       preview: {
         title: "优先发现类目",
@@ -168,10 +201,43 @@ export const dictionaries = {
     discover: {
       eyebrow: "Product Discovery Engine",
       title: "Find Amazon Products You Can Actually Launch",
-      subtitle: "The V2 homepage is moving from keyword validation to product discovery. This step keeps Radar and V1 validation entry points ready before the full filter and product opportunity list arrive.",
+      subtitle: "Choose a category, budget, and risk preference. NSPV filters out beginner-hostile products and returns opportunities worth researching.",
       actions: {
-        discover: "Open Product Radar",
-        validate: "Validate Keyword"
+        discover: "Discover Products",
+        validate: "Validate Keyword",
+        loading: "Discovering products..."
+      },
+      fields: {
+        category: "Category",
+        budget: "Launch Budget",
+        risk: "Risk Preference",
+        price: "Price Range",
+        weight: "Weight Limit"
+      },
+      risk: {
+        low: "Low Risk",
+        balanced: "Balanced",
+        aggressive: "Aggressive"
+      },
+      filters: {
+        title: "Smart Filters",
+        redOcean: "Exclude red ocean",
+        amazonBasics: "Exclude Amazon Basics",
+        fragile: "Exclude fragile",
+        seasonal: "Exclude seasonal",
+        lowMoq: "Low MOQ only",
+        easyLaunch: "Easy launch only",
+        highMargin: "High margin only"
+      },
+      error: {
+        title: "Discovery failed",
+        connect: "Cannot connect to NSPV API. Check the backend server and try again.",
+        failed: "Product discovery failed. Please try again."
+      },
+      result: {
+        title: "Found {count} product opportunities",
+        meta: "Scanned {scanned} candidates and filtered {filtered} high-risk products.",
+        openRadar: "Open Product Radar"
       },
       preview: {
         title: "Priority Discovery Categories",

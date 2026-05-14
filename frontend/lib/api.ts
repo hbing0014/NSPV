@@ -116,6 +116,45 @@ export type ReportListItem = {
   created_at: string;
 };
 
+export type DiscoverProduct = {
+  product_opportunity_id: number;
+  asin: string;
+  product_name: string;
+  category: string;
+  primary_keyword: string;
+  secondary_keywords: string[];
+  long_tail_keywords: string[];
+  avg_price: number;
+  avg_rating: number;
+  avg_reviews_top10: number;
+  min_reviews_top10: number;
+  sponsored_density: number;
+  npfs_score: number;
+  demand_score: number;
+  competition_score: number;
+  profit_score: number;
+  opportunity_score: number;
+  launch_score: number;
+  supplier_score: number;
+  estimated_budget_rmb: number;
+  estimated_moq: number;
+  estimated_launch_days: number;
+  risk_level: string;
+  recommendation: string;
+  tags: string[];
+  warnings: string[];
+  key_opportunities: string[];
+};
+
+export type DiscoverProductsResponse = {
+  discovery_report_id: number;
+  project_id: number;
+  total_products_scanned: number;
+  total_products_filtered: number;
+  total_recommendations: number;
+  products: DiscoverProduct[];
+};
+
 export async function analyzeKeyword(payload: {
   project_id?: number;
   keyword: string;
@@ -140,6 +179,39 @@ export async function analyzeKeyword(payload: {
   }
 
   return (await response.json()) as AnalyzeResponse;
+}
+
+export async function discoverProducts(payload: {
+  category: string;
+  marketplace: string;
+  budget_rmb: number;
+  risk_preference: "low" | "balanced" | "aggressive";
+  price_min: number;
+  price_max: number;
+  weight_limit_g: number;
+  exclude_red_ocean: boolean;
+  exclude_amazon_basics: boolean;
+  exclude_fragile: boolean;
+  exclude_seasonal: boolean;
+  low_moq_only: boolean;
+  easy_launch_only: boolean;
+  high_margin_only: boolean;
+  min_launch_score?: number;
+  min_npfs?: number;
+}) {
+  const response = await fetch(`${API_BASE}/api/discover/products`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, "Discover request failed");
+  }
+
+  return (await response.json()) as DiscoverProductsResponse;
 }
 
 export async function getProjects() {

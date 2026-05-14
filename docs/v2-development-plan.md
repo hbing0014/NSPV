@@ -637,7 +637,7 @@ npm run build
 - 更新：`frontend/lib/i18n/dictionaries.ts`
 - 验证：`npm run build` 通过。
 
-### Task 5.2 实现 V2 首页 Hero 和 Smart Filter `[NEXT]`
+### Task 5.2 实现 V2 首页 Hero 和 Smart Filter `[DONE]`
 
 建议分支：
 
@@ -668,6 +668,9 @@ Hero 字段：
 - 用户 30 秒内可完成选择并点击 `Discover Products`。
 - 点击后跳转 `/radar` 或调用 Discover API。
 - `Validate My Keyword` 可进入 `/validate`。
+- 首页支持类目、预算、风险、价格、重量和智能筛选项。
+- Discover API 调用成功后展示推荐数量和首个产品机会。
+- 加载和错误状态有明确反馈。
 
 测试：
 
@@ -677,7 +680,16 @@ npm run build
 npm run smoke
 ```
 
-### Task 5.3 实现 Product Opportunity Card `[TODO]`
+完成记录：
+
+- 分支：`v2/task-5.2-discovery-home`
+- 更新：`frontend/app/page.tsx`
+- 更新：`frontend/lib/api.ts`
+- 更新：`frontend/lib/i18n/dictionaries.ts`
+- 更新：`frontend/scripts/smoke-check.mjs`
+- 验证：`npm run build`、`npm run smoke` 通过。
+
+### Task 5.3 实现 Product Opportunity Card `[NEXT]`
 
 建议分支：
 
