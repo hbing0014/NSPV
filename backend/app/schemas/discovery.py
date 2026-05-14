@@ -22,6 +22,7 @@ class DiscoveryRequest(BaseModel):
     price_min: float | None = Field(default=None, gt=0)
     price_max: float | None = Field(default=None, gt=0)
     weight_limit: float | None = Field(default=None, gt=0)
+    weight_limit_g: float | None = Field(default=None, gt=0)
     exclude_red_ocean: bool = True
     exclude_amazon_basics: bool = True
     exclude_fragile: bool = True
@@ -39,6 +40,14 @@ class DiscoveryRequest(BaseModel):
         if self.price_min is not None and self.price_max is not None and self.price_min > self.price_max:
             raise ValueError("price_min cannot exceed price_max")
         return self
+
+    @property
+    def weight_limit_kg(self) -> float | None:
+        if self.weight_limit is not None:
+            return self.weight_limit
+        if self.weight_limit_g is not None:
+            return self.weight_limit_g / 1000
+        return None
 
 
 class CategoryOut(BaseModel):
@@ -182,3 +191,42 @@ class DiscoveryReportOut(BaseModel):
     updated_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+class DiscoverProductOut(BaseModel):
+    product_opportunity_id: int
+    asin: str
+    product_name: str
+    category: str
+    primary_keyword: str
+    secondary_keywords: list[str] = Field(default_factory=list)
+    long_tail_keywords: list[str] = Field(default_factory=list)
+    avg_price: float
+    avg_rating: float
+    avg_reviews_top10: float
+    min_reviews_top10: int
+    sponsored_density: float
+    npfs_score: float
+    demand_score: float
+    competition_score: float
+    profit_score: float
+    opportunity_score: float
+    launch_score: float
+    supplier_score: float
+    estimated_budget_rmb: float
+    estimated_moq: int
+    estimated_launch_days: int
+    risk_level: str
+    recommendation: str
+    tags: list[str] = Field(default_factory=list)
+    warnings: list[str] = Field(default_factory=list)
+    key_opportunities: list[str] = Field(default_factory=list)
+
+
+class DiscoverProductsResponse(BaseModel):
+    discovery_report_id: int
+    project_id: int
+    total_products_scanned: int
+    total_products_filtered: int
+    total_recommendations: int
+    products: list[DiscoverProductOut]

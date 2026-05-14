@@ -467,7 +467,7 @@ cd backend
 
 ## Phase 4：Product Radar API
 
-### Task 4.1 新增 Discover API `[NEXT]`
+### Task 4.1 新增 Discover API `[DONE]`
 
 建议分支：
 
@@ -515,6 +515,9 @@ Response：
 - 可基于 seed 数据返回产品机会。
 - 返回结果按 `npfs_score DESC` 排序。
 - 保存 `discovery_reports`。
+- 保存 `product_opportunities`，供后续 Radar API 复用。
+- 支持空结果，返回空产品列表而不是报错。
+- 支持复用已有项目或自动创建 Discovery 项目。
 
 测试：
 
@@ -523,7 +526,16 @@ cd backend
 .\.venv\Scripts\pytest tests\test_discover_api.py
 ```
 
-### Task 4.2 新增 Product Radar API `[TODO]`
+完成记录：
+
+- 分支：`v2/task-4.1-discover-api`
+- 新增：`backend/app/services/discovery/discovery_service.py`
+- 更新：`backend/app/api/routes.py`
+- 更新：`backend/app/schemas/discovery.py`
+- 新增：`backend/tests/test_discover_api.py`
+- 验证：`tests/test_discover_api.py` 通过。
+
+### Task 4.2 新增 Product Radar API `[NEXT]`
 
 建议分支：
 

@@ -8,9 +8,21 @@ from app.api.auth import get_optional_current_user
 from app.core.config import get_settings
 from app.core.errors import ApiError
 from app.db.session import get_db
-from app.models.tables import Keyword, KeywordProductSnapshot, Product, Project, ScraperRun, SelectionReport, User
+from app.models.tables import (
+    DiscoveryReport,
+    Keyword,
+    KeywordProductSnapshot,
+    Product,
+    ProductOpportunity,
+    Project,
+    ScraperRun,
+    SelectionReport,
+    User,
+)
 from app.schemas.analysis import AnalyzeRequest, AnalyzeResponse, ProductOut, ReportListItem
+from app.schemas.discovery import DiscoverProductOut, DiscoverProductsResponse, DiscoveryRequest
 from app.schemas.project import ProjectCreate, ProjectOut, ProjectUpdate
+from app.services.discovery.discovery_service import DiscoveredProduct, discover_products
 from app.services.scoring import analyze_products
 from app.services.scrapers import get_search_scraper
 from app.services.scrapers.base import ScraperError
@@ -291,6 +303,104 @@ def analyze(
     return report_to_response(report, request.keyword)
 
 
+@router.post("/discover/products", response_model=DiscoverProductsResponse)
+def discover_product_opportunities(
+    request: DiscoveryRequest,
+    db: Session = Depends(get_db),
+    current_user: User | None = Depends(get_optional_current_user),
+) -> DiscoverProductsResponse:
+    if request.project_id is not None:
+        project = get_project_or_404(request.project_id, db, current_user)
+    else:
+        project = Project(
+            user_id=current_user.id if current_user else None,
+            project_name=f"{request.category} discovery",
+            category=request.category,
+            budget_rmb=request.budget_rmb,
+            marketplace=request.marketplace,
+            target_price_min=request.price_min,
+            target_price_max=request.price_max,
+            status="active",
+        )
+        db.add(project)
+        db.flush()
+
+    result = discover_products(request)
+    saved_products: list[tuple[DiscoveredProduct, ProductOpportunity]] = []
+    for item in result.products:
+        opportunity = ProductOpportunity(
+            category_id=None,
+            asin=item.source.asin,
+            product_name=item.source.product_name,
+            brand=item.source.brand,
+            primary_keyword=item.keyword_cluster.primary_keyword,
+            keyword_cluster_id=None,
+            avg_price=item.source.avg_price,
+            avg_rating=item.source.avg_rating,
+            avg_reviews_top10=item.source.avg_reviews_top10,
+            min_reviews_top10=item.source.min_reviews_top10,
+            monthly_search_volume=int(item.source.estimated_monthly_sales * 20),
+            estimated_monthly_sales=item.source.estimated_monthly_sales,
+            estimated_monthly_revenue=item.source.estimated_monthly_revenue,
+            demand_score=item.demand_score,
+            competition_score=item.competition_score,
+            profit_score=item.profit_score,
+            opportunity_score=item.opportunity_score,
+            launch_score=item.launch_score,
+            supplier_score=item.supplier_score,
+            npfs_score=item.npfs_score,
+            estimated_budget_rmb=item.estimated_budget_rmb,
+            estimated_moq=item.estimated_moq,
+            estimated_first_order_qty=item.estimated_moq,
+            estimated_launch_days=item.estimated_launch_days,
+            risk_level=item.risk_level,
+            recommendation=item.recommendation,
+            is_red_ocean="RED_OCEAN" in item.tags,
+            is_amazon_basics=item.source.amazon_basics_present,
+            is_fragile=item.source.is_fragile,
+            is_seasonal=item.source.seasonality_score > 0.7,
+            is_heavy=item.source.weight_kg is not None and item.source.weight_kg > 1,
+            is_patent_risk=item.source.patent_risk_level == "high",
+            differentiation_paths=item.key_opportunities,
+            key_risks=item.warnings,
+            key_opportunities=item.key_opportunities,
+        )
+        db.add(opportunity)
+        db.flush()
+        saved_products.append((item, opportunity))
+
+    report = DiscoveryReport(
+        project_id=project.id,
+        user_id=current_user.id if current_user else None,
+        input_category=request.category,
+        input_budget_rmb=request.budget_rmb,
+        input_risk_preference=request.risk_preference,
+        input_price_min=request.price_min,
+        input_price_max=request.price_max,
+        input_weight_limit=request.weight_limit_kg,
+        exclude_red_ocean=request.exclude_red_ocean,
+        exclude_amazon_basics=request.exclude_amazon_basics,
+        total_products_scanned=result.total_products_scanned,
+        total_products_filtered=result.total_products_filtered,
+        total_recommendations=len(saved_products),
+        recommended_products=[opportunity.id for _, opportunity in saved_products],
+        summary=f"Found {len(saved_products)} product opportunities for {request.category}.",
+        strategy_advice="Validate the primary keyword before sourcing and avoid high-risk products.",
+    )
+    db.add(report)
+    db.commit()
+    db.refresh(report)
+
+    return DiscoverProductsResponse(
+        discovery_report_id=report.id,
+        project_id=project.id,
+        total_products_scanned=result.total_products_scanned,
+        total_products_filtered=result.total_products_filtered,
+        total_recommendations=len(saved_products),
+        products=[discovered_product_to_response(item, opportunity) for item, opportunity in saved_products],
+    )
+
+
 @router.get("/reports/{report_id}", response_model=AnalyzeResponse)
 def get_report(
     report_id: int,
@@ -363,6 +473,38 @@ def report_to_response(report: SelectionReport, keyword_text: str) -> AnalyzeRes
         analysis_status=report.analysis_status,
         error_message=report.error_message,
         created_at=report.created_at,
+    )
+
+
+def discovered_product_to_response(item: DiscoveredProduct, opportunity: ProductOpportunity) -> DiscoverProductOut:
+    return DiscoverProductOut(
+        product_opportunity_id=opportunity.id,
+        asin=item.source.asin,
+        product_name=item.source.product_name,
+        category=item.source.category,
+        primary_keyword=item.keyword_cluster.primary_keyword,
+        secondary_keywords=item.keyword_cluster.secondary_keywords,
+        long_tail_keywords=item.keyword_cluster.long_tail_keywords,
+        avg_price=item.source.avg_price,
+        avg_rating=item.source.avg_rating,
+        avg_reviews_top10=item.source.avg_reviews_top10,
+        min_reviews_top10=item.source.min_reviews_top10,
+        sponsored_density=item.source.sponsored_density,
+        npfs_score=item.npfs_score,
+        demand_score=item.demand_score,
+        competition_score=item.competition_score,
+        profit_score=item.profit_score,
+        opportunity_score=item.opportunity_score,
+        launch_score=item.launch_score,
+        supplier_score=item.supplier_score,
+        estimated_budget_rmb=item.estimated_budget_rmb,
+        estimated_moq=item.estimated_moq,
+        estimated_launch_days=item.estimated_launch_days,
+        risk_level=item.risk_level,
+        recommendation=item.recommendation,
+        tags=item.tags,
+        warnings=item.warnings,
+        key_opportunities=item.key_opportunities,
     )
 
 
