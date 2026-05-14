@@ -1,8 +1,8 @@
-# NSPV API Roadmap
+# NSPV API 路线图
 
 本文档定义 NSPV API 从当前原型到 V1、V2、V3 的演进规划。
 
-## API Design Principles
+## API 设计原则
 
 - V1 优先完成单关键词分析闭环。
 - API 输出必须可解释，不能只返回一个分数。
@@ -10,7 +10,7 @@
 - 后续 AI、支付、开放平台不得污染 V1 核心路径。
 - 内部 API 和开放 API 分开规划，V1 不做第三方开放平台。
 
-## Current Implemented APIs
+## 当前已实现 API
 
 当前项目已有：
 
@@ -29,7 +29,7 @@ GET  /api/projects/{project_id}/reports
 
 当前 `POST /api/analyze` 默认使用 mock Amazon Top20 数据源，用于打通业务闭环。
 
-Scraper provider is selected by backend configuration:
+Scraper provider 由后端配置选择：
 
 ```text
 SCRAPER_PROVIDER=mock
@@ -37,22 +37,22 @@ SCRAPER_PROVIDER=playwright
 SCRAPER_PROVIDER=brightdata
 ```
 
-Currently implemented:
+当前已实现：
 
-- `mock`: deterministic local product data for stable development and tests.
-- `playwright`: live Amazon US search page scraping for Top20 product cards.
+- `mock`：确定性的本地商品数据，用于稳定开发和测试。
+- `playwright`：抓取实时 Amazon US 搜索页 Top20 商品卡片。
 
-`brightdata` remains a placeholder and returns a structured scraper failure until implemented.
+`brightdata` 仍是占位 provider，正式实现前会返回结构化抓取失败。
 
-Playwright scraper notes:
+Playwright 抓取器说明：
 
-- Requires `python -m playwright install chromium`.
-- Extracts ASIN, title, price, rating, review count, image URL, product URL, and sponsored status.
-- Amazon may render localized currencies based on the running network location. The current scraper normalizes JPY to approximate USD for scoring, but production should use US proxy/location control or a live FX source.
+- 需要执行 `python -m playwright install chromium`。
+- 提取 ASIN、标题、价格、评分、Review 数、图片 URL、商品 URL 和广告状态。
+- Amazon 可能根据运行网络位置渲染本地货币。当前抓取器会将 JPY 粗略换算为 USD 参与评分；生产环境应使用美国代理/地区控制或实时汇率来源。
 
-## V1 API Target
+## V1 API 目标
 
-### Analyze Keyword
+### 关键词分析
 
 推荐最终路径：
 
@@ -66,7 +66,7 @@ POST /api/analyze/keyword
 POST /api/analyze
 ```
 
-Request:
+请求：
 
 ```json
 {
@@ -81,7 +81,7 @@ Request:
 }
 ```
 
-Response:
+响应：
 
 ```json
 {
@@ -125,63 +125,63 @@ Response:
 }
 ```
 
-V1 required behavior:
+V1 必需行为：
 
-- Validate `target_price_min <= target_price_max`.
-- Validate `marketplace = US`.
-- Return `400` for invalid input.
-- Return `502` or `503` for scraper/data provider failure.
-- Save report if analysis succeeds.
-- If `project_id` is provided, attach the report to that project.
-- If `project_id` is omitted, create a project automatically from the analysis input.
-- Save `input_payload`, `scoring_version`, `analysis_status`, and `error_message` on the report.
-- Save a `scraper_runs` record for successful, empty, and failed scraper attempts.
+- 校验 `target_price_min <= target_price_max`。
+- 校验 `marketplace = US`。
+- 无效输入返回 `400`。
+- 抓取器或数据 provider 失败时返回 `502` 或 `503`。
+- 分析成功时保存报告。
+- 如果传入 `project_id`，报告归属到该项目。
+- 如果未传 `project_id`，根据分析输入自动创建项目。
+- 在报告中保存 `input_payload`、`scoring_version`、`analysis_status` 和 `error_message`。
+- 对成功、空结果和失败的抓取尝试保存 `scraper_runs` 记录。
 
-### Report Detail
+### 报告详情
 
 ```text
 GET /api/reports/{report_id}
 ```
 
-V1 required behavior:
+V1 必需行为：
 
-- Return full report detail.
-- Include products snapshot used at analysis time.
-- Include analysis input and scoring version metadata.
-- Include `scraper_run_id` when a report was created from a scraper run.
-- Return `404` if report does not exist.
+- 返回完整报告详情。
+- 包含分析时使用的商品快照。
+- 包含分析输入和评分版本元数据。
+- 报告由抓取运行创建时包含 `scraper_run_id`。
+- 报告不存在时返回 `404`。
 
-### Report List
+### 报告列表
 
 ```text
 GET /api/reports
 ```
 
-V1 required behavior:
+V1 必需行为：
 
-- Return latest reports.
-- Include `analysis_status`.
-- Include `scraper_run_id`.
-- Support future pagination fields:
+- 返回最新报告。
+- 包含 `analysis_status`。
+- 包含 `scraper_run_id`。
+- 为后续分页字段预留支持：
   - `limit`
   - `offset`
   - `project_id`
   - `keyword`
 
-### Project Reports
+### 项目报告
 
 ```text
 GET /api/projects/{project_id}/reports
 ```
 
-V1 required behavior:
+V1 必需行为：
 
-- Return reports under one project.
-- Return empty list if no reports.
+- 返回某个项目下的报告。
+- 无报告时返回空列表。
 
-## V1 Project APIs
+## V1 项目 API
 
-Implemented:
+已实现：
 
 ```text
 POST   /api/projects
@@ -191,7 +191,7 @@ PUT    /api/projects/{project_id}
 DELETE /api/projects/{project_id}
 ```
 
-Project create request:
+项目创建请求：
 
 ```json
 {
@@ -204,13 +204,13 @@ Project create request:
 }
 ```
 
-V1 project API can be anonymous or default-user based. Full auth is not required before the core analysis workflow is stable.
+V1 项目 API 可以支持匿名或默认用户模式。在核心分析流程稳定之前，不要求完整认证。
 
-Project update accepts partial fields. `target_price_min` cannot exceed `target_price_max` on create or update.
+项目更新支持部分字段。创建或更新时，`target_price_min` 不能大于 `target_price_max`。
 
-## V1 Auth APIs, Basic
+## V1 基础认证 API
 
-Optional within V1, required before external users:
+V1 阶段可选，但对外部用户开放前必须完成：
 
 ```text
 POST /api/auth/register
@@ -219,7 +219,7 @@ GET  /api/auth/profile
 PUT  /api/auth/profile
 ```
 
-Register request:
+注册请求：
 
 ```json
 {
@@ -229,7 +229,7 @@ Register request:
 }
 ```
 
-Login request:
+登录请求：
 
 ```json
 {
@@ -238,7 +238,7 @@ Login request:
 }
 ```
 
-Auth response:
+认证响应：
 
 ```json
 {
@@ -255,28 +255,28 @@ Auth response:
 }
 ```
 
-Profile request:
+用户资料请求：
 
 ```text
 Authorization: Bearer {access_token}
 ```
 
-V1 basic auth behavior:
+V1 基础认证行为：
 
-- Password hashing.
-- JWT access token.
-- Current user profile.
-- Reports and projects are scoped to the bearer token user when authenticated.
-- Anonymous requests remain supported and can only access anonymous projects and reports.
+- 密码哈希。
+- JWT access token。
+- 当前用户资料。
+- 已认证时，报告和项目按 bearer token 用户隔离。
+- 匿名请求仍受支持，但只能访问匿名项目和报告。
 
-Deferred:
+暂缓：
 
-- Email verification.
-- Password reset.
-- OAuth login.
-- API key management.
+- 邮箱验证。
+- 密码重置。
+- OAuth 登录。
+- API Key 管理。
 
-## V2 APIs
+## V2 API
 
 ### Review NLP
 
@@ -285,40 +285,40 @@ POST /api/reviews/analyze
 GET  /api/reviews/analysis/{analysis_id}
 ```
 
-Purpose:
+用途：
 
-- Analyze negative reviews.
-- Extract pain points.
-- Generate upgrade suggestions.
+- 分析差评。
+- 提取痛点。
+- 生成升级建议。
 
-### Multi Keyword
+### 多关键词
 
 ```text
 POST /api/analyze/keywords
 ```
 
-Purpose:
+用途：
 
-- Analyze multiple keywords in one job.
-- Should use task queue.
+- 在一个任务中分析多个关键词。
+- 应使用任务队列。
 
-### Export
+### 导出
 
 ```text
 GET /api/reports/{report_id}/export/pdf
 GET /api/reports/{report_id}/export/xlsx
 ```
 
-### Historical Trends
+### 历史趋势
 
 ```text
 GET /api/keywords/{keyword_id}/history
 GET /api/products/{asin}/history
 ```
 
-## V3 APIs
+## V3 API
 
-### Open API Platform
+### 开放 API 平台
 
 ```text
 POST /api/developer/api-keys
@@ -326,7 +326,7 @@ GET  /api/developer/api-keys
 DELETE /api/developer/api-keys/{key_id}
 ```
 
-Public API examples:
+开放 API 示例：
 
 ```text
 POST /v1/analyze
@@ -334,7 +334,7 @@ GET  /v1/reports/{report_id}
 GET  /v1/keywords/{keyword}
 ```
 
-### Billing
+### 订阅支付
 
 ```text
 POST /api/billing/checkout
@@ -343,16 +343,16 @@ POST /api/billing/webhooks/stripe
 GET  /api/billing/subscription
 ```
 
-### Chrome Extension
+### Chrome 插件
 
 ```text
 POST /api/extension/analyze-page
 POST /api/extension/analyze-asin
 ```
 
-## Error Contract
+## 错误契约
 
-All API errors should eventually use this shape:
+所有 API 错误最终应使用以下结构：
 
 ```json
 {
@@ -364,7 +364,7 @@ All API errors should eventually use this shape:
 }
 ```
 
-Suggested error codes:
+建议错误码：
 
 - `VALIDATION_ERROR`
 - `REPORT_NOT_FOUND`
@@ -377,12 +377,12 @@ Suggested error codes:
 - `UNAUTHORIZED`
 - `FORBIDDEN`
 
-Currently implemented:
+当前已实现：
 
-- Invalid analyze price range returns `400` with `VALIDATION_ERROR`.
-- Pydantic request validation returns `422` with `VALIDATION_ERROR`.
-- Missing report returns `404` with `REPORT_NOT_FOUND`.
-- Missing project returns `404` with `PROJECT_NOT_FOUND`.
-- Empty scraper result returns `503` with `SCRAPER_EMPTY_RESULT`.
-- Unimplemented scraper provider returns `503` with `SCRAPER_FAILED`.
-- Invalid scraper provider config returns `500` with `SCRAPER_PROVIDER_INVALID`.
+- Analyze 价格区间无效时返回 `400` 和 `VALIDATION_ERROR`。
+- Pydantic 请求校验失败时返回 `422` 和 `VALIDATION_ERROR`。
+- 报告不存在时返回 `404` 和 `REPORT_NOT_FOUND`。
+- 项目不存在时返回 `404` 和 `PROJECT_NOT_FOUND`。
+- 抓取结果为空时返回 `503` 和 `SCRAPER_EMPTY_RESULT`。
+- 未实现的 scraper provider 返回 `503` 和 `SCRAPER_FAILED`。
+- scraper provider 配置无效时返回 `500` 和 `SCRAPER_PROVIDER_INVALID`。
