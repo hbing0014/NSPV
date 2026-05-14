@@ -46,7 +46,7 @@ Last updated: 2026-05-14
 
 Overall V1 progress: 99%
 
-Current branch: `phase-5/task-5.2-user-scope`
+Current branch: `phase-6/task-6.1-env-docs`
 
 Current branch status: `active`
 
@@ -57,9 +57,9 @@ Latest commits:
 - `ef4fa17 Add VSCode workspace`
 - `caa2642 Initial NSPV project scaffold`
 
-Current active task: `Task 5.2 Scope Projects and Reports by User`
+Current active task: `Task 6.1 Add Environment Documentation`
 
-Next recommended task: `Task 6.1 Add Environment Documentation`
+Next recommended task: `Task 6.2 Add Alembic`
 
 Phase progress:
 
@@ -70,8 +70,8 @@ Phase progress:
 | Phase 2 | Real Amazon data integration | `[DONE]` | 100% | `merged: main` | `passed` |
 | Phase 3 | Improve scoring and risk engine | `[DONE]` | 100% | `merged: main` | `passed` |
 | Phase 4 | Frontend V1 completion | `[DONE]` | 100% | `merged: main` | `passed` |
-| Phase 5 | Basic auth | `[DONE]` | 100% | `active: phase-5/task-5.2-user-scope` | `passed` |
-| Phase 6 | Deployment readiness | `[NEXT]` | 0% | `planned` | `not run` |
+| Phase 5 | Basic auth | `[DONE]` | 100% | `merged: main` | `passed` |
+| Phase 6 | Deployment readiness | `[IN PROGRESS]` | 50% | `active: phase-6/task-6.1-env-docs` | `manual` |
 
 Task progress:
 
@@ -92,9 +92,9 @@ Task progress:
 | Task 4.2 Add Project Selection to Home Page | `[DONE]` | `phase-4/task-4.2-project-selection` | `merged: main` | `passed` |
 | Task 4.3 Improve Report Detail Layout | `[DONE]` | `phase-4/task-4.3-report-layout` | `merged: main` | `passed` |
 | Task 5.1 Add Password Hash and JWT | `[DONE]` | `phase-5/task-5.1-auth-jwt` | `merged: main` | `passed` |
-| Task 5.2 Scope Projects and Reports by User | `[DONE]` | `phase-5/task-5.2-user-scope` | `active` | `passed` |
-| Task 6.1 Add Environment Documentation | `[NEXT]` | `phase-6/task-6.1-env-docs` | `planned` | `not run` |
-| Task 6.2 Add Alembic | `[TODO]` | `phase-6/task-6.2-alembic` | `planned` | `not run` |
+| Task 5.2 Scope Projects and Reports by User | `[DONE]` | `phase-5/task-5.2-user-scope` | `merged: main` | `passed` |
+| Task 6.1 Add Environment Documentation | `[DONE]` | `phase-6/task-6.1-env-docs` | `active` | `manual` |
+| Task 6.2 Add Alembic | `[NEXT]` | `phase-6/task-6.2-alembic` | `planned` | `not run` |
 
 ## Current Project State
 
@@ -840,13 +840,13 @@ Completion record:
 - Test result: `59 passed, 2 warnings`
 - Notes: Project and report endpoints now scope authenticated requests to the bearer token user. Anonymous requests remain supported and can only access anonymous projects and reports.
 
-## Phase 6: Deployment Readiness `[TODO]`
+## Phase 6: Deployment Readiness `[IN PROGRESS]`
 
 目标：
 
 - 可以部署到 Vercel + Render/Railway/Fly.io + Supabase/Neon。
 
-### Task 6.1 Add Environment Documentation `[TODO]`
+### Task 6.1 Add Environment Documentation `[DONE]`
 
 建议修改位置：
 
@@ -861,7 +861,14 @@ Completion record:
 - 记录前端 `NEXT_PUBLIC_API_BASE`。
 - 记录 PostgreSQL `DATABASE_URL`。
 
-### Task 6.2 Add Alembic `[TODO]`
+Completion record:
+
+- Branch: `phase-6/task-6.1-env-docs`
+- Status: `[DONE]`
+- Test result: `manual` documentation-only task.
+- Notes: Added `docs/deployment.md`, `frontend/.env.example`, and updated README, backend env example, and Supabase migration notes.
+
+### Task 6.2 Add Alembic `[NEXT]`
 
 目标：
 
