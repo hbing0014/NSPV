@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, status
-from sqlalchemy import select
+from sqlalchemy import case, select
 from sqlalchemy.orm import Session
 
 from app.api.auth import get_optional_current_user
@@ -9,6 +9,7 @@ from app.core.config import get_settings
 from app.core.errors import ApiError
 from app.db.session import get_db
 from app.models.tables import (
+    Category,
     DiscoveryReport,
     Keyword,
     KeywordProductSnapshot,
@@ -20,7 +21,13 @@ from app.models.tables import (
     User,
 )
 from app.schemas.analysis import AnalyzeRequest, AnalyzeResponse, ProductOut, ReportListItem
-from app.schemas.discovery import DiscoverProductOut, DiscoverProductsResponse, DiscoveryRequest
+from app.schemas.discovery import (
+    DiscoverProductOut,
+    DiscoverProductsResponse,
+    DiscoveryRequest,
+    RadarProductOut,
+    RadarProductsResponse,
+)
 from app.schemas.project import ProjectCreate, ProjectOut, ProjectUpdate
 from app.services.discovery.discovery_service import DiscoveredProduct, discover_products
 from app.services.scoring import analyze_products
@@ -326,10 +333,11 @@ def discover_product_opportunities(
         db.flush()
 
     result = discover_products(request)
+    category = get_or_create_category(db, request.category, request.marketplace)
     saved_products: list[tuple[DiscoveredProduct, ProductOpportunity]] = []
     for item in result.products:
         opportunity = ProductOpportunity(
-            category_id=None,
+            category_id=category.id,
             asin=item.source.asin,
             product_name=item.source.product_name,
             brand=item.source.brand,
@@ -399,6 +407,52 @@ def discover_product_opportunities(
         total_recommendations=len(saved_products),
         products=[discovered_product_to_response(item, opportunity) for item, opportunity in saved_products],
     )
+
+
+@router.get("/radar/products", response_model=RadarProductsResponse)
+def list_radar_products(
+    category: str | None = None,
+    risk_level: str | None = None,
+    budget_max: float | None = None,
+    price_min: float | None = None,
+    price_max: float | None = None,
+    sort: str = "highest_npfs",
+    limit: int = 50,
+    db: Session = Depends(get_db),
+) -> RadarProductsResponse:
+    limit = max(1, min(limit, 100))
+    query = select(ProductOpportunity).outerjoin(Category)
+
+    if category:
+        query = query.where(Category.category_name == category)
+    if risk_level:
+        query = query.where(ProductOpportunity.risk_level == risk_level)
+    if budget_max is not None:
+        query = query.where(ProductOpportunity.estimated_budget_rmb <= budget_max)
+    if price_min is not None:
+        query = query.where(ProductOpportunity.avg_price >= price_min)
+    if price_max is not None:
+        query = query.where(ProductOpportunity.avg_price <= price_max)
+
+    query = query.order_by(*radar_sort_order(sort)).limit(limit)
+    products = db.scalars(query).all()
+    return RadarProductsResponse(
+        total=len(products),
+        products=[radar_product_to_response(product) for product in products],
+    )
+
+
+@router.get("/radar/products/{opportunity_id}", response_model=RadarProductOut)
+def get_radar_product(opportunity_id: int, db: Session = Depends(get_db)) -> RadarProductOut:
+    opportunity = db.get(ProductOpportunity, opportunity_id)
+    if opportunity is None:
+        raise ApiError(
+            code="PRODUCT_OPPORTUNITY_NOT_FOUND",
+            message="Product opportunity not found",
+            status_code=status.HTTP_404_NOT_FOUND,
+            details={"opportunity_id": opportunity_id},
+        )
+    return radar_product_to_response(opportunity)
 
 
 @router.get("/reports/{report_id}", response_model=AnalyzeResponse)
@@ -508,6 +562,73 @@ def discovered_product_to_response(item: DiscoveredProduct, opportunity: Product
     )
 
 
+def radar_sort_order(sort: str):
+    if sort == "lowest_risk":
+        risk_order = case(
+            (ProductOpportunity.risk_level == "low", 1),
+            (ProductOpportunity.risk_level == "medium", 2),
+            (ProductOpportunity.risk_level == "high", 3),
+            else_=4,
+        )
+        return (
+            risk_order.asc(),
+            ProductOpportunity.npfs_score.desc(),
+        )
+    if sort == "lowest_budget":
+        return (
+            ProductOpportunity.estimated_budget_rmb.asc(),
+            ProductOpportunity.npfs_score.desc(),
+        )
+    if sort == "highest_profit":
+        return (
+            ProductOpportunity.profit_score.desc(),
+            ProductOpportunity.npfs_score.desc(),
+        )
+    if sort == "easiest_launch":
+        return (
+            ProductOpportunity.launch_score.desc(),
+            ProductOpportunity.npfs_score.desc(),
+        )
+    return (ProductOpportunity.npfs_score.desc(),)
+
+
+def radar_product_to_response(opportunity: ProductOpportunity) -> RadarProductOut:
+    return RadarProductOut(
+        product_opportunity_id=opportunity.id,
+        asin=opportunity.asin,
+        product_name=opportunity.product_name,
+        category=opportunity.category.category_name if opportunity.category else None,
+        primary_keyword=opportunity.primary_keyword,
+        avg_price=opportunity.avg_price,
+        avg_rating=opportunity.avg_rating,
+        avg_reviews_top10=opportunity.avg_reviews_top10,
+        min_reviews_top10=opportunity.min_reviews_top10,
+        npfs_score=opportunity.npfs_score,
+        demand_score=opportunity.demand_score,
+        competition_score=opportunity.competition_score,
+        profit_score=opportunity.profit_score,
+        opportunity_score=opportunity.opportunity_score,
+        launch_score=opportunity.launch_score,
+        supplier_score=opportunity.supplier_score,
+        estimated_budget_rmb=opportunity.estimated_budget_rmb,
+        estimated_moq=opportunity.estimated_moq,
+        estimated_launch_days=opportunity.estimated_launch_days,
+        risk_level=opportunity.risk_level,
+        recommendation=opportunity.recommendation,
+        is_red_ocean=opportunity.is_red_ocean,
+        is_amazon_basics=opportunity.is_amazon_basics,
+        is_fragile=opportunity.is_fragile,
+        is_seasonal=opportunity.is_seasonal,
+        is_heavy=opportunity.is_heavy,
+        is_patent_risk=opportunity.is_patent_risk,
+        differentiation_paths=opportunity.differentiation_paths or [],
+        key_risks=opportunity.key_risks or [],
+        key_opportunities=opportunity.key_opportunities or [],
+        created_at=opportunity.created_at,
+        updated_at=opportunity.updated_at,
+    )
+
+
 def report_to_list_item(report: SelectionReport) -> ReportListItem:
     return ReportListItem(
         report_id=report.id,
@@ -558,3 +679,26 @@ def project_to_response(project: Project) -> ProjectOut:
         created_at=project.created_at,
         updated_at=project.updated_at,
     )
+
+
+def get_or_create_category(db: Session, category_name: str, marketplace: str) -> Category:
+    category = db.scalar(
+        select(Category).where(
+            Category.category_name == category_name,
+            Category.marketplace == marketplace,
+        )
+    )
+    if category is not None:
+        return category
+
+    category = Category(
+        category_name=category_name,
+        parent_category=None,
+        amazon_category_id=None,
+        marketplace=marketplace,
+        is_active=True,
+        priority_level="high",
+    )
+    db.add(category)
+    db.flush()
+    return category

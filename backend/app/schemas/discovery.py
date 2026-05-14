@@ -11,6 +11,7 @@ ScanType = Literal["full_scan", "incremental_scan"]
 SourceType = Literal["best_sellers", "new_releases", "search_pool", "bsr_scan"]
 ScanStatus = Literal["pending", "running", "completed", "failed"]
 PriorityLevel = Literal["high", "medium", "low"]
+RadarSort = Literal["highest_npfs", "lowest_risk", "lowest_budget", "highest_profit", "easiest_launch"]
 
 
 class DiscoveryRequest(BaseModel):
@@ -230,3 +231,43 @@ class DiscoverProductsResponse(BaseModel):
     total_products_filtered: int
     total_recommendations: int
     products: list[DiscoverProductOut]
+
+
+class RadarProductOut(BaseModel):
+    product_opportunity_id: int
+    asin: str
+    product_name: str
+    category: str | None = None
+    primary_keyword: str
+    avg_price: float
+    avg_rating: float
+    avg_reviews_top10: float
+    min_reviews_top10: int
+    npfs_score: float
+    demand_score: float
+    competition_score: float
+    profit_score: float
+    opportunity_score: float
+    launch_score: float
+    supplier_score: float
+    estimated_budget_rmb: float
+    estimated_moq: int
+    estimated_launch_days: int
+    risk_level: str
+    recommendation: str
+    is_red_ocean: bool
+    is_amazon_basics: bool
+    is_fragile: bool
+    is_seasonal: bool
+    is_heavy: bool
+    is_patent_risk: bool
+    differentiation_paths: list[str] = Field(default_factory=list)
+    key_risks: list[str] = Field(default_factory=list)
+    key_opportunities: list[str] = Field(default_factory=list)
+    created_at: datetime
+    updated_at: datetime
+
+
+class RadarProductsResponse(BaseModel):
+    total: int
+    products: list[RadarProductOut]

@@ -535,7 +535,7 @@ cd backend
 - 新增：`backend/tests/test_discover_api.py`
 - 验证：`tests/test_discover_api.py` 通过。
 
-### Task 4.2 新增 Product Radar API `[NEXT]`
+### Task 4.2 新增 Product Radar API `[DONE]`
 
 建议分支：
 
@@ -573,6 +573,9 @@ GET /api/radar/products/{opportunity_id}
   - `lowest_budget`
   - `highest_profit`
   - `easiest_launch`
+- 支持类目、风险、预算、价格区间筛选。
+- 支持产品机会详情查询和不存在时 404。
+- Discover API 保存的机会产品可被 Radar 按类目查询。
 
 测试：
 
@@ -581,9 +584,17 @@ cd backend
 .\.venv\Scripts\pytest tests\test_radar_api.py
 ```
 
+完成记录：
+
+- 分支：`v2/task-4.2-product-radar-api`
+- 更新：`backend/app/api/routes.py`
+- 更新：`backend/app/schemas/discovery.py`
+- 新增：`backend/tests/test_radar_api.py`
+- 验证：`tests/test_radar_api.py` 通过。
+
 ## Phase 5：V2 首页与 Radar 页面
 
-### Task 5.1 迁移 V1 首页到 `/validate` `[TODO]`
+### Task 5.1 迁移 V1 首页到 `/validate` `[NEXT]`
 
 建议分支：
 
