@@ -13,6 +13,10 @@ const checks = [
     text: isEnglish ? "Amazon New Seller Product Validator" : "Amazon 新店选品风险判断"
   },
   {
+    path: "/radar",
+    text: isEnglish ? "Product Opportunity Radar" : "产品机会雷达"
+  },
+  {
     path: "/reports",
     text: isEnglish ? "Historical Reports" : "历史报告"
   }

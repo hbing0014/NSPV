@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { Bookmark, Eye, Search } from "lucide-react";
-import { DiscoverProduct } from "@/lib/api";
+import { DiscoverProduct, RadarProduct } from "@/lib/api";
 
 type ProductOpportunityCardProps = {
-  product: DiscoverProduct;
+  product: DiscoverProduct | RadarProduct;
   labels: {
     npfs: string;
     launch: string;
@@ -18,7 +18,7 @@ type ProductOpportunityCardProps = {
 };
 
 export function ProductOpportunityCard({ product, labels }: ProductOpportunityCardProps) {
-  const tags = product.tags.slice(0, 4);
+  const tags = tagsForProduct(product).slice(0, 4);
 
   return (
     <article className="grid gap-4 border border-line bg-white p-4 sm:grid-cols-[104px_1fr]">
@@ -77,6 +77,22 @@ export function ProductOpportunityCard({ product, labels }: ProductOpportunityCa
       </div>
     </article>
   );
+}
+
+function tagsForProduct(product: DiscoverProduct | RadarProduct) {
+  if ("tags" in product) {
+    return product.tags;
+  }
+
+  const tags: string[] = [];
+  if (product.risk_level === "low") tags.push("LOW_RISK");
+  if (product.recommendation === "strongly_recommended") tags.push("STRONG_OPPORTUNITY");
+  if (product.is_red_ocean) tags.push("RED_OCEAN");
+  if (product.is_amazon_basics) tags.push("AMAZON_BASICS");
+  if (product.is_fragile) tags.push("FRAGILE");
+  if (product.is_seasonal) tags.push("SEASONAL");
+  if (product.is_heavy) tags.push("HEAVY");
+  return tags;
 }
 
 function Score({ label, value }: { label: string; value: number }) {

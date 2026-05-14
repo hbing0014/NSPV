@@ -146,6 +146,20 @@ export type DiscoverProduct = {
   key_opportunities: string[];
 };
 
+export type RadarProduct = Omit<DiscoverProduct, "secondary_keywords" | "long_tail_keywords" | "sponsored_density" | "tags" | "warnings"> & {
+  category: string | null;
+  is_red_ocean: boolean;
+  is_amazon_basics: boolean;
+  is_fragile: boolean;
+  is_seasonal: boolean;
+  is_heavy: boolean;
+  is_patent_risk: boolean;
+  differentiation_paths: string[];
+  key_risks: string[];
+  created_at: string;
+  updated_at: string;
+};
+
 export type DiscoverProductsResponse = {
   discovery_report_id: number;
   project_id: number;
@@ -153,6 +167,11 @@ export type DiscoverProductsResponse = {
   total_products_filtered: number;
   total_recommendations: number;
   products: DiscoverProduct[];
+};
+
+export type RadarProductsResponse = {
+  total: number;
+  products: RadarProduct[];
 };
 
 export async function analyzeKeyword(payload: {
@@ -212,6 +231,34 @@ export async function discoverProducts(payload: {
   }
 
   return (await response.json()) as DiscoverProductsResponse;
+}
+
+export async function getRadarProducts(params: {
+  category?: string;
+  risk_level?: string;
+  budget_max?: number;
+  price_min?: number;
+  price_max?: number;
+  sort?: "highest_npfs" | "lowest_risk" | "lowest_budget" | "highest_profit" | "easiest_launch";
+  limit?: number;
+}) {
+  const searchParams = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== "" && value !== null) {
+      searchParams.set(key, String(value));
+    }
+  });
+
+  const query = searchParams.toString();
+  const response = await fetch(`${API_BASE}/api/radar/products${query ? `?${query}` : ""}`, {
+    cache: "no-store"
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, "Failed to load radar products");
+  }
+
+  return (await response.json()) as RadarProductsResponse;
 }
 
 export async function getProjects() {

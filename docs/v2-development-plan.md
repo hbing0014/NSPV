@@ -747,7 +747,7 @@ npm run build
 - 更新：`frontend/lib/i18n/dictionaries.ts`
 - 验证：`npm run build` 通过。
 
-### Task 5.4 实现 `/radar` 页面 `[NEXT]`
+### Task 5.4 实现 `/radar` 页面 `[DONE]`
 
 建议分支：
 
@@ -771,6 +771,9 @@ v2/task-5.4-radar-page
 - 默认展示 Top Product Opportunities。
 - 筛选条件可影响 API 请求。
 - 排序可切换。
+- 页面包含结果摘要、筛选器、排序器和产品机会卡片列表。
+- 空结果和加载失败有明确状态。
+- smoke 覆盖 `/radar` 路由。
 
 测试：
 
@@ -780,9 +783,19 @@ npm run build
 npm run smoke
 ```
 
+完成记录：
+
+- 分支：`v2/task-5.4-radar-page`
+- 新增：`frontend/app/radar/page.tsx`
+- 更新：`frontend/lib/api.ts`
+- 更新：`frontend/components/ProductOpportunityCard.tsx`
+- 更新：`frontend/lib/i18n/dictionaries.ts`
+- 更新：`frontend/scripts/smoke-check.mjs`
+- 验证：`npm run build`、`npm run smoke` 通过。
+
 ## Phase 6：V1 兼容与验证链路
 
-### Task 6.1 实现 Validate Keyword CTA `[TODO]`
+### Task 6.1 实现 Validate Keyword CTA `[NEXT]`
 
 建议分支：
 

@@ -121,6 +121,39 @@ export const dictionaries = {
         created: "创建时间"
       }
     },
+    radar: {
+      eyebrow: "Product Radar",
+      title: "产品机会雷达",
+      subtitle: "查看已发现的产品机会，按风险、预算、价格和排序方式筛选适合新手继续研究的方向。",
+      summary: "当前结果 {count} 个",
+      loading: "正在加载产品机会...",
+      empty: "暂无产品机会，请先在首页执行 Discover Products。",
+      actions: {
+        apply: "应用筛选"
+      },
+      filters: {
+        title: "筛选与排序",
+        all: "全部",
+        category: "类目",
+        risk: "风险",
+        budgetMax: "预算上限",
+        priceMin: "最低价格",
+        priceMax: "最高价格",
+        sort: "排序"
+      },
+      sort: {
+        highest_npfs: "NPFS 最高",
+        lowest_risk: "风险最低",
+        lowest_budget: "预算最低",
+        highest_profit: "利润最高",
+        easiest_launch: "最易启动"
+      },
+      error: {
+        title: "加载失败",
+        connect: "无法连接 NSPV API，请检查后端服务后重试。",
+        failed: "加载产品雷达失败，请重试。"
+      }
+    },
     report: {
       report: "报告",
       newAnalysis: "新分析",
@@ -311,6 +344,39 @@ export const dictionaries = {
         recommendation: "Recommendation",
         risk: "Risk",
         created: "Created"
+      }
+    },
+    radar: {
+      eyebrow: "Product Radar",
+      title: "Product Opportunity Radar",
+      subtitle: "Browse discovered product opportunities and filter by risk, budget, price, and ranking logic.",
+      summary: "{count} current results",
+      loading: "Loading product opportunities...",
+      empty: "No product opportunities yet. Run Discover Products on the homepage first.",
+      actions: {
+        apply: "Apply Filters"
+      },
+      filters: {
+        title: "Filters and Sort",
+        all: "All",
+        category: "Category",
+        risk: "Risk",
+        budgetMax: "Budget Max",
+        priceMin: "Price Min",
+        priceMax: "Price Max",
+        sort: "Sort"
+      },
+      sort: {
+        highest_npfs: "Highest NPFS",
+        lowest_risk: "Lowest Risk",
+        lowest_budget: "Lowest Budget",
+        highest_profit: "Highest Profit",
+        easiest_launch: "Easiest Launch"
+      },
+      error: {
+        title: "Load failed",
+        connect: "Cannot connect to NSPV API. Check the backend server and try again.",
+        failed: "Failed to load Product Radar. Please try again."
       }
     },
     report: {
