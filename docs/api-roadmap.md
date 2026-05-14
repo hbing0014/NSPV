@@ -266,7 +266,8 @@ V1 basic auth behavior:
 - Password hashing.
 - JWT access token.
 - Current user profile.
-- Reports and projects scoped to user after auth is enabled.
+- Reports and projects are scoped to the bearer token user when authenticated.
+- Anonymous requests remain supported and can only access anonymous projects and reports.
 
 Deferred:
 
