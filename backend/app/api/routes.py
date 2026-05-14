@@ -223,6 +223,14 @@ def analyze(
         db.add(project)
         db.flush()
 
+    if request.product_opportunity_id is not None and db.get(ProductOpportunity, request.product_opportunity_id) is None:
+        raise ApiError(
+            code="PRODUCT_OPPORTUNITY_NOT_FOUND",
+            message="Product opportunity not found",
+            status_code=status.HTTP_404_NOT_FOUND,
+            details={"product_opportunity_id": request.product_opportunity_id},
+        )
+
     details = score["score_details"]
     keyword = Keyword(
         project_id=project.id,
@@ -285,6 +293,7 @@ def analyze(
         project_id=project.id,
         keyword_id=keyword.id,
         scraper_run_id=scraper_run.id,
+        product_opportunity_id=request.product_opportunity_id,
         nsfs_score=score["nsfs_score"],
         demand_score=score["demand_score"],
         competition_score=score["competition_score"],

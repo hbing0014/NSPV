@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field
 
 class AnalyzeRequest(BaseModel):
     project_id: int | None = Field(default=None, gt=0)
+    product_opportunity_id: int | None = Field(default=None, gt=0)
     keyword: str = Field(min_length=2, max_length=255)
     marketplace: str = "US"
     category: str = "Kitchen & Dining"

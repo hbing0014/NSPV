@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { AlertTriangle, FolderOpen, Loader2, RotateCcw, Search } from "lucide-react";
 import { Header } from "@/components/Header";
 import { ApiRequestError, Project, analyzeKeyword, getProjects } from "@/lib/api";
@@ -11,13 +11,15 @@ const categories = ["Kitchen & Dining", "Home & Kitchen", "Storage & Organizatio
 
 export default function Home() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { locale, t } = useI18n();
-  const [keyword, setKeyword] = useState("sink organizer");
+  const [keyword, setKeyword] = useState(searchParams.get("keyword") ?? "sink organizer");
   const [marketplace, setMarketplace] = useState("US");
-  const [category, setCategory] = useState("Kitchen & Dining");
-  const [budget, setBudget] = useState(100000);
-  const [priceMin, setPriceMin] = useState(20);
-  const [priceMax, setPriceMax] = useState(40);
+  const [category, setCategory] = useState(searchParams.get("category") ?? "Kitchen & Dining");
+  const [budget, setBudget] = useState(Number(searchParams.get("budget_rmb") ?? 100000));
+  const [priceMin, setPriceMin] = useState(Number(searchParams.get("target_price_min") ?? 20));
+  const [priceMax, setPriceMax] = useState(Number(searchParams.get("target_price_max") ?? 40));
+  const productOpportunityId = Number(searchParams.get("product_opportunity_id") ?? 0) || undefined;
   const [excludeRedOcean, setExcludeRedOcean] = useState(true);
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState("");
@@ -84,6 +86,7 @@ export default function Home() {
       const projectId = selectedProjectId ? Number(selectedProjectId) : undefined;
       const report = await analyzeKeyword({
         ...(projectId ? { project_id: projectId } : {}),
+        ...(productOpportunityId ? { product_opportunity_id: productOpportunityId } : {}),
         keyword,
         marketplace,
         category,

@@ -1,7 +1,7 @@
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
-from app.models.tables import ScraperRun
+from app.models.tables import ProductOpportunity, ScraperRun, SelectionReport
 from app.services.scoring import SCORING_VERSION
 
 
@@ -29,7 +29,7 @@ def test_analyze_creates_report(client: TestClient) -> None:
     assert 0 <= data["nsfs_score"] <= 100
     assert data["recommendation"] in {"Strongly Recommended", "Worth Research", "Caution", "Avoid"}
     assert len(data["products"]) == 20
-    assert data["input_payload"] == analyze_payload() | {"project_id": None, "locale": "zh-CN"}
+    assert data["input_payload"] == analyze_payload() | {"project_id": None, "product_opportunity_id": None, "locale": "zh-CN"}
     assert data["scoring_version"] == SCORING_VERSION
     assert data["analysis_status"] == "completed"
     assert data["error_message"] is None
@@ -130,3 +130,57 @@ def test_analyze_rejects_unsupported_locale(client: TestClient) -> None:
     assert response.status_code == 422
     error = response.json()["error"]
     assert error["code"] == "VALIDATION_ERROR"
+
+
+def test_analyze_links_product_opportunity(client: TestClient, db_session: Session) -> None:
+    opportunity = ProductOpportunity(
+        asin="B000TEST01",
+        product_name="Under Sink Organizer",
+        primary_keyword="under sink organizer",
+        avg_price=29.99,
+        avg_rating=4.4,
+        avg_reviews_top10=420,
+        min_reviews_top10=88,
+        monthly_search_volume=18000,
+        estimated_monthly_sales=900,
+        estimated_monthly_revenue=26991,
+        demand_score=80,
+        competition_score=75,
+        profit_score=82,
+        opportunity_score=88,
+        launch_score=90,
+        supplier_score=85,
+        npfs_score=82,
+        estimated_budget_rmb=30000,
+        estimated_moq=300,
+        estimated_first_order_qty=300,
+        estimated_launch_days=45,
+        risk_level="low",
+        recommendation="worth_research",
+        is_red_ocean=False,
+        is_amazon_basics=False,
+        is_fragile=False,
+        is_seasonal=False,
+        is_heavy=False,
+        is_patent_risk=False,
+    )
+    db_session.add(opportunity)
+    db_session.commit()
+    db_session.refresh(opportunity)
+
+    response = client.post("/api/analyze", json=analyze_payload() | {"product_opportunity_id": opportunity.id})
+
+    assert response.status_code == 200
+    report = response.json()
+    assert report["input_payload"]["product_opportunity_id"] == opportunity.id
+    saved_report = db_session.get(SelectionReport, report["report_id"])
+    assert saved_report is not None
+    assert saved_report.product_opportunity_id == opportunity.id
+
+
+def test_analyze_rejects_missing_product_opportunity(client: TestClient) -> None:
+    response = client.post("/api/analyze", json=analyze_payload() | {"product_opportunity_id": 999999})
+
+    assert response.status_code == 404
+    error = response.json()["error"]
+    assert error["code"] == "PRODUCT_OPPORTUNITY_NOT_FOUND"

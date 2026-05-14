@@ -795,7 +795,7 @@ npm run smoke
 
 ## Phase 6：V1 兼容与验证链路
 
-### Task 6.1 实现 Validate Keyword CTA `[NEXT]`
+### Task 6.1 实现 Validate Keyword CTA `[DONE]`
 
 建议分支：
 
@@ -828,6 +828,8 @@ v2/task-6.1-product-to-validate
 - `/validate` 自动填入产品关键词。
 - Analyze 成功后生成 V1 报告。
 - 报告保存 `product_opportunity_id`。
+- 产品卡片 CTA 携带关键词、类目、预算、价格区间和产品机会 ID。
+- 后端会校验 `product_opportunity_id` 存在，不存在时返回 404。
 
 测试：
 
@@ -838,7 +840,17 @@ cd ..\frontend
 npm run build
 ```
 
-### Task 6.2 新增 Product Detail 页面 `[TODO]`
+完成记录：
+
+- 分支：`v2/task-6.1-product-to-validate`
+- 更新：`backend/app/schemas/analysis.py`
+- 更新：`backend/app/api/routes.py`
+- 更新：`frontend/components/ProductOpportunityCard.tsx`
+- 更新：`frontend/app/validate/page.tsx`
+- 更新：`frontend/lib/api.ts`
+- 验证：`tests/test_analyze_api.py`、`npm run build` 通过。
+
+### Task 6.2 新增 Product Detail 页面 `[NEXT]`
 
 建议分支：
 

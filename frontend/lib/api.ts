@@ -176,6 +176,7 @@ export type RadarProductsResponse = {
 
 export async function analyzeKeyword(payload: {
   project_id?: number;
+  product_opportunity_id?: number;
   keyword: string;
   marketplace: string;
   category: string;

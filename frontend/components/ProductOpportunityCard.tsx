@@ -19,6 +19,14 @@ type ProductOpportunityCardProps = {
 
 export function ProductOpportunityCard({ product, labels }: ProductOpportunityCardProps) {
   const tags = tagsForProduct(product).slice(0, 4);
+  const validateHref = `/validate?${new URLSearchParams({
+    keyword: product.primary_keyword,
+    category: product.category ?? "",
+    budget_rmb: String(Math.round(product.estimated_budget_rmb)),
+    target_price_min: String(Math.max(1, Math.floor(product.avg_price * 0.8))),
+    target_price_max: String(Math.ceil(product.avg_price * 1.2)),
+    product_opportunity_id: String(product.product_opportunity_id)
+  }).toString()}`;
 
   return (
     <article className="grid gap-4 border border-line bg-white p-4 sm:grid-cols-[104px_1fr]">
@@ -64,7 +72,7 @@ export function ProductOpportunityCard({ product, labels }: ProductOpportunityCa
           </Link>
           <Link
             className="inline-flex items-center gap-2 bg-accent px-3 py-2 text-sm font-medium text-white"
-            href={`/validate?keyword=${encodeURIComponent(product.primary_keyword)}`}
+            href={validateHref}
           >
             <Search size={16} aria-hidden="true" />
             {labels.validate}
