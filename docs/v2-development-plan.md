@@ -1,0 +1,818 @@
+# NSPV V2 开发任务计划
+
+本文档把 V2 Product Discovery Engine 拆成可执行任务。每个任务包含目标、建议分支、改动范围、验收标准和测试方式。执行时应保持 V1 关键词验证功能可用。
+
+## 执行原则
+
+1. V2 不推翻 V1，新增 Discovery Layer。
+2. 每个任务使用独立分支，建议命名：`v2/task-{number}-{short-name}`。
+3. 每个任务完成后运行后端测试和前端构建，影响页面时运行 smoke。
+4. 涉及数据库结构时必须新增 Alembic migration。
+5. 涉及 API 输出时同步更新 API 文档。
+6. `docs/` 文档继续使用中文。
+
+## 状态图例
+
+| 状态 | 含义 |
+| --- | --- |
+| `[TODO]` | 未开始 |
+| `[NEXT]` | 建议下一个执行 |
+| `[IN PROGRESS]` | 正在执行 |
+| `[DONE]` | 已完成 |
+| `[BLOCKED]` | 被外部条件阻塞 |
+| `[DEFERRED]` | 明确暂缓 |
+
+## V2 总体阶段
+
+| 阶段 | 范围 | 状态 | 目标 |
+| --- | --- | --- | --- |
+| Phase 0 | V2 文档和任务拆分 | `[DONE]` | 固化产品设计和开发计划 |
+| Phase 1 | 数据库与模型 | `[NEXT]` | 建立 Discovery Layer 数据结构 |
+| Phase 2 | 种子数据与规则引擎 | `[TODO]` | 跑通产品机会生成 |
+| Phase 3 | Launch Score 与 NPFS | `[TODO]` | 完成 V2 评分闭环 |
+| Phase 4 | Product Radar API | `[TODO]` | 提供发现结果接口 |
+| Phase 5 | V2 首页与 Radar 页面 | `[TODO]` | 前端 Discover-first 体验 |
+| Phase 6 | V1 兼容与验证链路 | `[TODO]` | Product → Validate Keyword |
+| Phase 7 | 测试、验收与部署准备 | `[TODO]` | 稳定 V2 MVP |
+
+## Phase 1：数据库与模型
+
+### Task 1.1 新增 V2 Alembic 迁移 `[NEXT]`
+
+建议分支：
+
+```text
+v2/task-1.1-discovery-schema
+```
+
+目标：
+
+- 新增 V2 P0 数据表。
+- 给 `selection_reports` 增加 `product_opportunity_id`。
+
+涉及文件：
+
+- `backend/alembic/versions/`
+- `backend/app/models/tables.py`
+- `docs/db-roadmap.md`
+
+新增表：
+
+- `categories`
+- `category_scan_jobs`
+- `category_products`
+- `product_opportunities`
+- `launch_scores`
+- `discovery_reports`
+
+字段范围：
+
+- 按 `docs/v2-product-design.md` 的 P0 设计实现。
+- JSON 字段使用 SQLAlchemy `JSON`。
+- 金额、价格、评分字段使用 `Float`。
+- 布尔过滤字段保留默认值。
+
+验收标准：
+
+- `alembic upgrade head` 可成功执行。
+- SQLite 测试库可创建所有新表。
+- `selection_reports.product_opportunity_id` 可为空。
+
+测试：
+
+```powershell
+cd backend
+.\.venv\Scripts\alembic upgrade head
+.\.venv\Scripts\pytest
+```
+
+### Task 1.2 新增 V2 Pydantic Schema `[TODO]`
+
+建议分支：
+
+```text
+v2/task-1.2-discovery-schemas
+```
+
+目标：
+
+- 定义 V2 API 输入输出结构。
+
+涉及文件：
+
+- `backend/app/schemas/discovery.py`
+
+Schema：
+
+- `DiscoveryRequest`
+- `ProductOpportunityOut`
+- `DiscoveryReportOut`
+- `LaunchScoreOut`
+- `CategoryOut`
+
+验收标准：
+
+- 所有 V2 API 可复用 schema。
+- 字段命名与数据库保持一致。
+
+测试：
+
+```powershell
+cd backend
+.\.venv\Scripts\pytest
+```
+
+## Phase 2：种子数据与规则引擎
+
+### Task 2.1 添加 V2 种子产品池 `[TODO]`
+
+建议分支：
+
+```text
+v2/task-2.1-seed-product-pool
+```
+
+目标：
+
+- 在真实 Category Scanner 完成前，用稳定 seed 数据验证 V2 产品发现流程。
+
+涉及文件：
+
+- `backend/app/services/discovery/seed_products.py`
+- `backend/tests/fixtures/v2_seed_products.json`
+
+数据要求：
+
+- 至少 30 个候选产品。
+- 覆盖 Kitchen、Home、Storage 三个 P0 类目。
+- 覆盖低风险、中风险、红海、Amazon Basics、过重、易碎、低价等样例。
+- 不生成假 Amazon 链接和假图片。
+
+验收标准：
+
+- seed 数据可稳定生成。
+- 测试中每次结果一致。
+
+测试：
+
+```powershell
+cd backend
+.\.venv\Scripts\pytest tests\test_discovery_seed.py
+```
+
+### Task 2.2 实现 Category Scanner 规则引擎 `[TODO]`
+
+建议分支：
+
+```text
+v2/task-2.2-category-scanner-rules
+```
+
+目标：
+
+- 实现硬过滤、软过滤、标签生成和输出层级。
+
+涉及文件：
+
+- `backend/app/services/discovery/category_scanner.py`
+- `backend/app/services/discovery/rules.py`
+- `backend/tests/test_category_scanner.py`
+
+规则：
+
+- 价格 `<15` 排除。
+- 价格 `>80` 默认排除。
+- Top10 Avg Reviews `>1500` 默认排除。
+- Amazon Basics 默认排除。
+- 重量 `>1kg` 默认排除。
+- 易碎默认排除。
+- 强季节性默认排除。
+- Sponsored Density、Avg Rating、Lowest Review Top10 作为软过滤和标签依据。
+
+输出层级：
+
+- `Rejected`
+- `Research`
+- `Opportunity`
+
+验收标准：
+
+- 每条规则有单元测试。
+- 每个样例产品有可解释标签。
+- Opportunity 产品不会包含默认硬过滤失败项。
+
+测试：
+
+```powershell
+cd backend
+.\.venv\Scripts\pytest tests\test_category_scanner.py
+```
+
+### Task 2.3 实现关键词生成器 `[TODO]`
+
+建议分支：
+
+```text
+v2/task-2.3-keyword-cluster-generator
+```
+
+目标：
+
+- 从产品名生成 `primary_keyword`、`secondary_keywords`、`long_tail_keywords`。
+
+涉及文件：
+
+- `backend/app/services/discovery/keyword_clusters.py`
+- `backend/tests/test_keyword_clusters.py`
+
+V2 MVP 规则：
+
+- 清理品牌词、尺寸词、营销词。
+- 生成主关键词。
+- 用类目模板生成长尾词。
+
+验收标准：
+
+- `Under Sink Organizer` 可生成：
+  - `primary_keyword = under sink organizer`
+  - secondary 包含 `sink organizer`
+  - long tail 包含厨房/收纳语义。
+
+测试：
+
+```powershell
+cd backend
+.\.venv\Scripts\pytest tests\test_keyword_clusters.py
+```
+
+## Phase 3：Launch Score 与 NPFS
+
+### Task 3.1 实现 Launch Score Engine `[TODO]`
+
+建议分支：
+
+```text
+v2/task-3.1-launch-score-engine
+```
+
+目标：
+
+- 按 PRD 公式实现 Launch Score。
+
+涉及文件：
+
+- `backend/app/services/discovery/launch_score.py`
+- `backend/tests/test_launch_score.py`
+
+维度：
+
+- Budget Feasibility
+- PPC Launch Difficulty
+- Review Acquisition Difficulty
+- MOQ Accessibility
+- Inventory Pressure
+- Operational Complexity
+
+验收标准：
+
+- 输出总分和 6 个子分。
+- 输出预算建议。
+- 输出风险标签。
+- 覆盖 Sink Organizer 和 Air Fryer Accessory Set 两个典型样例。
+
+测试：
+
+```powershell
+cd backend
+.\.venv\Scripts\pytest tests\test_launch_score.py
+```
+
+### Task 3.2 实现 Supplier Score 简化版 `[TODO]`
+
+建议分支：
+
+```text
+v2/task-3.2-supplier-score-lite
+```
+
+目标：
+
+- 在无真实 1688 数据前，用规则估算 Supplier Score。
+
+涉及文件：
+
+- `backend/app/services/discovery/supplier_score.py`
+- `backend/tests/test_supplier_score.py`
+
+规则输入：
+
+- MOQ
+- 产品复杂度
+- 是否模具开发
+- 包装复杂度
+- 供应链成熟度估算
+
+验收标准：
+
+- 低 MOQ、标准件得分高。
+- 模具复杂、高 MOQ 得分低。
+
+测试：
+
+```powershell
+cd backend
+.\.venv\Scripts\pytest tests\test_supplier_score.py
+```
+
+### Task 3.3 实现 NPFS Engine `[TODO]`
+
+建议分支：
+
+```text
+v2/task-3.3-npfs-engine
+```
+
+目标：
+
+- 整合 V1 四项分数、Launch Score、Supplier Score。
+
+涉及文件：
+
+- `backend/app/services/discovery/npfs.py`
+- `backend/tests/test_npfs.py`
+
+公式：
+
+```text
+NPFS =
+Demand × 0.20 +
+Competition × 0.25 +
+Profit × 0.20 +
+Opportunity × 0.15 +
+Launch × 0.10 +
+Supplier × 0.10
+```
+
+验收标准：
+
+- 输出 `npfs_score`。
+- 输出推荐等级：
+  - `strongly_recommended`
+  - `worth_research`
+  - `caution`
+  - `avoid`
+- 输出风险等级。
+
+测试：
+
+```powershell
+cd backend
+.\.venv\Scripts\pytest tests\test_npfs.py
+```
+
+## Phase 4：Product Radar API
+
+### Task 4.1 新增 Discover API `[TODO]`
+
+建议分支：
+
+```text
+v2/task-4.1-discover-api
+```
+
+目标：
+
+- 用户输入条件，返回推荐产品列表。
+
+新增 API：
+
+```text
+POST /api/discover/products
+```
+
+Request：
+
+```json
+{
+  "category": "Kitchen & Dining",
+  "budget_rmb": 100000,
+  "risk_preference": "low",
+  "price_min": 20,
+  "price_max": 40,
+  "weight_limit_g": 500,
+  "exclude_red_ocean": true,
+  "exclude_amazon_basics": true,
+  "exclude_fragile": true,
+  "exclude_seasonal": true
+}
+```
+
+Response：
+
+- `discovery_report_id`
+- `total_products_scanned`
+- `total_products_filtered`
+- `total_recommendations`
+- `products[]`
+
+验收标准：
+
+- 可基于 seed 数据返回产品机会。
+- 返回结果按 `npfs_score DESC` 排序。
+- 保存 `discovery_reports`。
+
+测试：
+
+```powershell
+cd backend
+.\.venv\Scripts\pytest tests\test_discover_api.py
+```
+
+### Task 4.2 新增 Product Radar API `[TODO]`
+
+建议分支：
+
+```text
+v2/task-4.2-product-radar-api
+```
+
+目标：
+
+- 为 Radar 页面提供榜单数据。
+
+新增 API：
+
+```text
+GET /api/radar/products
+GET /api/radar/products/{opportunity_id}
+```
+
+支持 query：
+
+- `category`
+- `risk_level`
+- `budget_max`
+- `price_min`
+- `price_max`
+- `sort`
+- `limit`
+
+验收标准：
+
+- 支持默认 Top Product Opportunities。
+- 支持排序：
+  - `highest_npfs`
+  - `lowest_risk`
+  - `lowest_budget`
+  - `highest_profit`
+  - `easiest_launch`
+
+测试：
+
+```powershell
+cd backend
+.\.venv\Scripts\pytest tests\test_radar_api.py
+```
+
+## Phase 5：V2 首页与 Radar 页面
+
+### Task 5.1 迁移 V1 首页到 `/validate` `[TODO]`
+
+建议分支：
+
+```text
+v2/task-5.1-validate-page
+```
+
+目标：
+
+- 保留 V1 关键词验证能力。
+- 为 V2 首页腾出 `/`。
+
+涉及文件：
+
+- `frontend/app/page.tsx`
+- `frontend/app/validate/page.tsx`
+- `frontend/components/Header.tsx`
+
+验收标准：
+
+- `/validate` 保持原 V1 关键词分析流程。
+- `/reports/{id}` 仍可打开。
+- Header 有 `Discover Products` 和 `Validate Keyword`。
+
+测试：
+
+```powershell
+cd frontend
+npm run build
+```
+
+### Task 5.2 实现 V2 首页 Hero 和 Smart Filter `[TODO]`
+
+建议分支：
+
+```text
+v2/task-5.2-discovery-home
+```
+
+目标：
+
+- `/` 变成 Product Discovery 首页。
+
+模块：
+
+- Top Navigation
+- Hero Section
+- Smart Filter Section
+
+Hero 字段：
+
+- Category
+- Budget
+- Risk Preference
+- Price Range
+- Weight Limit
+
+验收标准：
+
+- 用户 30 秒内可完成选择并点击 `Discover Products`。
+- 点击后跳转 `/radar` 或调用 Discover API。
+- `Validate My Keyword` 可进入 `/validate`。
+
+测试：
+
+```powershell
+cd frontend
+npm run build
+npm run smoke
+```
+
+### Task 5.3 实现 Product Opportunity Card `[TODO]`
+
+建议分支：
+
+```text
+v2/task-5.3-product-opportunity-card
+```
+
+目标：
+
+- 展示 V2 产品机会卡片。
+
+涉及文件：
+
+- `frontend/components/ProductOpportunityCard.tsx`
+
+展示字段：
+
+- Product Name
+- Primary Keyword
+- Category
+- Avg Price
+- NPFS Score
+- Launch Score
+- Risk Level
+- Estimated Budget
+- Tags
+
+CTA：
+
+- `View Detail`
+- `Validate Keyword`
+- `Save`
+
+验收标准：
+
+- mock/seed 产品可以稳定展示。
+- 无图片时使用安全 fallback，不显示破图。
+- 无真实链接时不渲染无效外链。
+
+测试：
+
+```powershell
+cd frontend
+npm run build
+```
+
+### Task 5.4 实现 `/radar` 页面 `[TODO]`
+
+建议分支：
+
+```text
+v2/task-5.4-radar-page
+```
+
+目标：
+
+- 展示产品机会榜单。
+
+模块：
+
+- 筛选器
+- 排序
+- 产品卡片列表
+- 结果摘要
+
+验收标准：
+
+- 默认展示 Top Product Opportunities。
+- 筛选条件可影响 API 请求。
+- 排序可切换。
+
+测试：
+
+```powershell
+cd frontend
+npm run build
+npm run smoke
+```
+
+## Phase 6：V1 兼容与验证链路
+
+### Task 6.1 实现 Validate Keyword CTA `[TODO]`
+
+建议分支：
+
+```text
+v2/task-6.1-product-to-validate
+```
+
+目标：
+
+- 从 V2 产品卡片进入 V1 关键词验证。
+
+方案：
+
+- 点击 `Validate Keyword` 后携带：
+  - `primary_keyword`
+  - `category`
+  - `budget_rmb`
+  - `target_price_min`
+  - `target_price_max`
+  - `product_opportunity_id`
+
+可选路径：
+
+```text
+/validate?keyword=under%20sink%20organizer&product_opportunity_id=1
+```
+
+验收标准：
+
+- `/validate` 自动填入产品关键词。
+- Analyze 成功后生成 V1 报告。
+- 报告保存 `product_opportunity_id`。
+
+测试：
+
+```powershell
+cd backend
+.\.venv\Scripts\pytest
+cd ..\frontend
+npm run build
+```
+
+### Task 6.2 新增 Product Detail 页面 `[TODO]`
+
+建议分支：
+
+```text
+v2/task-6.2-product-detail
+```
+
+目标：
+
+- 用户可查看产品机会详情。
+
+路径：
+
+```text
+/radar/products/{opportunity_id}
+```
+
+展示：
+
+- 产品总览
+- Keyword Cluster
+- Top10 竞争结构
+- 利润分析
+- Launch Budget
+- Supplier Score
+- 差异化建议
+- 风险预警
+- Validate 入口
+
+验收标准：
+
+- 可以从产品卡片进入详情页。
+- 详情页可以进入 `/validate`。
+
+测试：
+
+```powershell
+cd frontend
+npm run build
+```
+
+## Phase 7：测试、验收与部署准备
+
+### Task 7.1 增加 V2 后端完整测试套件 `[TODO]`
+
+建议分支：
+
+```text
+v2/task-7.1-v2-backend-tests
+```
+
+覆盖：
+
+- Category Scanner rules
+- Launch Score
+- Supplier Score
+- NPFS
+- Discover API
+- Radar API
+- Product → Validate linkage
+
+验收标准：
+
+- 后端测试覆盖 V2 核心规则。
+- 固定样例得分稳定。
+
+测试：
+
+```powershell
+cd backend
+.\.venv\Scripts\pytest
+```
+
+### Task 7.2 增加 V2 前端 smoke `[TODO]`
+
+建议分支：
+
+```text
+v2/task-7.2-v2-frontend-smoke
+```
+
+覆盖路径：
+
+- `/`
+- `/validate`
+- `/radar`
+- `/radar/products/{id}`
+- `/reports/{id}`
+
+验收标准：
+
+- 首页能显示 Discovery Hero。
+- Radar 能显示产品机会卡片。
+- Validate Keyword 可进入 V1 分析流程。
+
+测试：
+
+```powershell
+cd frontend
+npm run smoke
+```
+
+### Task 7.3 更新部署和环境文档 `[TODO]`
+
+建议分支：
+
+```text
+v2/task-7.3-v2-docs
+```
+
+目标：
+
+- 更新 V2 API、数据库和部署说明。
+
+涉及文件：
+
+- `docs/api-roadmap.md`
+- `docs/db-roadmap.md`
+- `docs/deployment.md`
+- `docs/testing.md`
+
+验收标准：
+
+- 新 API 有请求和响应示例。
+- 新表有字段说明。
+- V2 smoke 有测试步骤。
+
+## V2 MVP 验收清单
+
+V2 MVP 完成时必须验证：
+
+- `/` 是 Product Discovery 首页。
+- `/validate` 保留 V1 关键词验证。
+- 用户可以按类目、预算、风险、价格、重量发现产品。
+- Radar 页面返回产品机会卡片。
+- Product Opportunity 包含 NPFS、Launch Score、预算、风险和标签。
+- 点击 `Validate Keyword` 可以进入 V1 流程。
+- V1 报告能关联 V2 `product_opportunity_id`。
+- 后端 V2 测试通过。
+- 前端 build 通过。
+- 前端 smoke 通过。
+- mock/seed 数据不生成假图片和无效 Amazon 链接。
