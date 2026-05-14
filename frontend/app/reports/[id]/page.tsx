@@ -24,7 +24,7 @@ export default async function ReportPage({ params }: ReportPageProps) {
             <div className="text-sm text-ink/60">{t.report.report} #{report.report_id}</div>
             <h1 className="mt-1 text-3xl font-semibold text-ink">{report.keyword}</h1>
           </div>
-          <Link className="bg-accent px-4 py-2 text-sm font-medium text-white" href="/">
+          <Link className="bg-accent px-4 py-2 text-sm font-medium text-white" href="/validate">
             {t.report.newAnalysis}
           </Link>
         </div>

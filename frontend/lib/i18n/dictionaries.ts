@@ -12,8 +12,23 @@ export const dictionaries = {
       english: "English"
     },
     nav: {
+      discover: "发现产品",
+      validate: "验证关键词",
       analyze: "分析",
       reports: "历史报告"
+    },
+    discover: {
+      eyebrow: "Product Discovery Engine",
+      title: "发现你当前真正启动得起的 Amazon 产品",
+      subtitle: "V2 首页将从关键词验证升级为产品发现入口。现在先保留 Radar 入口和 V1 验证入口，后续任务会接入完整筛选器和产品机会榜。",
+      actions: {
+        discover: "查看产品雷达",
+        validate: "验证关键词"
+      },
+      preview: {
+        title: "优先发现类目",
+        status: "即将接入"
+      }
     },
     home: {
       eyebrow: "New Seller Product Validator",
@@ -145,8 +160,23 @@ export const dictionaries = {
       english: "English"
     },
     nav: {
+      discover: "Discover Products",
+      validate: "Validate Keyword",
       analyze: "Analyze",
       reports: "Reports"
+    },
+    discover: {
+      eyebrow: "Product Discovery Engine",
+      title: "Find Amazon Products You Can Actually Launch",
+      subtitle: "The V2 homepage is moving from keyword validation to product discovery. This step keeps Radar and V1 validation entry points ready before the full filter and product opportunity list arrive.",
+      actions: {
+        discover: "Open Product Radar",
+        validate: "Validate Keyword"
+      },
+      preview: {
+        title: "Priority Discovery Categories",
+        status: "Coming next"
+      }
     },
     home: {
       eyebrow: "New Seller Product Validator",

@@ -19,7 +19,8 @@ export function Header() {
         </Link>
         <div className="flex items-center gap-5">
           <nav className="flex items-center gap-5 text-sm text-ink/70">
-            <Link href="/">{t.nav.analyze}</Link>
+            <Link href="/">{t.nav.discover}</Link>
+            <Link href="/validate">{t.nav.validate}</Link>
             <Link href="/reports">{t.nav.reports}</Link>
           </nav>
           <LanguageSwitcher />

@@ -18,7 +18,7 @@ export default async function ReportsPage() {
             <h1 className="text-3xl font-semibold text-ink">{t.reports.title}</h1>
             <p className="mt-2 text-sm text-ink/60">{t.reports.subtitle}</p>
           </div>
-          <Link className="bg-accent px-4 py-2 text-sm font-medium text-white" href="/">
+          <Link className="bg-accent px-4 py-2 text-sm font-medium text-white" href="/validate">
             {t.reports.newAnalysis}
           </Link>
         </div>

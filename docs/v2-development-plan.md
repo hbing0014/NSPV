@@ -594,7 +594,7 @@ cd backend
 
 ## Phase 5：V2 首页与 Radar 页面
 
-### Task 5.1 迁移 V1 首页到 `/validate` `[NEXT]`
+### Task 5.1 迁移 V1 首页到 `/validate` `[DONE]`
 
 建议分支：
 
@@ -618,6 +618,8 @@ v2/task-5.1-validate-page
 - `/validate` 保持原 V1 关键词分析流程。
 - `/reports/{id}` 仍可打开。
 - Header 有 `Discover Products` 和 `Validate Keyword`。
+- `/` 已释放为 V2 Discover 入口。
+- 历史报告页和报告详情页的“新分析”入口指向 `/validate`。
 
 测试：
 
@@ -626,7 +628,16 @@ cd frontend
 npm run build
 ```
 
-### Task 5.2 实现 V2 首页 Hero 和 Smart Filter `[TODO]`
+完成记录：
+
+- 分支：`v2/task-5.1-validate-page`
+- 新增：`frontend/app/validate/page.tsx`
+- 更新：`frontend/app/page.tsx`
+- 更新：`frontend/components/Header.tsx`
+- 更新：`frontend/lib/i18n/dictionaries.ts`
+- 验证：`npm run build` 通过。
+
+### Task 5.2 实现 V2 首页 Hero 和 Smart Filter `[NEXT]`
 
 建议分支：
 
