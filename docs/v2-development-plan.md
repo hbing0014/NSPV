@@ -207,7 +207,7 @@ cd backend
 - 新增：`backend/tests/test_discovery_seed.py`
 - 验证：`tests/test_discovery_seed.py` 通过。
 
-### Task 2.2 实现 Category Scanner 规则引擎 `[NEXT]`
+### Task 2.2 实现 Category Scanner 规则引擎 `[DONE]`
 
 建议分支：
 
@@ -247,6 +247,8 @@ v2/task-2.2-category-scanner-rules
 - 每条规则有单元测试。
 - 每个样例产品有可解释标签。
 - Opportunity 产品不会包含默认硬过滤失败项。
+- 支持默认严格过滤，也支持关闭部分排除规则进入人工研究。
+- 输出结果稳定分为 `Rejected`、`Research`、`Opportunity` 三层。
 
 测试：
 
@@ -255,7 +257,15 @@ cd backend
 .\.venv\Scripts\pytest tests\test_category_scanner.py
 ```
 
-### Task 2.3 实现关键词生成器 `[TODO]`
+完成记录：
+
+- 分支：`v2/task-2.2-category-scanner-rules`
+- 新增：`backend/app/services/discovery/rules.py`
+- 新增：`backend/app/services/discovery/category_scanner.py`
+- 新增：`backend/tests/test_category_scanner.py`
+- 验证：`tests/test_category_scanner.py` 通过。
+
+### Task 2.3 实现关键词生成器 `[NEXT]`
 
 建议分支：
 
