@@ -74,9 +74,19 @@ v2/task-1.1-discovery-schema
 
 验收标准：
 
-- `alembic upgrade head` 可成功执行。
-- SQLite 测试库可创建所有新表。
+- Alembic migration 是 V2 数据库结构的唯一正式来源，不再为 Supabase 单独手写结构 SQL。
+- 本地 SQLite 测试库执行 `alembic upgrade head` 通过，可创建所有 V2 新表。
+- Supabase PostgreSQL 使用同一份 Alembic migration 执行 `alembic upgrade head` 通过。
+- Supabase 中可以看到 V2 新表：
+  - `categories`
+  - `category_scan_jobs`
+  - `category_products`
+  - `product_opportunities`
+  - `launch_scores`
+  - `discovery_reports`
+- Supabase 的 `alembic_version` 已更新到最新 revision。
 - `selection_reports.product_opportunity_id` 可为空。
+- 不在 pytest 中直接连接或污染 Supabase；pytest 继续使用隔离测试库。
 
 测试：
 
@@ -85,6 +95,19 @@ cd backend
 .\.venv\Scripts\alembic upgrade head
 .\.venv\Scripts\pytest
 ```
+
+Supabase 正式迁移验证：
+
+```powershell
+cd backend
+.\.venv\Scripts\alembic upgrade head
+```
+
+说明：
+
+- 上述 Supabase 命令必须在 `backend/.env` 的 `DATABASE_URL` 指向 Supabase PostgreSQL 时执行。
+- 如果是全新 Supabase 数据库，直接运行 `alembic upgrade head`。
+- 如果数据库已由历史 SQL 手工迁移过，必须先确认当前 `alembic_version` 状态，再决定是否需要 `alembic stamp head`，避免重复建表。
 
 ### Task 1.2 新增 V2 Pydantic Schema `[TODO]`
 
