@@ -44,9 +44,9 @@
 
 Last updated: 2026-05-13
 
-Overall V1 progress: 91%
+Overall V1 progress: 94%
 
-Current branch: `phase-4/task-4.2-project-selection`
+Current branch: `phase-4/task-4.3-report-layout`
 
 Current branch status: `active`
 
@@ -57,9 +57,9 @@ Latest commits:
 - `ef4fa17 Add VSCode workspace`
 - `caa2642 Initial NSPV project scaffold`
 
-Current active task: `Task 4.2 Add Project Selection to Home Page`
+Current active task: `Task 4.3 Improve Report Detail Layout`
 
-Next recommended task: `Task 4.3 Improve Report Detail Layout`
+Next recommended task: `Task 5.1 Add Password Hash and JWT`
 
 Phase progress:
 
@@ -69,8 +69,8 @@ Phase progress:
 | Phase 1 | Stabilize current V1 prototype | `[DONE]` | 100% | `merged: main` | `passed` |
 | Phase 2 | Real Amazon data integration | `[DONE]` | 100% | `merged: main` | `passed` |
 | Phase 3 | Improve scoring and risk engine | `[DONE]` | 100% | `merged: main` | `passed` |
-| Phase 4 | Frontend V1 completion | `[IN PROGRESS]` | 66% | `active: phase-4/task-4.2-project-selection` | `passed` |
-| Phase 5 | Basic auth | `[TODO]` | 0% | `planned` | `not run` |
+| Phase 4 | Frontend V1 completion | `[DONE]` | 100% | `active: phase-4/task-4.3-report-layout` | `passed` |
+| Phase 5 | Basic auth | `[NEXT]` | 0% | `planned` | `not run` |
 | Phase 6 | Deployment readiness | `[TODO]` | 0% | `planned` | `not run` |
 
 Task progress:
@@ -89,9 +89,9 @@ Task progress:
 | Task 3.2 Add Scoring Fixtures | `[DONE]` | `phase-3/task-3.2-scoring-fixtures` | `merged: main` | `passed` |
 | Task 3.3 Add Scoring Version | `[DONE]` | `phase-3/task-3.3-scoring-version` | `merged: main` | `passed` |
 | Task 4.1 Improve Loading and Error States | `[DONE]` | `phase-4/task-4.1-loading-errors` | `merged: main` | `passed` |
-| Task 4.2 Add Project Selection to Home Page | `[DONE]` | `phase-4/task-4.2-project-selection` | `active` | `passed` |
-| Task 4.3 Improve Report Detail Layout | `[NEXT]` | `phase-4/task-4.3-report-layout` | `planned` | `not run` |
-| Task 5.1 Add Password Hash and JWT | `[TODO]` | `phase-5/task-5.1-auth-jwt` | `planned` | `not run` |
+| Task 4.2 Add Project Selection to Home Page | `[DONE]` | `phase-4/task-4.2-project-selection` | `merged: main` | `passed` |
+| Task 4.3 Improve Report Detail Layout | `[DONE]` | `phase-4/task-4.3-report-layout` | `active` | `passed` |
+| Task 5.1 Add Password Hash and JWT | `[NEXT]` | `phase-5/task-5.1-auth-jwt` | `planned` | `not run` |
 | Task 5.2 Scope Projects and Reports by User | `[TODO]` | `phase-5/task-5.2-user-scope` | `planned` | `not run` |
 | Task 6.1 Add Environment Documentation | `[TODO]` | `phase-6/task-6.1-env-docs` | `planned` | `not run` |
 | Task 6.2 Add Alembic | `[TODO]` | `phase-6/task-6.2-alembic` | `planned` | `not run` |
@@ -629,7 +629,7 @@ Completion record:
 - Test result: `51 passed, 2 warnings`
 - Notes: Scoring output now carries `scoring_version`; report persistence uses the version returned by the scoring engine.
 
-## Phase 4: Frontend V1 Completion `[IN PROGRESS]`
+## Phase 4: Frontend V1 Completion `[DONE]`
 
 目标：
 
@@ -711,7 +711,7 @@ Completion record:
 - Test result: `npm run build` passed; `npm run smoke` passed; `tests/test_projects_api.py` passed.
 - Notes: Home page now loads projects, supports selecting an existing project, applies project defaults, and sends `project_id` during analysis. Leaving the selector empty keeps automatic project creation.
 
-### Task 4.3 Improve Report Detail Layout `[NEXT]`
+### Task 4.3 Improve Report Detail Layout `[DONE]`
 
 目标：
 
@@ -756,7 +756,14 @@ npm run build
 - 查看结果页
 - 查看 `Reports`
 
-## Phase 5: Basic Auth `[TODO]`
+Completion record:
+
+- Branch: `phase-4/task-4.3-report-layout`
+- Status: `[DONE]`
+- Test result: `npm run build` passed; `npm run smoke` passed; `GET /reports/8` returned 200.
+- Notes: Report detail now emphasizes NSFS, recommendation, risk, decision summary, score breakdown, review competition, risk warnings, profit estimate, opportunity signals, action suggestions, and a horizontally scrollable Top20 table.
+
+## Phase 5: Basic Auth `[NEXT]`
 
 目标：
 
