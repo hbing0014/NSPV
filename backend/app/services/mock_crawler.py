@@ -57,12 +57,11 @@ def fetch_top20_products(keyword: str, marketplace: str) -> list[ProductOut]:
                 bsr=int(rng.uniform(500, 90000)),
                 is_sponsored=is_sponsored,
                 seller_type="FBA",
-                image_url=f"https://placehold.co/160x160?text={index}",
-                product_url=f"https://www.amazon.com/dp/B0{stable_seed(keyword + str(index)) % 10_000_000:07d}",
+                image_url=None,
+                product_url=None,
                 organic_rank=None if is_sponsored else index,
                 sponsored_rank=index if is_sponsored else None,
             )
         )
 
     return products
-

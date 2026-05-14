@@ -118,24 +118,30 @@ export function ReportView({ report, locale }: ReportViewProps) {
                   <td className="p-3 text-ink/70">{index + 1}</td>
                   <td className="p-3">
                     <div className="flex items-center gap-3">
-                      {product.image_url ? (
+                      {shouldShowProductImage(product.image_url) ? (
                         <Image
-                          src={product.image_url}
-                          alt=""
+                          src={product.image_url ?? ""}
+                          alt={product.title}
                           width={48}
                           height={48}
                           className="border border-line"
                         />
-                      ) : null}
-                      <a
-                        className="block max-w-[460px] break-words text-ink hover:text-accent"
-                        href={product.product_url ?? "#"}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        {product.title}
-                        <ExternalLink className="ml-1 inline" size={13} aria-hidden="true" />
-                      </a>
+                      ) : (
+                        <ProductImageFallback rank={index + 1} brand={product.brand} />
+                      )}
+                      {isValidAmazonProductUrl(product.product_url, product.asin) ? (
+                        <a
+                          className="block max-w-[460px] break-words text-ink hover:text-accent"
+                          href={product.product_url ?? "#"}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {product.title}
+                          <ExternalLink className="ml-1 inline" size={13} aria-hidden="true" />
+                        </a>
+                      ) : (
+                        <span className="block max-w-[460px] break-words text-ink">{product.title}</span>
+                      )}
                     </div>
                   </td>
                   <td className="p-3">{product.brand}</td>
@@ -223,6 +229,39 @@ function Badge({
   }[tone];
 
   return <span className={`px-3 py-1 ${className}`}>{children}</span>;
+}
+
+function ProductImageFallback({ rank, brand }: { rank: number; brand: string | null }) {
+  const label = brand?.slice(0, 2).toUpperCase() || `#${rank}`;
+
+  return (
+    <div
+      className="flex h-12 w-12 shrink-0 items-center justify-center border border-line bg-field text-xs font-semibold text-ink/55"
+      aria-hidden="true"
+    >
+      {label}
+    </div>
+  );
+}
+
+function shouldShowProductImage(imageUrl: string | null | undefined) {
+  if (!imageUrl) {
+    return false;
+  }
+  return !imageUrl.includes("placehold.co");
+}
+
+function isValidAmazonProductUrl(productUrl: string | null | undefined, asin: string) {
+  if (!productUrl || !/^B[A-Z0-9]{9}$/.test(asin)) {
+    return false;
+  }
+
+  try {
+    const url = new URL(productUrl);
+    return url.hostname.endsWith("amazon.com") && url.pathname.includes(`/dp/${asin}`);
+  } catch {
+    return false;
+  }
 }
 
 function formatMoney(value: number | null | undefined) {
