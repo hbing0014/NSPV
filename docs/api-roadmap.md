@@ -219,6 +219,48 @@ GET  /api/auth/profile
 PUT  /api/auth/profile
 ```
 
+Register request:
+
+```json
+{
+  "email": "seller@example.com",
+  "password": "safe-password-123",
+  "name": "New Seller"
+}
+```
+
+Login request:
+
+```json
+{
+  "email": "seller@example.com",
+  "password": "safe-password-123"
+}
+```
+
+Auth response:
+
+```json
+{
+  "access_token": "jwt-token",
+  "token_type": "bearer",
+  "user": {
+    "id": 1,
+    "email": "seller@example.com",
+    "name": "New Seller",
+    "plan_type": "free",
+    "created_at": "2026-05-14T00:00:00Z",
+    "updated_at": "2026-05-14T00:00:00Z"
+  }
+}
+```
+
+Profile request:
+
+```text
+Authorization: Bearer {access_token}
+```
+
 V1 basic auth behavior:
 
 - Password hashing.

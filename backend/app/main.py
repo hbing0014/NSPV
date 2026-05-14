@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.auth import router as auth_router
 from app.api.routes import router
 from app.core.config import get_settings
 from app.core.errors import ApiError, api_error_handler, validation_error_handler
@@ -33,3 +34,4 @@ def health() -> dict[str, str]:
 
 
 app.include_router(router)
+app.include_router(auth_router)

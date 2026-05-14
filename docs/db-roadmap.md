@@ -42,13 +42,13 @@ Current fields:
 - `id`
 - `email`
 - `name`
+- `password_hash`
 - `plan_type`
 - `created_at`
 - `updated_at`
 
 V1 recommended additions:
 
-- `password_hash`
 - `email_verified`
 - `monthly_analysis_limit`
 - `monthly_analysis_used`

@@ -42,11 +42,11 @@
 
 ## Progress Dashboard
 
-Last updated: 2026-05-13
+Last updated: 2026-05-14
 
-Overall V1 progress: 94%
+Overall V1 progress: 97%
 
-Current branch: `phase-4/task-4.3-report-layout`
+Current branch: `phase-5/task-5.1-auth-jwt`
 
 Current branch status: `active`
 
@@ -57,9 +57,9 @@ Latest commits:
 - `ef4fa17 Add VSCode workspace`
 - `caa2642 Initial NSPV project scaffold`
 
-Current active task: `Task 4.3 Improve Report Detail Layout`
+Current active task: `Task 5.1 Add Password Hash and JWT`
 
-Next recommended task: `Task 5.1 Add Password Hash and JWT`
+Next recommended task: `Task 5.2 Scope Projects and Reports by User`
 
 Phase progress:
 
@@ -69,8 +69,8 @@ Phase progress:
 | Phase 1 | Stabilize current V1 prototype | `[DONE]` | 100% | `merged: main` | `passed` |
 | Phase 2 | Real Amazon data integration | `[DONE]` | 100% | `merged: main` | `passed` |
 | Phase 3 | Improve scoring and risk engine | `[DONE]` | 100% | `merged: main` | `passed` |
-| Phase 4 | Frontend V1 completion | `[DONE]` | 100% | `active: phase-4/task-4.3-report-layout` | `passed` |
-| Phase 5 | Basic auth | `[NEXT]` | 0% | `planned` | `not run` |
+| Phase 4 | Frontend V1 completion | `[DONE]` | 100% | `merged: main` | `passed` |
+| Phase 5 | Basic auth | `[IN PROGRESS]` | 50% | `active: phase-5/task-5.1-auth-jwt` | `passed` |
 | Phase 6 | Deployment readiness | `[TODO]` | 0% | `planned` | `not run` |
 
 Task progress:
@@ -90,9 +90,9 @@ Task progress:
 | Task 3.3 Add Scoring Version | `[DONE]` | `phase-3/task-3.3-scoring-version` | `merged: main` | `passed` |
 | Task 4.1 Improve Loading and Error States | `[DONE]` | `phase-4/task-4.1-loading-errors` | `merged: main` | `passed` |
 | Task 4.2 Add Project Selection to Home Page | `[DONE]` | `phase-4/task-4.2-project-selection` | `merged: main` | `passed` |
-| Task 4.3 Improve Report Detail Layout | `[DONE]` | `phase-4/task-4.3-report-layout` | `active` | `passed` |
-| Task 5.1 Add Password Hash and JWT | `[NEXT]` | `phase-5/task-5.1-auth-jwt` | `planned` | `not run` |
-| Task 5.2 Scope Projects and Reports by User | `[TODO]` | `phase-5/task-5.2-user-scope` | `planned` | `not run` |
+| Task 4.3 Improve Report Detail Layout | `[DONE]` | `phase-4/task-4.3-report-layout` | `merged: main` | `passed` |
+| Task 5.1 Add Password Hash and JWT | `[DONE]` | `phase-5/task-5.1-auth-jwt` | `active` | `passed` |
+| Task 5.2 Scope Projects and Reports by User | `[NEXT]` | `phase-5/task-5.2-user-scope` | `planned` | `not run` |
 | Task 6.1 Add Environment Documentation | `[TODO]` | `phase-6/task-6.1-env-docs` | `planned` | `not run` |
 | Task 6.2 Add Alembic | `[TODO]` | `phase-6/task-6.2-alembic` | `planned` | `not run` |
 
@@ -763,13 +763,13 @@ Completion record:
 - Test result: `npm run build` passed; `npm run smoke` passed; `GET /reports/8` returned 200.
 - Notes: Report detail now emphasizes NSFS, recommendation, risk, decision summary, score breakdown, review competition, risk warnings, profit estimate, opportunity signals, action suggestions, and a horizontally scrollable Top20 table.
 
-## Phase 5: Basic Auth `[NEXT]`
+## Phase 5: Basic Auth `[IN PROGRESS]`
 
 目标：
 
 - 支持真实用户注册登录，并将项目和报告归属用户。
 
-### Task 5.1 Add Password Hash and JWT `[TODO]`
+### Task 5.1 Add Password Hash and JWT `[DONE]`
 
 建议修改位置：
 
@@ -796,7 +796,15 @@ cd backend
 .\.venv\Scripts\pytest
 ```
 
-### Task 5.2 Scope Projects and Reports by User `[TODO]`
+Completion record:
+
+- Branch: `phase-5/task-5.1-auth-jwt`
+- Status: `[DONE]`
+- Test result: `56 passed, 2 warnings`
+- Database: Supabase migration `005_add_user_auth.sql` applied for `users.password_hash`.
+- Notes: Added password hashing, JWT access token generation/verification, `/api/auth/register`, `/api/auth/login`, and `/api/auth/profile`.
+
+### Task 5.2 Scope Projects and Reports by User `[NEXT]`
 
 目标：
 
