@@ -30,10 +30,19 @@ npm run dev
 
 Open `http://localhost:3000`.
 
-The backend uses SQLite by default for quick local runs. Set `DATABASE_URL` to use PostgreSQL:
+The backend uses SQLite by default for quick local runs. Copy the environment templates before using PostgreSQL or a deployed API:
+
+```powershell
+Copy-Item backend\.env.example backend\.env
+Copy-Item frontend\.env.example frontend\.env.local
+```
+
+Set `DATABASE_URL` to use PostgreSQL:
 
 ```powershell
 $env:DATABASE_URL="postgresql+psycopg://nspv:nspv@localhost:5432/nspv"
 ```
 
 Supabase is configured as the target hosted database. See `docs/supabase.md` for the migrated schema and connection string format.
+
+See `docs/deployment.md` for the complete environment variable and deployment checklist.

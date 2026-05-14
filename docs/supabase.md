@@ -25,6 +25,7 @@ backend/migrations/supabase/001_create_nspv_v1_schema.sql
 backend/migrations/supabase/002_add_project_crud_fields.sql
 backend/migrations/supabase/003_add_analysis_persistence_fields.sql
 backend/migrations/supabase/004_add_scraper_runs.sql
+backend/migrations/supabase/005_add_user_auth.sql
 ```
 
 Migration `002_add_project_crud_fields.sql` adds the Project CRUD fields:
@@ -44,6 +45,10 @@ Migration `004_add_scraper_runs.sql` adds scraper execution logging:
 
 - `scraper_runs`
 - `selection_reports.scraper_run_id`
+
+Migration `005_add_user_auth.sql` adds user authentication storage:
+
+- `users.password_hash`
 
 ## Backend Connection
 
