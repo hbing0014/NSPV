@@ -363,7 +363,7 @@ cd backend
 - 新增：`backend/tests/test_launch_score.py`
 - 验证：`tests/test_launch_score.py` 通过。
 
-### Task 3.2 实现 Supplier Score 简化版 `[NEXT]`
+### Task 3.2 实现 Supplier Score 简化版 `[DONE]`
 
 建议分支：
 
@@ -392,6 +392,8 @@ v2/task-3.2-supplier-score-lite
 
 - 低 MOQ、标准件得分高。
 - 模具复杂、高 MOQ 得分低。
+- 输出供应商数量、MOQ、价格稳定、模具、包装、成熟度 6 个子分。
+- 输出供应链等级和风险标签。
 
 测试：
 
@@ -400,7 +402,14 @@ cd backend
 .\.venv\Scripts\pytest tests\test_supplier_score.py
 ```
 
-### Task 3.3 实现 NPFS Engine `[TODO]`
+完成记录：
+
+- 分支：`v2/task-3.2-supplier-score-lite`
+- 新增：`backend/app/services/discovery/supplier_score.py`
+- 新增：`backend/tests/test_supplier_score.py`
+- 验证：`tests/test_supplier_score.py` 通过。
+
+### Task 3.3 实现 NPFS Engine `[NEXT]`
 
 建议分支：
 
