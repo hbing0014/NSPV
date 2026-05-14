@@ -4,10 +4,11 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.api.auth import get_optional_current_user
 from app.core.config import get_settings
 from app.core.errors import ApiError
 from app.db.session import get_db
-from app.models.tables import Keyword, KeywordProductSnapshot, Product, Project, ScraperRun, SelectionReport
+from app.models.tables import Keyword, KeywordProductSnapshot, Product, Project, ScraperRun, SelectionReport, User
 from app.schemas.analysis import AnalyzeRequest, AnalyzeResponse, ProductOut, ReportListItem
 from app.schemas.project import ProjectCreate, ProjectOut, ProjectUpdate
 from app.services.scoring import analyze_products
@@ -21,9 +22,9 @@ def now_utc() -> datetime:
     return datetime.now(timezone.utc)
 
 
-def get_project_or_404(project_id: int, db: Session) -> Project:
+def get_project_or_404(project_id: int, db: Session, current_user: User | None = None) -> Project:
     project = db.get(Project, project_id)
-    if project is None:
+    if project is None or not can_access_project(project, current_user):
         raise ApiError(
             code="PROJECT_NOT_FOUND",
             message="Project not found",
@@ -34,8 +35,12 @@ def get_project_or_404(project_id: int, db: Session) -> Project:
 
 
 @router.post("/projects", response_model=ProjectOut)
-def create_project(request: ProjectCreate, db: Session = Depends(get_db)) -> ProjectOut:
-    project = Project(**request.model_dump(), status="active")
+def create_project(
+    request: ProjectCreate,
+    db: Session = Depends(get_db),
+    current_user: User | None = Depends(get_optional_current_user),
+) -> ProjectOut:
+    project = Project(**request.model_dump(), status="active", user_id=current_user.id if current_user else None)
     db.add(project)
     db.commit()
     db.refresh(project)
@@ -43,19 +48,36 @@ def create_project(request: ProjectCreate, db: Session = Depends(get_db)) -> Pro
 
 
 @router.get("/projects", response_model=list[ProjectOut])
-def list_projects(db: Session = Depends(get_db)) -> list[ProjectOut]:
-    projects = db.scalars(select(Project).order_by(Project.created_at.desc()).limit(100)).all()
+def list_projects(
+    db: Session = Depends(get_db),
+    current_user: User | None = Depends(get_optional_current_user),
+) -> list[ProjectOut]:
+    projects = db.scalars(
+        select(Project)
+        .where(project_owner_filter(current_user))
+        .order_by(Project.created_at.desc())
+        .limit(100)
+    ).all()
     return [project_to_response(project) for project in projects]
 
 
 @router.get("/projects/{project_id}", response_model=ProjectOut)
-def get_project(project_id: int, db: Session = Depends(get_db)) -> ProjectOut:
-    return project_to_response(get_project_or_404(project_id, db))
+def get_project(
+    project_id: int,
+    db: Session = Depends(get_db),
+    current_user: User | None = Depends(get_optional_current_user),
+) -> ProjectOut:
+    return project_to_response(get_project_or_404(project_id, db, current_user))
 
 
 @router.put("/projects/{project_id}", response_model=ProjectOut)
-def update_project(project_id: int, request: ProjectUpdate, db: Session = Depends(get_db)) -> ProjectOut:
-    project = get_project_or_404(project_id, db)
+def update_project(
+    project_id: int,
+    request: ProjectUpdate,
+    db: Session = Depends(get_db),
+    current_user: User | None = Depends(get_optional_current_user),
+) -> ProjectOut:
+    project = get_project_or_404(project_id, db, current_user)
     updates = request.model_dump(exclude_unset=True)
     next_target_price_min = updates.get("target_price_min", project.target_price_min)
     next_target_price_max = updates.get("target_price_max", project.target_price_max)
@@ -80,15 +102,23 @@ def update_project(project_id: int, request: ProjectUpdate, db: Session = Depend
 
 
 @router.delete("/projects/{project_id}")
-def delete_project(project_id: int, db: Session = Depends(get_db)) -> dict[str, bool]:
-    project = get_project_or_404(project_id, db)
+def delete_project(
+    project_id: int,
+    db: Session = Depends(get_db),
+    current_user: User | None = Depends(get_optional_current_user),
+) -> dict[str, bool]:
+    project = get_project_or_404(project_id, db, current_user)
     db.delete(project)
     db.commit()
     return {"deleted": True}
 
 
 @router.post("/analyze", response_model=AnalyzeResponse)
-def analyze(request: AnalyzeRequest, db: Session = Depends(get_db)) -> AnalyzeResponse:
+def analyze(
+    request: AnalyzeRequest,
+    db: Session = Depends(get_db),
+    current_user: User | None = Depends(get_optional_current_user),
+) -> AnalyzeResponse:
     if request.target_price_min > request.target_price_max:
         raise ApiError(
             code="VALIDATION_ERROR",
@@ -158,9 +188,10 @@ def analyze(request: AnalyzeRequest, db: Session = Depends(get_db)) -> AnalyzeRe
     )
 
     if request.project_id is not None:
-        project = get_project_or_404(request.project_id, db)
+        project = get_project_or_404(request.project_id, db, current_user)
     else:
         project = Project(
+            user_id=current_user.id if current_user else None,
             project_name=f"{request.keyword} analysis",
             category=request.category,
             budget_rmb=request.budget_rmb,
@@ -260,9 +291,13 @@ def analyze(request: AnalyzeRequest, db: Session = Depends(get_db)) -> AnalyzeRe
 
 
 @router.get("/reports/{report_id}", response_model=AnalyzeResponse)
-def get_report(report_id: int, db: Session = Depends(get_db)) -> AnalyzeResponse:
+def get_report(
+    report_id: int,
+    db: Session = Depends(get_db),
+    current_user: User | None = Depends(get_optional_current_user),
+) -> AnalyzeResponse:
     report = db.get(SelectionReport, report_id)
-    if report is None:
+    if report is None or not can_access_project(report.project, current_user):
         raise ApiError(
             code="REPORT_NOT_FOUND",
             message="Report not found",
@@ -273,7 +308,12 @@ def get_report(report_id: int, db: Session = Depends(get_db)) -> AnalyzeResponse
 
 
 @router.get("/projects/{project_id}/reports", response_model=list[ReportListItem])
-def get_project_reports(project_id: int, db: Session = Depends(get_db)) -> list[ReportListItem]:
+def get_project_reports(
+    project_id: int,
+    db: Session = Depends(get_db),
+    current_user: User | None = Depends(get_optional_current_user),
+) -> list[ReportListItem]:
+    get_project_or_404(project_id, db, current_user)
     reports = db.scalars(
         select(SelectionReport)
         .where(SelectionReport.project_id == project_id)
@@ -283,8 +323,17 @@ def get_project_reports(project_id: int, db: Session = Depends(get_db)) -> list[
 
 
 @router.get("/reports", response_model=list[ReportListItem])
-def get_all_reports(db: Session = Depends(get_db)) -> list[ReportListItem]:
-    reports = db.scalars(select(SelectionReport).order_by(SelectionReport.created_at.desc()).limit(50)).all()
+def get_all_reports(
+    db: Session = Depends(get_db),
+    current_user: User | None = Depends(get_optional_current_user),
+) -> list[ReportListItem]:
+    reports = db.scalars(
+        select(SelectionReport)
+        .join(Project)
+        .where(project_owner_filter(current_user))
+        .order_by(SelectionReport.created_at.desc())
+        .limit(50)
+    ).all()
     return [report_to_list_item(report) for report in reports]
 
 
@@ -342,6 +391,15 @@ def finish_scraper_run(
     scraper_run.error_message = error_message
     scraper_run.finished_at = now_utc()
     db.commit()
+
+
+def can_access_project(project: Project, current_user: User | None) -> bool:
+    expected_user_id = current_user.id if current_user else None
+    return project.user_id == expected_user_id
+
+
+def project_owner_filter(current_user: User | None):
+    return Project.user_id == (current_user.id if current_user else None)
 
 
 def project_to_response(project: Project) -> ProjectOut:

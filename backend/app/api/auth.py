@@ -34,6 +34,15 @@ def get_current_user(
     return user
 
 
+def get_optional_current_user(
+    authorization: str | None = Header(default=None),
+    db: Session = Depends(get_db),
+) -> User | None:
+    if not authorization:
+        return None
+    return get_current_user(authorization=authorization, db=db)
+
+
 @router.post("/register", response_model=AuthResponse)
 def register(request: RegisterRequest, db: Session = Depends(get_db)) -> AuthResponse:
     email = normalize_email(request.email)
