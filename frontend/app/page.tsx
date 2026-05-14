@@ -5,11 +5,13 @@ import { useRouter } from "next/navigation";
 import { AlertTriangle, FolderOpen, Loader2, RotateCcw, Search } from "lucide-react";
 import { Header } from "@/components/Header";
 import { ApiRequestError, Project, analyzeKeyword, getProjects } from "@/lib/api";
+import { useI18n } from "@/lib/i18n/LocaleProvider";
 
 const categories = ["Kitchen & Dining", "Home & Kitchen", "Storage & Organization", "Tools & Home Improvement"];
 
 export default function Home() {
   const router = useRouter();
+  const { locale, t } = useI18n();
   const [keyword, setKeyword] = useState("sink organizer");
   const [marketplace, setMarketplace] = useState("US");
   const [category, setCategory] = useState("Kitchen & Dining");
@@ -36,7 +38,7 @@ export default function Home() {
         }
       } catch (err) {
         if (active) {
-          setProjectError(err instanceof Error ? err.message : "Failed to load projects");
+          setProjectError(err instanceof Error ? err.message : t.home.error.projectLoad);
         }
       } finally {
         if (active) {
@@ -49,7 +51,7 @@ export default function Home() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [t.home.error.projectLoad]);
 
   function selectProject(projectId: string) {
     setSelectedProjectId(projectId);
@@ -88,7 +90,8 @@ export default function Home() {
         budget_rmb: budget,
         target_price_min: priceMin,
         target_price_max: priceMax,
-        exclude_red_ocean: excludeRedOcean
+        exclude_red_ocean: excludeRedOcean,
+        locale
       });
       router.push(`/reports/${report.report_id}`);
     } catch (err) {
@@ -98,10 +101,10 @@ export default function Home() {
         setError({
           message:
             err instanceof TypeError
-              ? "Cannot connect to NSPV API. Check the backend server and try again."
+              ? t.home.error.connect
               : err instanceof Error
                 ? err.message
-                : "Analyze failed. Please try again.",
+                : t.home.error.analyzeFailed,
           code: "CLIENT_ERROR"
         });
       }
@@ -121,19 +124,19 @@ export default function Home() {
       <main className="mx-auto max-w-7xl px-5 py-8">
         <section className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
           <div>
-            <div className="text-sm font-medium text-accent">New Seller Product Validator</div>
+            <div className="text-sm font-medium text-accent">{t.home.eyebrow}</div>
             <h1 className="mt-3 max-w-3xl text-4xl font-semibold leading-tight text-ink md:text-5xl">
-              Amazon 新店选品风险判断
+              {t.home.title}
             </h1>
             <p className="mt-4 max-w-2xl text-base leading-7 text-ink/70">
-              输入一个美国站关键词，系统会分析首页 Top20 商品结构，生成 NSFS 评分、红海预警和进入建议。
+              {t.home.subtitle}
             </p>
           </div>
 
           <form onSubmit={onSubmit} className="border border-line bg-white p-5" aria-busy={loading}>
             <div className="grid gap-4">
               <label className="grid gap-2">
-                <span className="text-sm font-medium text-ink">Project</span>
+                <span className="text-sm font-medium text-ink">{t.home.fields.project}</span>
                 <div className="relative">
                   <FolderOpen
                     className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink/45"
@@ -147,7 +150,7 @@ export default function Home() {
                     disabled={projectsLoading}
                   >
                     <option value="">
-                      {projectsLoading ? "Loading projects..." : "Create new project from this analysis"}
+                      {projectsLoading ? t.home.fields.loadingProjects : t.home.fields.createProject}
                     </option>
                     {projects.map((project) => (
                       <option key={project.id} value={project.id}>
@@ -160,7 +163,7 @@ export default function Home() {
               </label>
 
               <label className="grid gap-2">
-                <span className="text-sm font-medium text-ink">Keyword</span>
+                <span className="text-sm font-medium text-ink">{t.home.fields.keyword}</span>
                 <input
                   className="border border-line bg-field px-3 py-3 outline-none focus:border-accent"
                   value={keyword}
@@ -171,7 +174,7 @@ export default function Home() {
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <label className="grid gap-2">
-                  <span className="text-sm font-medium text-ink">Marketplace</span>
+                  <span className="text-sm font-medium text-ink">{t.home.fields.marketplace}</span>
                   <select
                     className="border border-line bg-field px-3 py-3 outline-none focus:border-accent"
                     value={marketplace}
@@ -181,7 +184,7 @@ export default function Home() {
                   </select>
                 </label>
                 <label className="grid gap-2">
-                  <span className="text-sm font-medium text-ink">Category</span>
+                  <span className="text-sm font-medium text-ink">{t.home.fields.category}</span>
                   <select
                     className="border border-line bg-field px-3 py-3 outline-none focus:border-accent"
                     value={category}
@@ -197,7 +200,7 @@ export default function Home() {
               </div>
 
               <label className="grid gap-2">
-                <span className="text-sm font-medium text-ink">Budget RMB</span>
+                <span className="text-sm font-medium text-ink">{t.home.fields.budget}</span>
                 <input
                   className="border border-line bg-field px-3 py-3 outline-none focus:border-accent"
                   type="number"
@@ -210,7 +213,7 @@ export default function Home() {
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <label className="grid gap-2">
-                  <span className="text-sm font-medium text-ink">Target Price Min</span>
+                  <span className="text-sm font-medium text-ink">{t.home.fields.targetPriceMin}</span>
                   <input
                     className="border border-line bg-field px-3 py-3 outline-none focus:border-accent"
                     type="number"
@@ -221,7 +224,7 @@ export default function Home() {
                   />
                 </label>
                 <label className="grid gap-2">
-                  <span className="text-sm font-medium text-ink">Target Price Max</span>
+                  <span className="text-sm font-medium text-ink">{t.home.fields.targetPriceMax}</span>
                   <input
                     className="border border-line bg-field px-3 py-3 outline-none focus:border-accent"
                     type="number"
@@ -239,7 +242,7 @@ export default function Home() {
                   checked={excludeRedOcean}
                   onChange={(event) => setExcludeRedOcean(event.target.checked)}
                 />
-                Exclude red ocean by default
+                {t.home.fields.excludeRedOcean}
               </label>
 
               {error ? (
@@ -247,7 +250,7 @@ export default function Home() {
                   <div className="flex gap-3">
                     <AlertTriangle className="mt-0.5 shrink-0 text-red-600" size={18} aria-hidden="true" />
                     <div className="min-w-0">
-                      <div className="font-medium">Analysis failed</div>
+                      <div className="font-medium">{t.home.error.title}</div>
                       <p className="mt-1 leading-6">{error.message}</p>
                       <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-red-700/80">
                         {error.code ? <span>{error.code}</span> : null}
@@ -270,17 +273,17 @@ export default function Home() {
                 ) : (
                   <Search size={18} aria-hidden="true" />
                 )}
-                {loading ? "Analyzing Amazon Top20..." : error ? "Retry Analyze" : "Analyze"}
+                {loading ? t.home.actions.loading : error ? t.home.actions.retry : t.home.actions.analyze}
               </button>
             </div>
           </form>
         </section>
 
         <section className="mt-8 grid gap-4 md:grid-cols-4">
-          <Signal label="Demand" text="Search volume and estimated monthly sales" />
-          <Signal label="Competition" text="Review structure, ads, brand concentration" />
-          <Signal label="Profit" text="Margin, ROI and break-even ACOS" />
-          <Signal label="Opportunity" text="Rating gaps and upgrade potential" />
+          <Signal label={t.home.signals.demand[0]} text={t.home.signals.demand[1]} />
+          <Signal label={t.home.signals.competition[0]} text={t.home.signals.competition[1]} />
+          <Signal label={t.home.signals.profit[0]} text={t.home.signals.profit[1]} />
+          <Signal label={t.home.signals.opportunity[0]} text={t.home.signals.opportunity[1]} />
         </section>
       </main>
     </>

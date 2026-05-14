@@ -125,6 +125,7 @@ export async function analyzeKeyword(payload: {
   target_price_min: number;
   target_price_max: number;
   exclude_red_ocean: boolean;
+  locale?: "zh-CN" | "en";
 }) {
   const response = await fetch(`${API_BASE}/api/analyze`, {
     method: "POST",

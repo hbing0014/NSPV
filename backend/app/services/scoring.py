@@ -82,6 +82,7 @@ def analyze_products(
     budget_rmb: float,
     target_price_min: float,
     target_price_max: float,
+    locale: str = "zh-CN",
 ) -> dict:
     top10 = products[:10]
     top3 = products[:3]
@@ -141,15 +142,26 @@ def analyze_products(
     prof_score = profit_score(net_margin)
     nsfs = dem_score * 0.25 + comp_score * 0.30 + prof_score * 0.25 + opp_score * 0.20
 
-    suggestions = [
-        "Avoid competing on main keyword only",
-        "Focus on long-tail keywords",
-        "Recommended first order quantity: 300-500 units" if budget_rmb >= 80000 else "Recommended first order quantity: 150-300 units",
-    ]
-    opportunities = [
-        "Review数量较低的Listing可作为差异化切入口",
-        "优先验证可升级的功能点和包装组合",
-    ]
+    if locale == "en":
+        suggestions = [
+            "Avoid competing only on the main keyword.",
+            "Focus on long-tail keywords first.",
+            "Recommended first order quantity: 300-500 units" if budget_rmb >= 80000 else "Recommended first order quantity: 150-300 units",
+        ]
+        opportunities = [
+            "Listings with lower review counts can be used as differentiation entry points.",
+            "Validate upgradeable product features and packaging combinations first.",
+        ]
+    else:
+        suggestions = [
+            "避免只围绕主关键词正面竞争",
+            "优先切入长尾关键词",
+            "建议首单数量：300-500件" if budget_rmb >= 80000 else "建议首单数量：150-300件",
+        ]
+        opportunities = [
+            "Review数量较低的Listing可作为差异化切入口",
+            "优先验证可升级的功能点和包装组合",
+        ]
 
     details = ScoreDetails(
         monthly_search_volume=monthly_search_volume,
@@ -173,8 +185,8 @@ def analyze_products(
         homogenization_level=round(homogenization_level, 2),
         upgrade_potential=round(upgrade_potential, 2),
     )
-    warnings = generate_risk_warnings(details, target_price_min, target_price_max)
-    summary = build_summary(nsfs, warnings, avg_reviews_top10, sponsored_density)
+    warnings = generate_risk_warnings(details, target_price_min, target_price_max, locale)
+    summary = build_summary(nsfs, warnings, avg_reviews_top10, sponsored_density, locale)
 
     return {
         "nsfs_score": round(nsfs, 1),
@@ -193,7 +205,26 @@ def analyze_products(
     }
 
 
-def build_summary(nsfs: float, warnings: list[str], avg_reviews_top10: float, sponsored_density: float) -> str:
+def build_summary(
+    nsfs: float,
+    warnings: list[str],
+    avg_reviews_top10: float,
+    sponsored_density: float,
+    locale: str = "zh-CN",
+) -> str:
+    if locale == "en":
+        if nsfs >= 70:
+            base = "Demand and profit room are worth further research"
+        elif nsfs >= 50:
+            base = "There is some opportunity, but entry needs cautious validation"
+        else:
+            base = "This keyword is not friendly enough for a new seller"
+
+        review_text = "page-one review pressure is high" if avg_reviews_top10 > 800 else "review barriers are relatively manageable"
+        ad_text = "ad competition is relatively strong" if sponsored_density > 0.3 else "sponsored density is acceptable"
+        risk_text = f"; key risk: {warnings[0].rstrip('.')}" if warnings else ""
+        return f"{base}; {review_text}; {ad_text}{risk_text}."
+
     if nsfs >= 70:
         base = "需求和利润空间具备继续研究价值"
     elif nsfs >= 50:

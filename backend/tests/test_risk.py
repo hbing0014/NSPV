@@ -33,6 +33,10 @@ def warnings_for(details: ScoreDetails, target_price_min: float = 20, target_pri
     return generate_risk_warnings(details, target_price_min, target_price_max)
 
 
+def english_warnings_for(details: ScoreDetails, target_price_min: float = 20, target_price_max: float = 40) -> list[str]:
+    return generate_risk_warnings(details, target_price_min, target_price_max, "en")
+
+
 def test_warns_when_top10_reviews_are_too_high() -> None:
     warnings = warnings_for(score_details(avg_reviews_top10=2501))
 
@@ -73,3 +77,9 @@ def test_returns_no_warning_for_balanced_market() -> None:
     warnings = warnings_for(score_details())
 
     assert warnings == []
+
+
+def test_returns_english_warning_text() -> None:
+    warnings = english_warnings_for(score_details(amazon_basics_present=True))
+
+    assert "Amazon private-label competition risk is present" in warnings

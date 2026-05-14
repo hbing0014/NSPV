@@ -29,7 +29,7 @@ def test_analyze_creates_report(client: TestClient) -> None:
     assert 0 <= data["nsfs_score"] <= 100
     assert data["recommendation"] in {"Strongly Recommended", "Worth Research", "Caution", "Avoid"}
     assert len(data["products"]) == 20
-    assert data["input_payload"] == analyze_payload() | {"project_id": None}
+    assert data["input_payload"] == analyze_payload() | {"project_id": None, "locale": "zh-CN"}
     assert data["scoring_version"] == SCORING_VERSION
     assert data["analysis_status"] == "completed"
     assert data["error_message"] is None
@@ -100,3 +100,33 @@ def test_request_validation_error_uses_error_contract(client: TestClient) -> Non
     assert error["code"] == "VALIDATION_ERROR"
     assert error["message"] == "Request validation failed."
     assert error["details"]["errors"]
+
+
+def test_analyze_defaults_to_chinese_locale(client: TestClient) -> None:
+    response = client.post("/api/analyze", json=analyze_payload())
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["input_payload"]["locale"] == "zh-CN"
+    assert "需求" in data["summary"]
+    assert data["suggestions"][0] == "避免只围绕主关键词正面竞争"
+
+
+def test_analyze_supports_english_locale(client: TestClient) -> None:
+    payload = analyze_payload() | {"locale": "en"}
+    response = client.post("/api/analyze", json=payload)
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["input_payload"]["locale"] == "en"
+    assert "Demand" in data["summary"]
+    assert data["suggestions"][0] == "Avoid competing only on the main keyword."
+
+
+def test_analyze_rejects_unsupported_locale(client: TestClient) -> None:
+    payload = analyze_payload() | {"locale": "ja"}
+    response = client.post("/api/analyze", json=payload)
+
+    assert response.status_code == 422
+    error = response.json()["error"]
+    assert error["code"] == "VALIDATION_ERROR"

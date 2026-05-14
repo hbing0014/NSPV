@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from typing import Literal
+
 from pydantic import BaseModel, Field
 
 
@@ -12,6 +14,7 @@ class AnalyzeRequest(BaseModel):
     target_price_min: float = Field(gt=0)
     target_price_max: float = Field(gt=0)
     exclude_red_ocean: bool = True
+    locale: Literal["zh-CN", "en"] = "zh-CN"
 
 
 class ProductOut(BaseModel):

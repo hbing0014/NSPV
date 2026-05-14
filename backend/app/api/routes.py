@@ -185,6 +185,7 @@ def analyze(
         budget_rmb=request.budget_rmb,
         target_price_min=request.target_price_min,
         target_price_max=request.target_price_max,
+        locale=request.locale,
     )
 
     if request.project_id is not None:
