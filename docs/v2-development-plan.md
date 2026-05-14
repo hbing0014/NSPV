@@ -265,7 +265,7 @@ cd backend
 - 新增：`backend/tests/test_category_scanner.py`
 - 验证：`tests/test_category_scanner.py` 通过。
 
-### Task 2.3 实现关键词生成器 `[NEXT]`
+### Task 2.3 实现关键词生成器 `[DONE]`
 
 建议分支：
 
@@ -294,6 +294,9 @@ V2 MVP 规则：
   - `primary_keyword = under sink organizer`
   - secondary 包含 `sink organizer`
   - long tail 包含厨房/收纳语义。
+- 能清理品牌词、尺寸词和营销词。
+- 所有 seed 产品都能生成非空关键词聚类。
+- 同一批 seed 产品多次生成结果一致。
 
 测试：
 
@@ -302,9 +305,16 @@ cd backend
 .\.venv\Scripts\pytest tests\test_keyword_clusters.py
 ```
 
+完成记录：
+
+- 分支：`v2/task-2.3-keyword-cluster-generator`
+- 新增：`backend/app/services/discovery/keyword_clusters.py`
+- 新增：`backend/tests/test_keyword_clusters.py`
+- 验证：`tests/test_keyword_clusters.py` 通过。
+
 ## Phase 3：Launch Score 与 NPFS
 
-### Task 3.1 实现 Launch Score Engine `[TODO]`
+### Task 3.1 实现 Launch Score Engine `[NEXT]`
 
 建议分支：
 
