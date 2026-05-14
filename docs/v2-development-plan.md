@@ -29,7 +29,7 @@
 | Phase 0 | V2 文档和任务拆分 | `[DONE]` | 固化产品设计和开发计划 |
 | Phase 1 | 数据库与模型 | `[IN PROGRESS]` | 建立 Discovery Layer 数据结构 |
 | Phase 2 | 种子数据与规则引擎 | `[IN PROGRESS]` | 跑通产品机会生成 |
-| Phase 3 | Launch Score 与 NPFS | `[TODO]` | 完成 V2 评分闭环 |
+| Phase 3 | Launch Score 与 NPFS | `[IN PROGRESS]` | 完成 V2 评分闭环 |
 | Phase 4 | Product Radar API | `[TODO]` | 提供发现结果接口 |
 | Phase 5 | V2 首页与 Radar 页面 | `[TODO]` | 前端 Discover-first 体验 |
 | Phase 6 | V1 兼容与验证链路 | `[TODO]` | Product → Validate Keyword |
@@ -314,7 +314,7 @@ cd backend
 
 ## Phase 3：Launch Score 与 NPFS
 
-### Task 3.1 实现 Launch Score Engine `[NEXT]`
+### Task 3.1 实现 Launch Score Engine `[DONE]`
 
 建议分支：
 
@@ -346,6 +346,8 @@ v2/task-3.1-launch-score-engine
 - 输出预算建议。
 - 输出风险标签。
 - 覆盖 Sink Organizer 和 Air Fryer Accessory Set 两个典型样例。
+- 子分按 PRD 阈值可单独测试。
+- 输出启动天数、回本天数和预算拆解。
 
 测试：
 
@@ -354,7 +356,14 @@ cd backend
 .\.venv\Scripts\pytest tests\test_launch_score.py
 ```
 
-### Task 3.2 实现 Supplier Score 简化版 `[TODO]`
+完成记录：
+
+- 分支：`v2/task-3.1-launch-score-engine`
+- 新增：`backend/app/services/discovery/launch_score.py`
+- 新增：`backend/tests/test_launch_score.py`
+- 验证：`tests/test_launch_score.py` 通过。
+
+### Task 3.2 实现 Supplier Score 简化版 `[NEXT]`
 
 建议分支：
 
