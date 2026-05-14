@@ -20,6 +20,13 @@
 - `products`
 - `keyword_product_snapshots`
 - `selection_reports`
+- `scraper_runs`
+- `categories`
+- `category_scan_jobs`
+- `category_products`
+- `product_opportunities`
+- `launch_scores`
+- `discovery_reports`
 
 当前默认本地数据库：
 
@@ -27,7 +34,12 @@
 
 生产目标数据库：
 
-- PostgreSQL
+- Supabase PostgreSQL
+
+当前正式迁移版本：
+
+- `0001_initial_schema`
+- `0002_v2_discovery_schema`
 
 ## V1 数据表
 
@@ -283,6 +295,187 @@ V1 优先级：
 
 ## V2 数据表
 
+V2 采用兼容升级方案：V1 表保留，新增 Discovery Layer 表。V1 继续作为关键词验证层，V2 新增产品发现层。
+
+### categories
+
+用途：
+
+- 存储系统支持扫描和推荐的 Amazon 类目。
+
+当前字段：
+
+- `id`
+- `category_name`
+- `parent_category`
+- `amazon_category_id`
+- `marketplace`
+- `is_active`
+- `priority_level`
+- `created_at`
+- `updated_at`
+
+### category_scan_jobs
+
+用途：
+
+- 记录 Category Scanner 每次扫描任务的来源、类型和状态。
+
+当前字段：
+
+- `id`
+- `category_id`
+- `marketplace`
+- `scan_type`
+- `source_type`
+- `status`
+- `total_products_found`
+- `total_products_filtered`
+- `started_at`
+- `finished_at`
+- `created_at`
+
+### category_products
+
+用途：
+
+- 存储类目扫描得到的原始候选产品池。
+
+当前字段：
+
+- `id`
+- `scan_job_id`
+- `category_id`
+- `asin`
+- `title`
+- `brand`
+- `price`
+- `rating`
+- `review_count`
+- `bsr`
+- `is_sponsored`
+- `seller_type`
+- `weight`
+- `dimensions`
+- `is_fragile`
+- `estimated_monthly_sales`
+- `estimated_monthly_revenue`
+- `amazon_basics_present`
+- `seasonality_score`
+- `patent_risk_level`
+- `created_at`
+- `updated_at`
+
+### product_opportunities
+
+用途：
+
+- 存储经过硬过滤、软过滤和评分后的 V2 产品机会池。
+
+当前字段：
+
+- `id`
+- `category_id`
+- `asin`
+- `product_name`
+- `brand`
+- `primary_keyword`
+- `keyword_cluster_id`
+- `avg_price`
+- `avg_rating`
+- `avg_reviews_top10`
+- `min_reviews_top10`
+- `monthly_search_volume`
+- `estimated_monthly_sales`
+- `estimated_monthly_revenue`
+- `demand_score`
+- `competition_score`
+- `profit_score`
+- `opportunity_score`
+- `launch_score`
+- `supplier_score`
+- `npfs_score`
+- `estimated_budget_rmb`
+- `estimated_moq`
+- `estimated_first_order_qty`
+- `estimated_launch_days`
+- `risk_level`
+- `recommendation`
+- `is_red_ocean`
+- `is_amazon_basics`
+- `is_fragile`
+- `is_seasonal`
+- `is_heavy`
+- `is_patent_risk`
+- `differentiation_paths`
+- `key_risks`
+- `key_opportunities`
+- `created_at`
+- `updated_at`
+
+### launch_scores
+
+用途：
+
+- 存储 Launch Feasibility Score，用于判断新手是否启动得起某个产品。
+
+当前字段：
+
+- `id`
+- `product_opportunity_id`
+- `asin`
+- `estimated_moq`
+- `estimated_unit_cost_rmb`
+- `estimated_shipping_cost_rmb`
+- `estimated_packaging_complexity`
+- `estimated_ppc_launch_cost`
+- `estimated_review_difficulty`
+- `estimated_inventory_cycle_days`
+- `estimated_total_launch_budget`
+- `launch_score`
+- `created_at`
+- `updated_at`
+
+### discovery_reports
+
+用途：
+
+- 存储用户 Discover 模式生成的产品发现报告。
+
+当前字段：
+
+- `id`
+- `project_id`
+- `user_id`
+- `input_category`
+- `input_budget_rmb`
+- `input_risk_preference`
+- `input_price_min`
+- `input_price_max`
+- `input_weight_limit`
+- `exclude_red_ocean`
+- `exclude_amazon_basics`
+- `total_products_scanned`
+- `total_products_filtered`
+- `total_recommendations`
+- `recommended_products`
+- `summary`
+- `strategy_advice`
+- `created_at`
+- `updated_at`
+
+### selection_reports V2 关联字段
+
+V2 新增字段：
+
+- `product_opportunity_id`
+
+用途：
+
+- 将 V2 Product Opportunity 与 V1 Keyword Validation 报告绑定，支持 Discover → Validate → Launch 链路。
+
+## V2 后续候选表
+
 ### review_analysis
 
 用途：
@@ -387,4 +580,4 @@ cd backend
 
 当前 Alembic 版本：
 
-- `0001_initial_schema`
+- `0002_v2_discovery_schema`
