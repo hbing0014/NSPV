@@ -154,6 +154,23 @@ export const dictionaries = {
         failed: "加载产品雷达失败，请重试。"
       }
     },
+    productDetail: {
+      back: "返回产品雷达",
+      validate: "验证关键词",
+      notFound: "未找到该产品机会。",
+      primaryKeyword: "主关键词",
+      risk: "风险",
+      launchBudget: "启动预算",
+      estimatedBudget: "预估预算",
+      launchDays: "启动天数",
+      avgPrice: "平均价格",
+      competition: "Top10 竞争结构",
+      profit: "利润与机会",
+      risks: "风险预警",
+      differentiation: "差异化建议",
+      keyRisks: "关键风险",
+      empty: "暂无数据"
+    },
     report: {
       report: "报告",
       newAnalysis: "新分析",
@@ -378,6 +395,23 @@ export const dictionaries = {
         connect: "Cannot connect to NSPV API. Check the backend server and try again.",
         failed: "Failed to load Product Radar. Please try again."
       }
+    },
+    productDetail: {
+      back: "Back to Product Radar",
+      validate: "Validate Keyword",
+      notFound: "Product opportunity not found.",
+      primaryKeyword: "Primary Keyword",
+      risk: "Risk",
+      launchBudget: "Launch Budget",
+      estimatedBudget: "Estimated Budget",
+      launchDays: "Launch Days",
+      avgPrice: "Avg Price",
+      competition: "Top10 Competition",
+      profit: "Profit and Opportunity",
+      risks: "Risk Warnings",
+      differentiation: "Differentiation Ideas",
+      keyRisks: "Key Risks",
+      empty: "No data"
     },
     report: {
       report: "Report",

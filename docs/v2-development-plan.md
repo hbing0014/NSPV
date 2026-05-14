@@ -850,7 +850,7 @@ npm run build
 - 更新：`frontend/lib/api.ts`
 - 验证：`tests/test_analyze_api.py`、`npm run build` 通过。
 
-### Task 6.2 新增 Product Detail 页面 `[NEXT]`
+### Task 6.2 新增 Product Detail 页面 `[DONE]`
 
 建议分支：
 
@@ -884,6 +884,8 @@ v2/task-6.2-product-detail
 
 - 可以从产品卡片进入详情页。
 - 详情页可以进入 `/validate`。
+- 详情页展示产品总览、竞争结构、利润机会、启动预算、风险预警和差异化建议。
+- 不存在的产品机会显示明确错误状态和返回入口。
 
 测试：
 
@@ -892,9 +894,17 @@ cd frontend
 npm run build
 ```
 
+完成记录：
+
+- 分支：`v2/task-6.2-product-detail`
+- 新增：`frontend/app/radar/products/[id]/page.tsx`
+- 更新：`frontend/lib/api.ts`
+- 更新：`frontend/lib/i18n/dictionaries.ts`
+- 验证：`npm run build` 通过。
+
 ## Phase 7：测试、验收与部署准备
 
-### Task 7.1 增加 V2 后端完整测试套件 `[TODO]`
+### Task 7.1 增加 V2 后端完整测试套件 `[NEXT]`
 
 建议分支：
 

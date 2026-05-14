@@ -262,6 +262,18 @@ export async function getRadarProducts(params: {
   return (await response.json()) as RadarProductsResponse;
 }
 
+export async function getRadarProduct(opportunityId: string) {
+  const response = await fetch(`${API_BASE}/api/radar/products/${opportunityId}`, {
+    cache: "no-store"
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, "Product opportunity not found");
+  }
+
+  return (await response.json()) as RadarProduct;
+}
+
 export async function getProjects() {
   const response = await fetch(`${API_BASE}/api/projects`, {
     cache: "no-store"
