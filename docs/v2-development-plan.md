@@ -945,7 +945,7 @@ cd backend
   - Product Opportunity → V1 Validate Keyword → SelectionReport 的关联链路。
 - 验证：`cd backend; .\.venv\Scripts\python.exe -m pytest -q` 通过，`143 passed`。
 
-### Task 7.2 增加 V2 前端 smoke `[NEXT]`
+### Task 7.2 增加 V2 前端 smoke `[DONE]`
 
 建议分支：
 
@@ -974,7 +974,23 @@ cd frontend
 npm run smoke
 ```
 
-### Task 7.3 更新部署和环境文档 `[TODO]`
+完成记录：
+
+- 分支：`v2/task-7.2-v2-frontend-smoke`
+- 更新：`frontend/scripts/smoke-check.mjs`
+- 覆盖：
+  - `/` Discovery Hero。
+  - `/validate` 带 Product Opportunity 参数的验证入口。
+  - `/radar` Product Radar 页面。
+  - `/radar/products/{id}` 产品详情页。
+  - `/reports` 历史报告页。
+  - `/reports/{id}` V1 分析报告页。
+- 行为：如未提供 `SMOKE_PRODUCT_ID` 和 `SMOKE_REPORT_ID`，脚本会通过后端 API 自动创建 smoke 产品机会和报告。
+- 验证：
+  - `NEXT_PUBLIC_API_BASE=http://127.0.0.1:8012 npm run build` 通过。
+  - `FRONTEND_BASE_URL=http://127.0.0.1:3012 BACKEND_BASE_URL=http://127.0.0.1:8012 npm run smoke` 通过。
+
+### Task 7.3 更新部署和环境文档 `[NEXT]`
 
 建议分支：
 
