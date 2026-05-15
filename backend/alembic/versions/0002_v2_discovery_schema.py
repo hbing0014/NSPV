@@ -198,7 +198,7 @@ def upgrade() -> None:
         batch_op.add_column(sa.Column("product_opportunity_id", sa.Integer(), nullable=True))
         batch_op.create_index("ix_selection_reports_product_opportunity_id", ["product_opportunity_id"], unique=False)
         batch_op.create_foreign_key(
-            "fk_selection_reports_product_opportunity_id_product_opportunities",
+            "fk_selection_reports_product_opportunity_id",
             "product_opportunities",
             ["product_opportunity_id"],
             ["id"],
@@ -211,7 +211,7 @@ def upgrade() -> None:
 def downgrade() -> None:
     with op.batch_alter_table("selection_reports") as batch_op:
         batch_op.drop_constraint(
-            "fk_selection_reports_product_opportunity_id_product_opportunities",
+            "fk_selection_reports_product_opportunity_id",
             type_="foreignkey",
         )
         batch_op.drop_index("ix_selection_reports_product_opportunity_id")

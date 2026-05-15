@@ -17,7 +17,7 @@ target_metadata = Base.metadata
 
 
 def database_url_for_alembic() -> str:
-    return get_settings().database_url.replace("%", "%%")
+    return get_settings().database_url
 
 
 def run_migrations_offline() -> None:

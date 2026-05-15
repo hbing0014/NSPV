@@ -27,7 +27,7 @@
 | 阶段 | 范围 | 状态 | 目标 |
 | --- | --- | --- | --- |
 | Phase 0 | V2 文档和任务拆分 | `[DONE]` | 固化产品设计和开发计划 |
-| Phase 1 | 数据库与模型 | `[IN PROGRESS]` | 建立 Discovery Layer 数据结构 |
+| Phase 1 | 数据库与模型 | `[DONE]` | 建立 Discovery Layer 数据结构 |
 | Phase 2 | 种子数据与规则引擎 | `[IN PROGRESS]` | 跑通产品机会生成 |
 | Phase 3 | Launch Score 与 NPFS | `[IN PROGRESS]` | 完成 V2 评分闭环 |
 | Phase 4 | Product Radar API | `[DONE]` | 提供发现结果接口 |
@@ -37,7 +37,7 @@
 
 ## Phase 1：数据库与模型
 
-### Task 1.1 新增 V2 Alembic 迁移 `[BLOCKED]`
+### Task 1.1 新增 V2 Alembic 迁移 `[DONE]`
 
 建议分支：
 
@@ -109,10 +109,23 @@ cd backend
 - 如果是全新 Supabase 数据库，直接运行 `alembic upgrade head`。
 - 如果数据库已由历史 SQL 手工迁移过，必须先确认当前 `alembic_version` 状态，再决定是否需要 `alembic stamp head`，避免重复建表。
 
-当前状态：
+完成记录：
 
-- 本地代码、SQLite Alembic 迁移、pytest、SQLAlchemy mapper 检查已完成。
-- Supabase 执行 `alembic current` 时返回数据库密码认证失败，需要更新有效 `DATABASE_URL` 后继续远端迁移验收。
+- 分支：`v2/task-1.1-unblock-alembic`
+- 修复：`backend/alembic/env.py` 不再对 `DATABASE_URL` 中的 `%` 做二次转义，避免 Supabase URL 编码密码在 Alembic 中认证失败。
+- 修复：`backend/alembic/versions/0002_v2_discovery_schema.py` 缩短 `selection_reports.product_opportunity_id` 外键名，避免 PostgreSQL 63 字符标识符限制。
+- Supabase 现状：历史 V1 表已存在但没有 `alembic_version`，已执行 `alembic stamp 0001_initial_schema` 后再执行 `alembic upgrade head`。
+- Supabase 验证：
+  - `categories`
+  - `category_scan_jobs`
+  - `category_products`
+  - `product_opportunities`
+  - `launch_scores`
+  - `discovery_reports`
+  - `selection_reports.product_opportunity_id`
+  - `alembic_version = 0002_v2_discovery_schema`
+- 本地 SQLite 验证：临时 SQLite 数据库执行 `alembic upgrade head` 后为 `0002_v2_discovery_schema (head)`。
+- 测试：`cd backend; .\.venv\Scripts\python.exe -m pytest -q` 通过，`143 passed`。
 
 ### Task 1.2 新增 V2 Pydantic Schema `[DONE]`
 
