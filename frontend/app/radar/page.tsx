@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { AlertTriangle, Loader2, Radar, SlidersHorizontal } from "lucide-react";
 import { Header } from "@/components/Header";
 import { ProductOpportunityCard } from "@/components/ProductOpportunityCard";
-import { ApiRequestError, RadarProductsResponse, getRadarProducts } from "@/lib/api";
+import { ApiRequestError, RadarProductsResponse, discoverProducts, getRadarProducts } from "@/lib/api";
 import { useI18n } from "@/lib/i18n/LocaleProvider";
 
 const categories = ["", "Kitchen & Dining", "Home & Kitchen", "Storage & Organization"];
@@ -31,11 +31,11 @@ export default function RadarPage() {
   const [error, setError] = useState<{ message: string; code?: string; status?: number } | null>(null);
 
   useEffect(() => {
-    void loadProducts();
+    void loadProducts(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  async function loadProducts() {
+  async function loadProducts(autoDiscoverIfEmpty = false) {
     setLoading(true);
     setError(null);
 
@@ -49,6 +49,36 @@ export default function RadarPage() {
         sort,
         limit: 50
       });
+      if (autoDiscoverIfEmpty && category && response.products.length === 0) {
+        await discoverProducts({
+          category,
+          marketplace: "US",
+          budget_rmb: budgetMax,
+          risk_preference: readRiskPreference(searchParams.get("risk_preference")),
+          price_min: priceMin,
+          price_max: priceMax,
+          weight_limit_g: Number(searchParams.get("weight_limit_g") ?? 500),
+          exclude_red_ocean: readBooleanParam(searchParams.get("exclude_red_ocean"), true),
+          exclude_amazon_basics: readBooleanParam(searchParams.get("exclude_amazon_basics"), true),
+          exclude_fragile: readBooleanParam(searchParams.get("exclude_fragile"), true),
+          exclude_seasonal: readBooleanParam(searchParams.get("exclude_seasonal"), true),
+          low_moq_only: readBooleanParam(searchParams.get("low_moq_only"), false),
+          easy_launch_only: readBooleanParam(searchParams.get("easy_launch_only"), false),
+          high_margin_only: readBooleanParam(searchParams.get("high_margin_only"), false),
+          min_launch_score: readBooleanParam(searchParams.get("easy_launch_only"), false) ? 80 : undefined
+        });
+        const refreshed = await getRadarProducts({
+          category: category || undefined,
+          risk_level: riskLevel || undefined,
+          budget_max: budgetMax,
+          price_min: priceMin,
+          price_max: priceMax,
+          sort,
+          limit: 50
+        });
+        setResult(refreshed);
+        return;
+      }
       setResult(response);
     } catch (err) {
       if (err instanceof ApiRequestError) {
@@ -147,6 +177,20 @@ export default function RadarPage() {
       </main>
     </>
   );
+}
+
+function readBooleanParam(value: string | null, fallback: boolean) {
+  if (value === null) {
+    return fallback;
+  }
+  return value === "true";
+}
+
+function readRiskPreference(value: string | null): "low" | "balanced" | "aggressive" {
+  if (value === "balanced" || value === "aggressive") {
+    return value;
+  }
+  return "low";
 }
 
 function Select({

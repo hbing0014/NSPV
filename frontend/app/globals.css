@@ -4,13 +4,69 @@
 
 :root {
   color-scheme: light;
-  background: #fbfcf8;
+
+  --background: 210 40% 98%;
+  --foreground: 222 47% 11%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+  --primary: 221 83% 53%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 222 47% 11%;
+  --muted: 215 20% 65%;
+  --muted-foreground: 215 16% 47%;
+  --accent: 173 80% 30%;
+  --accent-foreground: 0 0% 100%;
+  --warning: 38 92% 50%;
+  --warning-foreground: 30 92% 12%;
+  --success: 158 64% 38%;
+  --success-foreground: 0 0% 100%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 214 32% 91%;
+  --input: 214 32% 91%;
+  --ring: 221 83% 53%;
+  --field: 210 40% 96%;
+  --radius: 0.5rem;
+
+  background: hsl(var(--background));
+}
+
+.dark {
+  color-scheme: dark;
+
+  --background: 222 47% 7%;
+  --foreground: 210 40% 98%;
+  --card: 222 47% 10%;
+  --card-foreground: 210 40% 98%;
+  --popover: 222 47% 10%;
+  --popover-foreground: 210 40% 98%;
+  --primary: 217 91% 60%;
+  --primary-foreground: 222 47% 7%;
+  --secondary: 217 33% 17%;
+  --secondary-foreground: 210 40% 98%;
+  --muted: 215 25% 27%;
+  --muted-foreground: 215 20% 72%;
+  --accent: 173 70% 40%;
+  --accent-foreground: 222 47% 7%;
+  --warning: 38 92% 56%;
+  --warning-foreground: 30 92% 12%;
+  --success: 158 64% 45%;
+  --success-foreground: 222 47% 7%;
+  --destructive: 0 72% 58%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 217 33% 20%;
+  --input: 217 33% 20%;
+  --ring: 217 91% 60%;
+  --field: 217 33% 14%;
 }
 
 body {
   margin: 0;
-  color: #18221f;
-  background: #fbfcf8;
+  color: hsl(var(--foreground));
+  background: hsl(var(--background));
 }
 
 button,
@@ -19,3 +75,6 @@ select {
   font: inherit;
 }
 
+* {
+  border-color: hsl(var(--border));
+}

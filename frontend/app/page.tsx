@@ -1,12 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
-import { AlertTriangle, CheckCircle2, Compass, Loader2, Search, SlidersHorizontal } from "lucide-react";
+import { Compass, Loader2, Search, SlidersHorizontal } from "lucide-react";
 import { Header } from "@/components/Header";
-import { ProductOpportunityCard } from "@/components/ProductOpportunityCard";
-import { ApiRequestError, DiscoverProductsResponse, discoverProducts } from "@/lib/api";
 import { useI18n } from "@/lib/i18n/LocaleProvider";
 
 const categories = ["Kitchen & Dining", "Home & Kitchen", "Storage & Organization", "Cleaning Tools"];
@@ -27,7 +24,6 @@ const weightLimits = [
 
 export default function Home() {
   const { t } = useI18n();
-  const router = useRouter();
   const [category, setCategory] = useState("Kitchen & Dining");
   const [budget, setBudget] = useState(100000);
   const [riskPreference, setRiskPreference] = useState<"low" | "balanced" | "aggressive">("low");
@@ -41,8 +37,6 @@ export default function Home() {
   const [easyLaunchOnly, setEasyLaunchOnly] = useState(false);
   const [highMarginOnly, setHighMarginOnly] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<DiscoverProductsResponse | null>(null);
-  const [error, setError] = useState<{ message: string; code?: string; status?: number } | null>(null);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -51,49 +45,23 @@ export default function Home() {
     }
 
     setLoading(true);
-    setError(null);
-    setResult(null);
-
-    try {
-      const response = await discoverProducts({
-        category,
-        marketplace: "US",
-        budget_rmb: budget,
-        risk_preference: riskPreference,
-        price_min: priceRange.min,
-        price_max: priceRange.max,
-        weight_limit_g: weightLimit,
-        exclude_red_ocean: excludeRedOcean,
-        exclude_amazon_basics: excludeAmazonBasics,
-        exclude_fragile: excludeFragile,
-        exclude_seasonal: excludeSeasonal,
-        low_moq_only: lowMoqOnly,
-        easy_launch_only: easyLaunchOnly,
-        high_margin_only: highMarginOnly,
-        min_launch_score: easyLaunchOnly ? 80 : undefined,
-        min_npfs: undefined
-      });
-      setResult(response);
-      const params = new URLSearchParams({
-        category,
-        budget_max: String(budget),
-        price_min: String(priceRange.min),
-        price_max: String(priceRange.max),
-        sort: "highest_npfs"
-      });
-      router.push(`/radar?${params.toString()}`);
-    } catch (err) {
-      if (err instanceof ApiRequestError) {
-        setError({ message: err.message, code: err.code, status: err.status });
-      } else {
-        setError({
-          message: err instanceof TypeError ? t.discover.error.connect : t.discover.error.failed,
-          code: "CLIENT_ERROR"
-        });
-      }
-    } finally {
-      setLoading(false);
-    }
+    const params = new URLSearchParams({
+      category,
+      budget_max: String(budget),
+      risk_preference: riskPreference,
+      price_min: String(priceRange.min),
+      price_max: String(priceRange.max),
+      weight_limit_g: String(weightLimit),
+      exclude_red_ocean: String(excludeRedOcean),
+      exclude_amazon_basics: String(excludeAmazonBasics),
+      exclude_fragile: String(excludeFragile),
+      exclude_seasonal: String(excludeSeasonal),
+      low_moq_only: String(lowMoqOnly),
+      easy_launch_only: String(easyLaunchOnly),
+      high_margin_only: String(highMarginOnly),
+      sort: "highest_npfs"
+    });
+    window.location.assign(`/radar?${params.toString()}`);
   }
 
   return (
@@ -127,13 +95,33 @@ export default function Home() {
             </div>
           </div>
 
-          <form id="discover-form" onSubmit={onSubmit} className="border border-line bg-white p-5" aria-busy={loading}>
+          <form
+            id="discover-form"
+            action="/radar"
+            method="get"
+            onSubmit={onSubmit}
+            className="border border-line bg-white p-5"
+            aria-busy={loading}
+          >
             <div className="grid gap-4">
+              <input type="hidden" name="price_min" value={priceRange.min} />
+              <input type="hidden" name="price_max" value={priceRange.max} />
+              <input type="hidden" name="risk_preference" value={riskPreference} />
+              <input type="hidden" name="weight_limit_g" value={weightLimit} />
+              <input type="hidden" name="exclude_red_ocean" value={String(excludeRedOcean)} />
+              <input type="hidden" name="exclude_amazon_basics" value={String(excludeAmazonBasics)} />
+              <input type="hidden" name="exclude_fragile" value={String(excludeFragile)} />
+              <input type="hidden" name="exclude_seasonal" value={String(excludeSeasonal)} />
+              <input type="hidden" name="low_moq_only" value={String(lowMoqOnly)} />
+              <input type="hidden" name="easy_launch_only" value={String(easyLaunchOnly)} />
+              <input type="hidden" name="high_margin_only" value={String(highMarginOnly)} />
+              <input type="hidden" name="sort" value="highest_npfs" />
               <div className="grid gap-4 sm:grid-cols-2">
-                <SelectField label={t.discover.fields.category} value={category} onChange={setCategory} options={categories} />
+                <SelectField label={t.discover.fields.category} name="category" value={category} onChange={setCategory} options={categories} />
                 <label className="grid gap-2">
                   <span className="text-sm font-medium text-ink">{t.discover.fields.budget}</span>
                   <select
+                    name="budget_max"
                     className="border border-line bg-field px-3 py-3 outline-none focus:border-accent"
                     value={budget}
                     onChange={(event) => setBudget(Number(event.target.value))}
@@ -206,45 +194,6 @@ export default function Home() {
                 </div>
               </div>
 
-              {error ? (
-                <div className="border border-red-200 bg-red-50 p-3 text-sm text-red-800" role="alert">
-                  <div className="flex gap-3">
-                    <AlertTriangle className="mt-0.5 shrink-0 text-red-600" size={18} aria-hidden="true" />
-                    <div>
-                      <div className="font-medium">{t.discover.error.title}</div>
-                      <p className="mt-1 leading-6">{error.message}</p>
-                      <div className="mt-2 flex gap-2 text-xs text-red-700/80">
-                        {error.code ? <span>{error.code}</span> : null}
-                        {error.status ? <span>HTTP {error.status}</span> : null}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ) : null}
-
-              {result ? (
-                <div className="border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-900" role="status">
-                  <div className="flex items-start gap-3">
-                    <CheckCircle2 className="mt-0.5 shrink-0 text-emerald-700" size={18} aria-hidden="true" />
-                    <div>
-                      <div className="font-medium">
-                        {t.discover.result.title.replace("{count}", String(result.total_recommendations))}
-                      </div>
-                      <p className="mt-1 leading-6">
-                        {t.discover.result.meta
-                          .replace("{scanned}", String(result.total_products_scanned))
-                          .replace("{filtered}", String(result.total_products_filtered))}
-                      </p>
-                      {result.products[0] ? (
-                        <div className="mt-4">
-                          <ProductOpportunityCard product={result.products[0]} labels={t.discover.card} />
-                        </div>
-                      ) : null}
-                    </div>
-                  </div>
-                </div>
-              ) : null}
-
               <button
                 className="flex items-center justify-center gap-2 bg-accent px-4 py-3 font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
                 type="submit"
@@ -263,11 +212,13 @@ export default function Home() {
 
 function SelectField({
   label,
+  name,
   value,
   onChange,
   options
 }: {
   label: string;
+  name?: string;
   value: string;
   onChange: (value: string) => void;
   options: string[];
@@ -276,6 +227,7 @@ function SelectField({
     <label className="grid gap-2">
       <span className="text-sm font-medium text-ink">{label}</span>
       <select
+        name={name}
         className="border border-line bg-field px-3 py-3 outline-none focus:border-accent"
         value={value}
         onChange={(event) => onChange(event.target.value)}

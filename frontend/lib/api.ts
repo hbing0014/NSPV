@@ -1,5 +1,21 @@
-export const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE ?? "http://127.0.0.1:8000";
+export const API_BASE = resolveApiBase();
+
+function resolveApiBase() {
+  if (process.env.NEXT_PUBLIC_API_BASE) {
+    return process.env.NEXT_PUBLIC_API_BASE;
+  }
+
+  if (typeof window !== "undefined") {
+    const localBackendByFrontendPort: Record<string, string> = {
+      "3000": "http://127.0.0.1:8000",
+      "3001": "http://127.0.0.1:8001",
+      "3002": "http://127.0.0.1:8002"
+    };
+    return localBackendByFrontendPort[window.location.port] ?? "http://127.0.0.1:8000";
+  }
+
+  return "http://127.0.0.1:8000";
+}
 
 type ApiErrorBody = {
   error?: {
