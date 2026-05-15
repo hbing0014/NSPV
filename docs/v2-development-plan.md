@@ -30,10 +30,10 @@
 | Phase 1 | 数据库与模型 | `[IN PROGRESS]` | 建立 Discovery Layer 数据结构 |
 | Phase 2 | 种子数据与规则引擎 | `[IN PROGRESS]` | 跑通产品机会生成 |
 | Phase 3 | Launch Score 与 NPFS | `[IN PROGRESS]` | 完成 V2 评分闭环 |
-| Phase 4 | Product Radar API | `[TODO]` | 提供发现结果接口 |
-| Phase 5 | V2 首页与 Radar 页面 | `[TODO]` | 前端 Discover-first 体验 |
-| Phase 6 | V1 兼容与验证链路 | `[TODO]` | Product → Validate Keyword |
-| Phase 7 | 测试、验收与部署准备 | `[TODO]` | 稳定 V2 MVP |
+| Phase 4 | Product Radar API | `[DONE]` | 提供发现结果接口 |
+| Phase 5 | V2 首页与 Radar 页面 | `[DONE]` | 前端 Discover-first 体验 |
+| Phase 6 | V1 兼容与验证链路 | `[DONE]` | Product → Validate Keyword |
+| Phase 7 | 测试、验收与部署准备 | `[IN PROGRESS]` | 稳定 V2 MVP |
 
 ## Phase 1：数据库与模型
 
@@ -904,7 +904,7 @@ npm run build
 
 ## Phase 7：测试、验收与部署准备
 
-### Task 7.1 增加 V2 后端完整测试套件 `[NEXT]`
+### Task 7.1 增加 V2 后端完整测试套件 `[DONE]`
 
 建议分支：
 
@@ -934,7 +934,18 @@ cd backend
 .\.venv\Scripts\pytest
 ```
 
-### Task 7.2 增加 V2 前端 smoke `[TODO]`
+完成记录：
+
+- 分支：`v2/task-7.1-v2-backend-tests`
+- 新增：`backend/tests/test_v2_backend_suite.py`
+- 覆盖：
+  - 固定 Discovery 样例得分稳定性。
+  - Discover API 写入 Category、DiscoveryReport、ProductOpportunity 的持久化契约。
+  - Radar Product Detail 与 Discover 返回产品的一致性。
+  - Product Opportunity → V1 Validate Keyword → SelectionReport 的关联链路。
+- 验证：`cd backend; .\.venv\Scripts\python.exe -m pytest -q` 通过，`143 passed`。
+
+### Task 7.2 增加 V2 前端 smoke `[NEXT]`
 
 建议分支：
 

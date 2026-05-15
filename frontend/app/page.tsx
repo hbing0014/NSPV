@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { AlertTriangle, CheckCircle2, Compass, Loader2, Search, SlidersHorizontal } from "lucide-react";
 import { Header } from "@/components/Header";
@@ -26,6 +27,7 @@ const weightLimits = [
 
 export default function Home() {
   const { t } = useI18n();
+  const router = useRouter();
   const [category, setCategory] = useState("Kitchen & Dining");
   const [budget, setBudget] = useState(100000);
   const [riskPreference, setRiskPreference] = useState<"low" | "balanced" | "aggressive">("low");
@@ -72,6 +74,14 @@ export default function Home() {
         min_npfs: undefined
       });
       setResult(response);
+      const params = new URLSearchParams({
+        category,
+        budget_max: String(budget),
+        price_min: String(priceRange.min),
+        price_max: String(priceRange.max),
+        sort: "highest_npfs"
+      });
+      router.push(`/radar?${params.toString()}`);
     } catch (err) {
       if (err instanceof ApiRequestError) {
         setError({ message: err.message, code: err.code, status: err.status });
@@ -98,10 +108,15 @@ export default function Home() {
             </h1>
             <p className="mt-4 max-w-2xl text-base leading-7 text-ink/70">{t.discover.subtitle}</p>
             <div className="mt-6 flex flex-wrap gap-3">
-              <a className="inline-flex items-center gap-2 bg-accent px-4 py-3 font-medium text-white" href="#discover-form">
+              <button
+                className="inline-flex items-center gap-2 bg-accent px-4 py-3 font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
+                type="submit"
+                form="discover-form"
+                disabled={loading}
+              >
                 <Compass size={18} aria-hidden="true" />
-                {t.discover.actions.discover}
-              </a>
+                {loading ? t.discover.actions.loading : t.discover.actions.discover}
+              </button>
               <Link
                 className="inline-flex items-center gap-2 border border-line bg-white px-4 py-3 font-medium text-ink"
                 href="/validate"

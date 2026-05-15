@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { AlertTriangle, Loader2, Radar, SlidersHorizontal } from "lucide-react";
 import { Header } from "@/components/Header";
 import { ProductOpportunityCard } from "@/components/ProductOpportunityCard";
@@ -13,12 +14,18 @@ const sortOptions = ["highest_npfs", "lowest_risk", "lowest_budget", "highest_pr
 
 export default function RadarPage() {
   const { t } = useI18n();
-  const [category, setCategory] = useState("");
+  const searchParams = useSearchParams();
+  const [category, setCategory] = useState(searchParams.get("category") ?? "");
   const [riskLevel, setRiskLevel] = useState("");
-  const [budgetMax, setBudgetMax] = useState(100000);
-  const [priceMin, setPriceMin] = useState(15);
-  const [priceMax, setPriceMax] = useState(60);
-  const [sort, setSort] = useState<(typeof sortOptions)[number]>("highest_npfs");
+  const [budgetMax, setBudgetMax] = useState(Number(searchParams.get("budget_max") ?? 100000));
+  const [priceMin, setPriceMin] = useState(Number(searchParams.get("price_min") ?? 15));
+  const [priceMax, setPriceMax] = useState(Number(searchParams.get("price_max") ?? 60));
+  const initialSort = searchParams.get("sort");
+  const [sort, setSort] = useState<(typeof sortOptions)[number]>(
+    sortOptions.includes(initialSort as (typeof sortOptions)[number])
+      ? (initialSort as (typeof sortOptions)[number])
+      : "highest_npfs"
+  );
   const [loading, setLoading] = useState(true);
   const [result, setResult] = useState<RadarProductsResponse | null>(null);
   const [error, setError] = useState<{ message: string; code?: string; status?: number } | null>(null);
