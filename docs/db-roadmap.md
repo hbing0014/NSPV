@@ -41,6 +41,13 @@
 - `0001_initial_schema`
 - `0002_v2_discovery_schema`
 
+当前 Supabase 状态：
+
+- `alembic_version = 0002_v2_discovery_schema`
+- V1 历史表保留。
+- V2 Discovery Layer 表已通过 Alembic 创建。
+- `selection_reports.product_opportunity_id` 已存在，可为空，用于关联 V2 产品机会。
+
 ## V1 数据表
 
 ### users
@@ -231,6 +238,7 @@ V1 建议新增字段：
 - `error_message`
 - `input_payload`
 - `scoring_version`
+- `product_opportunity_id`
 - `created_at`
 
 `analysis_status` values:
@@ -581,3 +589,58 @@ cd backend
 当前 Alembic 版本：
 
 - `0002_v2_discovery_schema`
+
+### 新 Supabase 数据库
+
+新数据库没有应用表和 `alembic_version` 时，直接执行：
+
+```powershell
+cd backend
+.\.venv\Scripts\alembic upgrade head
+```
+
+### 已存在 V1 表但没有 Alembic 版本的 Supabase 数据库
+
+如果 Supabase 已经有 V1 表，例如 `users`、`projects`、`selection_reports`，但没有 `alembic_version`，不要直接 `upgrade head`，否则 Alembic 会尝试再次创建 V1 表。
+
+正确步骤：
+
+```powershell
+cd backend
+.\.venv\Scripts\alembic stamp 0001_initial_schema
+.\.venv\Scripts\alembic upgrade head
+```
+
+完成后检查：
+
+```sql
+select version_num from alembic_version;
+```
+
+预期：
+
+```text
+0002_v2_discovery_schema
+```
+
+### V2 必查表
+
+完成迁移后，Supabase 应存在：
+
+- `categories`
+- `category_scan_jobs`
+- `category_products`
+- `product_opportunities`
+- `launch_scores`
+- `discovery_reports`
+
+并且 `selection_reports` 应包含：
+
+- `product_opportunity_id`
+
+### 迁移注意事项
+
+- `DATABASE_URL` 中的数据库密码必须做 URL 编码。
+- Alembic 使用 `backend/.env` 的 `DATABASE_URL`。
+- 不要在 pytest 中连接 Supabase；pytest 使用隔离 SQLite 测试库。
+- 生产库迁移前先确认目标数据库和 `alembic current`。

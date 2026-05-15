@@ -82,19 +82,37 @@ cd frontend
 npm run smoke
 ```
 
-这会针对 `http://127.0.0.1:3000` 检查首页和报告列表。
+这会针对 `http://127.0.0.1:3000` 检查 V2 Discovery 首页、V1 Validate、Radar、产品详情、报告列表和报告详情。
 
-如需包含报告详情页：
+默认情况下，脚本会通过后端 API 自动创建 smoke 所需的 V2 产品机会和 V1 报告。需要先确保后端可访问。
+
+可配置环境变量：
 
 ```powershell
-cd frontend
+$env:FRONTEND_BASE_URL="http://127.0.0.1:3000"
+$env:BACKEND_BASE_URL="http://127.0.0.1:8000"
+$env:SMOKE_LOCALE="zh-CN"
+npm run smoke
+```
+
+如果已经有固定数据，可以跳过自动创建：
+
+```powershell
+$env:SMOKE_PRODUCT_ID="1"
 $env:SMOKE_REPORT_ID="1"
 npm run smoke
 ```
 
-使用 `FRONTEND_BASE_URL` 指向不同的前端服务。
+Smoke 覆盖路径：
 
-## 待补充后端单元测试
+- `/`
+- `/validate?...product_opportunity_id=...`
+- `/radar`
+- `/radar/products/{id}`
+- `/reports`
+- `/reports/{id}`
+
+## 后端测试
 
 目标命令：
 
@@ -103,7 +121,7 @@ cd backend
 .\.venv\Scripts\pytest
 ```
 
-必要测试：
+当前后端测试覆盖：
 
 - `test_health.py`
   - `/health` 返回状态 ok。
@@ -124,32 +142,52 @@ cd backend
   - Amazon Basics 预警。
   - 低价格预警。
   - 成熟产品预警。
+- `test_category_scanner.py`
+  - V2 Category Scanner 硬过滤和软过滤规则。
+- `test_launch_score.py`
+  - Launch Score 六个维度和预算输出。
+- `test_supplier_score.py`
+  - Supplier Score 简化版。
+- `test_npfs.py`
+  - NPFS 权重、推荐等级和风险等级。
+- `test_discover_api.py`
+  - Discover API 创建项目、报告和产品机会。
+- `test_radar_api.py`
+  - Radar 列表、筛选、排序和详情。
+- `test_v2_backend_suite.py`
+  - 固定 V2 样例得分稳定。
+  - Discover → Radar Detail → Validate → Report 端到端后端链路。
 
-## 待补充前端测试
+## 前端测试
 
 最低要求：
 
 ```powershell
 cd frontend
 npm run build
+npm run smoke
 ```
 
-建议的 Playwright 测试：
+当前自动 smoke 已覆盖主要页面。后续如果引入 Playwright，优先覆盖：
 
-- 首页渲染表单。
-- 用户提交关键词。
-- 出现加载状态。
-- 用户进入报告页。
+- Discovery 首页提交并跳转 Radar。
+- Radar 产品卡片进入产品详情。
+- 产品详情页点击 Validate Keyword。
+- Validate 提交后进入报告页。
 - 报告页包含 NSFS、推荐等级和商品表格。
-- 报告页列出已创建报告。
 
 ## 手工回归检查清单
 
-在确认 V1 稳定前运行以下检查：
+在确认 V2 稳定前运行以下检查：
 
-- 首页可加载。
-- 使用 mock provider 时 Analyze 请求成功。
+- `/` 是 Discovery 首页。
+- `/validate` 保留 V1 关键词验证。
+- 使用 mock provider 时 Discover 和 Analyze 请求成功。
 - Analyze 请求能够处理无效价格区间。
+- Discover 请求能够处理无效价格区间。
+- Radar 页面能显示产品机会卡片。
+- 产品详情页能显示 NPFS、Launch、Supplier、风险和差异化建议。
+- Product Opportunity 的 Validate Keyword 可以生成 V1 报告。
 - 报告详情可以通过已保存的 report ID 加载。
 - 报告列表可加载。
 - Top20 表格显示全部商品。

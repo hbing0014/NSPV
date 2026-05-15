@@ -17,6 +17,9 @@
 ```text
 GET  /health
 POST /api/analyze
+POST /api/discover/products
+GET  /api/radar/products
+GET  /api/radar/products/{opportunity_id}
 POST /api/projects
 GET  /api/projects
 GET  /api/projects/{project_id}
@@ -77,6 +80,7 @@ POST /api/analyze
   "target_price_min": 20,
   "target_price_max": 40,
   "project_id": 1,
+  "product_opportunity_id": 1,
   "exclude_red_ocean": true
 }
 ```
@@ -117,6 +121,7 @@ POST /api/analyze
     "target_price_min": 20,
     "target_price_max": 40,
     "project_id": 1,
+    "product_opportunity_id": 1,
     "exclude_red_ocean": true
   },
   "scoring_version": "v1.0.0",
@@ -134,6 +139,7 @@ V1 必需行为：
 - 分析成功时保存报告。
 - 如果传入 `project_id`，报告归属到该项目。
 - 如果未传 `project_id`，根据分析输入自动创建项目。
+- 如果传入 `product_opportunity_id`，报告会绑定 V2 产品机会，支持 Discover → Validate 链路。
 - 在报告中保存 `input_payload`、`scoring_version`、`analysis_status` 和 `error_message`。
 - 对成功、空结果和失败的抓取尝试保存 `scraper_runs` 记录。
 
@@ -276,7 +282,173 @@ V1 基础认证行为：
 - OAuth 登录。
 - API Key 管理。
 
-## V2 API
+## V2 已实现 API
+
+V2 新增 Product Discovery Layer。V1 `POST /api/analyze` 保留为 Keyword Validation Layer。
+
+### Discover Products
+
+```text
+POST /api/discover/products
+```
+
+用途：
+
+- 用户输入类目、预算、风险偏好、价格和重量限制。
+- 后端从 V2 seed/category scanner 生成候选产品池。
+- 执行 Category Scanner 硬过滤、Launch Score、Supplier Score、NPFS。
+- 保存 `discovery_reports` 和 `product_opportunities`。
+
+请求：
+
+```json
+{
+  "category": "Kitchen & Dining",
+  "marketplace": "US",
+  "budget_rmb": 100000,
+  "risk_preference": "low",
+  "price_min": 20,
+  "price_max": 40,
+  "weight_limit_g": 500,
+  "exclude_red_ocean": true,
+  "exclude_amazon_basics": true,
+  "exclude_fragile": true,
+  "exclude_seasonal": true,
+  "low_moq_only": false,
+  "easy_launch_only": false,
+  "high_margin_only": false,
+  "min_launch_score": 80,
+  "min_npfs": 70,
+  "max_review_barrier": 300
+}
+```
+
+响应：
+
+```json
+{
+  "discovery_report_id": 1,
+  "project_id": 1,
+  "total_products_scanned": 10,
+  "total_products_filtered": 7,
+  "total_recommendations": 3,
+  "products": [
+    {
+      "product_opportunity_id": 1,
+      "asin": "NSPVK00001",
+      "product_name": "Under Sink Organizer",
+      "category": "Kitchen & Dining",
+      "primary_keyword": "under sink organizer",
+      "secondary_keywords": ["sink organizer", "under sink storage"],
+      "long_tail_keywords": ["under sink organizer for kitchen"],
+      "avg_price": 29.99,
+      "avg_rating": 4.4,
+      "avg_reviews_top10": 420,
+      "min_reviews_top10": 88,
+      "sponsored_density": 0.28,
+      "npfs_score": 85.8,
+      "demand_score": 85,
+      "competition_score": 78,
+      "profit_score": 85,
+      "opportunity_score": 100,
+      "launch_score": 86.25,
+      "supplier_score": 86.75,
+      "estimated_budget_rmb": 32692.18,
+      "estimated_moq": 300,
+      "estimated_launch_days": 45,
+      "risk_level": "low",
+      "recommendation": "strongly_recommended",
+      "tags": ["LOW_REVIEW", "LOW_RISK", "HIGH_MARGIN"],
+      "warnings": [],
+      "key_opportunities": ["Low review + easy launch candidate"]
+    }
+  ]
+}
+```
+
+校验规则：
+
+- `budget_rmb > 0`。
+- `price_min <= price_max`。
+- `risk_preference` 只能为 `low`、`balanced`、`aggressive`。
+- `min_launch_score` 和 `min_npfs` 范围为 `0-100`。
+
+### Product Radar
+
+```text
+GET /api/radar/products
+```
+
+用途：
+
+- 返回已发现的产品机会池。
+- 支持 Radar 页面按类目、风险、预算、价格和排序方式筛选。
+
+查询参数：
+
+| 参数 | 示例 | 说明 |
+| --- | --- | --- |
+| `category` | `Kitchen & Dining` | 类目过滤 |
+| `risk_level` | `low` | 风险等级过滤 |
+| `budget_max` | `100000` | 最大启动预算 |
+| `price_min` | `20` | 最低客单价 |
+| `price_max` | `40` | 最高客单价 |
+| `sort` | `highest_npfs` | 可选：`highest_npfs`、`lowest_risk`、`lowest_budget`、`highest_profit`、`easiest_launch` |
+| `limit` | `50` | 返回数量，最大 100 |
+
+响应：
+
+```json
+{
+  "total": 1,
+  "products": [
+    {
+      "product_opportunity_id": 1,
+      "asin": "NSPVK00001",
+      "product_name": "Under Sink Organizer",
+      "category": "Kitchen & Dining",
+      "primary_keyword": "under sink organizer",
+      "avg_price": 29.99,
+      "npfs_score": 85.8,
+      "launch_score": 86.25,
+      "supplier_score": 86.75,
+      "estimated_budget_rmb": 32692.18,
+      "risk_level": "low",
+      "recommendation": "strongly_recommended",
+      "is_red_ocean": false,
+      "is_amazon_basics": false,
+      "key_opportunities": ["Low review + easy launch candidate"]
+    }
+  ]
+}
+```
+
+### Product Opportunity Detail
+
+```text
+GET /api/radar/products/{opportunity_id}
+```
+
+用途：
+
+- 返回单个产品机会详情。
+- 为 `/radar/products/{id}` 详情页和 `Validate Keyword` CTA 提供数据。
+
+不存在时返回：
+
+```json
+{
+  "error": {
+    "code": "PRODUCT_OPPORTUNITY_NOT_FOUND",
+    "message": "Product opportunity not found",
+    "details": {
+      "opportunity_id": 999999
+    }
+  }
+}
+```
+
+## V2 后续 API
 
 ### Review NLP
 

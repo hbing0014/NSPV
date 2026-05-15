@@ -28,12 +28,12 @@
 | --- | --- | --- | --- |
 | Phase 0 | V2 文档和任务拆分 | `[DONE]` | 固化产品设计和开发计划 |
 | Phase 1 | 数据库与模型 | `[DONE]` | 建立 Discovery Layer 数据结构 |
-| Phase 2 | 种子数据与规则引擎 | `[IN PROGRESS]` | 跑通产品机会生成 |
-| Phase 3 | Launch Score 与 NPFS | `[IN PROGRESS]` | 完成 V2 评分闭环 |
+| Phase 2 | 种子数据与规则引擎 | `[DONE]` | 跑通产品机会生成 |
+| Phase 3 | Launch Score 与 NPFS | `[DONE]` | 完成 V2 评分闭环 |
 | Phase 4 | Product Radar API | `[DONE]` | 提供发现结果接口 |
 | Phase 5 | V2 首页与 Radar 页面 | `[DONE]` | 前端 Discover-first 体验 |
 | Phase 6 | V1 兼容与验证链路 | `[DONE]` | Product → Validate Keyword |
-| Phase 7 | 测试、验收与部署准备 | `[IN PROGRESS]` | 稳定 V2 MVP |
+| Phase 7 | 测试、验收与部署准备 | `[DONE]` | 稳定 V2 MVP |
 
 ## Phase 1：数据库与模型
 
@@ -1003,7 +1003,7 @@ npm run smoke
   - `NEXT_PUBLIC_API_BASE=http://127.0.0.1:8012 npm run build` 通过。
   - `FRONTEND_BASE_URL=http://127.0.0.1:3012 BACKEND_BASE_URL=http://127.0.0.1:8012 npm run smoke` 通过。
 
-### Task 7.3 更新部署和环境文档 `[NEXT]`
+### Task 7.3 更新部署和环境文档 `[DONE]`
 
 建议分支：
 
@@ -1027,6 +1027,20 @@ v2/task-7.3-v2-docs
 - 新 API 有请求和响应示例。
 - 新表有字段说明。
 - V2 smoke 有测试步骤。
+
+完成记录：
+
+- 分支：`v2/task-7.3-v2-docs`
+- 更新：`docs/api-roadmap.md`
+- 更新：`docs/db-roadmap.md`
+- 更新：`docs/deployment.md`
+- 更新：`docs/testing.md`
+- 覆盖：
+  - V2 Discover API、Radar API、Product Detail API 请求和响应示例。
+  - V2 Supabase Alembic 迁移流程。
+  - 现有 V1 表但没有 `alembic_version` 的 Supabase 处理方式。
+  - V2 smoke 脚本环境变量和覆盖路径。
+- 验证：`git diff --check` 通过。
 
 ## V2 MVP 验收清单
 

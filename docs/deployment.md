@@ -1,6 +1,6 @@
 # 部署与环境变量
 
-本文档记录 NSPV V1 在本地和托管环境运行所需的环境变量。
+本文档记录 NSPV V1/V2 在本地和托管环境运行所需的环境变量。
 
 ## 后端
 
@@ -102,7 +102,7 @@ DATABASE_URL=postgresql+psycopg://postgres.<project-ref>:[URL_ENCODED_DB_PASSWOR
 DATABASE_URL=postgresql+psycopg://postgres:[URL_ENCODED_DB_PASSWORD]@db.<project-ref>.supabase.co:5432/postgres
 ```
 
-Alembic 是应用 schema 变更的迁移入口。
+Alembic 是应用 schema 变更的唯一正式迁移入口。
 
 新空数据库：
 
@@ -111,12 +111,15 @@ cd backend
 .\.venv\Scripts\alembic upgrade head
 ```
 
-对于已经通过 `backend/migrations/supabase/*.sql` 创建的现有 Supabase 数据库，只需标记一次当前版本：
+对于已经存在 V1 表但没有 `alembic_version` 的 Supabase 数据库，需要先标记 V1 版本，再升级到最新版本：
 
 ```powershell
 cd backend
-.\.venv\Scripts\alembic stamp head
+.\.venv\Scripts\alembic stamp 0001_initial_schema
+.\.venv\Scripts\alembic upgrade head
 ```
+
+不要对只有 V1 表的数据库直接执行 `alembic upgrade head`，否则 Alembic 会从 `0001_initial_schema` 开始重复创建 V1 表。
 
 Alembic 迁移文件位于：
 
@@ -134,14 +137,61 @@ backend/migrations/supabase/
 
 1. 创建或更新 Supabase 数据库。
 2. 新数据库在 `backend/` 下运行 `alembic upgrade head`。
-3. 现有已手工迁移的 Supabase 数据库只运行一次 `alembic stamp head`。
+3. 现有 V1 数据库先运行 `alembic stamp 0001_initial_schema`，再运行 `alembic upgrade head`。
 4. 配置后端环境变量。
 5. 部署 FastAPI 后端。
 6. 配置前端 `NEXT_PUBLIC_API_BASE`。
 7. 部署 Next.js 前端。
 8. 将后端 `FRONTEND_ORIGIN` 设置为前端来源。
 9. 验证 `GET /health`。
-10. 从前端执行一次冒烟分析。
+10. 验证 V2 表存在，且 `alembic_version = 0002_v2_discovery_schema`。
+11. 从前端执行一次冒烟分析。
+
+## V2 部署验证
+
+后端健康检查：
+
+```powershell
+Invoke-RestMethod http://127.0.0.1:8000/health
+```
+
+Discover API 冒烟：
+
+```powershell
+$body = @{
+  category = 'Kitchen & Dining'
+  marketplace = 'US'
+  budget_rmb = 100000
+  risk_preference = 'low'
+  price_min = 20
+  price_max = 40
+  weight_limit_g = 500
+  exclude_red_ocean = $true
+  exclude_amazon_basics = $true
+  exclude_fragile = $true
+  exclude_seasonal = $true
+} | ConvertTo-Json
+
+Invoke-RestMethod -Uri http://127.0.0.1:8000/api/discover/products -Method Post -ContentType 'application/json' -Body $body
+```
+
+前端自动 smoke：
+
+```powershell
+cd frontend
+$env:FRONTEND_BASE_URL="http://127.0.0.1:3000"
+$env:BACKEND_BASE_URL="http://127.0.0.1:8000"
+npm run smoke
+```
+
+`npm run smoke` 会自动创建 V2 产品机会和 V1 报告，并检查：
+
+- `/`
+- `/validate`
+- `/radar`
+- `/radar/products/{id}`
+- `/reports`
+- `/reports/{id}`
 
 ## 安全说明
 
